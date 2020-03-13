@@ -26,6 +26,7 @@ public class UserResource {
     public static final String TOKEN = "/token";
     public static final String MOBILE_ID = "/{mobile}";
 
+
     private UserController userController;
 
     @Autowired
