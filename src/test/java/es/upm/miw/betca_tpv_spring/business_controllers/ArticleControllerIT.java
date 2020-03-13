@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 import es.upm.miw.betca_tpv_spring.TestConfig;
 import es.upm.miw.betca_tpv_spring.documents.Tax;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
+import es.upm.miw.betca_tpv_spring.dtos.ArticleSearchDto;
 import es.upm.miw.betca_tpv_spring.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
@@ -127,6 +128,16 @@ class ArticleControllerIT {
                             return true;
                         }
                 )
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testSearchArticleByDescriptionOrProvider() {
+        ArticleSearchDto articleSearchDto = new ArticleSearchDto("null",this.providerRepository.findAll().get(1).getId());
+        StepVerifier
+                .create(this.articleController.searchArticleByDescriptionOrProvider(articleSearchDto))
+                .expectNextCount(6)
                 .expectComplete()
                 .verify();
     }

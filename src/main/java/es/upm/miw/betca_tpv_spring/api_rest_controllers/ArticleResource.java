@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.ArticleController;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
+import es.upm.miw.betca_tpv_spring.dtos.ArticleSearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,9 +53,10 @@ public class ArticleResource {
     }
 
     @GetMapping(value = SEARCH)
-    public Flux<ArticleDto> searchArticleByDescriptionOrProvider(@RequestParam(required = false) String desription,
+    public Flux<ArticleDto> searchArticleByDescriptionOrProvider(@RequestParam(required = false) String description,
                                                                  @RequestParam(required = false) String provider) {
-        return this.articleController.searchArticleByDescriptionOrProvider(desription, provider)
+        ArticleSearchDto articleSearchDto = new ArticleSearchDto(description,provider);
+        return this.articleController.searchArticleByDescriptionOrProvider(articleSearchDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

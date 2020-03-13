@@ -6,5 +6,5 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 
 public interface ArticleReactRepository extends ReactiveSortingRepository<Article, String> {
-    Flux<Article> findByDescriptionContainingOrProvider(String description, String provider);
+    Flux<Article> findByDescriptionLikeOrProvider(String description, String provider);
 }
