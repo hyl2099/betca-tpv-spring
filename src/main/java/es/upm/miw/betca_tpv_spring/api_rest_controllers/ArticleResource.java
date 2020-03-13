@@ -18,6 +18,7 @@ public class ArticleResource {
 
     public static final String ARTICLES = "/articles";
     public static final String CODE_ID = "/{code}";
+    public static final String SEARCH = "/search";
 
     private ArticleController articleController;
 
@@ -47,6 +48,13 @@ public class ArticleResource {
     @PutMapping(value = CODE_ID)
     public Mono<ArticleDto> updateArticle(@PathVariable String code, @Valid @RequestBody ArticleDto articleDto) {
         return this.articleController.updateArticle(code, articleDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = SEARCH)
+    public Flux<ArticleDto> searchArticleByDescriptionOrProvider(@RequestParam(required = false) String desription,
+                                                                 @RequestParam(required = false) String provider) {
+        return this.articleController.searchArticleByDescriptionOrProvider(desription, provider)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

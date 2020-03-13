@@ -102,4 +102,10 @@ public class ArticleController {
 
 
     }
+
+    public Flux<ArticleDto> searchArticleByDescriptionOrProvider(String description, String providerId) {
+        return this.articleReactRepository.findByDescriptionContainingOrProvider(description,providerId)
+                .switchIfEmpty(Flux.error(new BadRequestException("Params not found")))
+                .map(ArticleDto::new);
+    }
 }
