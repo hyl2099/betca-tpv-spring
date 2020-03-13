@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.Tax;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
+import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.util.UriBuilder;
 
 import java.math.BigDecimal;
 
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticleResource.ARTICLES;
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticleResource.CODE_ID;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticleResource.*;
 
 @ApiTestConfig
 class ArticleResourceIT {
@@ -23,6 +24,9 @@ class ArticleResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private ProviderRepository providerRepository;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -72,6 +76,16 @@ class ArticleResourceIT {
                 .get().uri(contextPath + ARTICLES)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void testSearchArticle() {
+        this.restService.loginAdmin(webTestClient)
+                .get().uri(uriBuilder ->  uriBuilder
+                .path(contextPath + ARTICLES + SEARCH)
+                .queryParam("description","null")
+                .queryParam("provider", this.providerRepository.findAll().get(1).getId()).build()
+        ).exchange().expectStatus().isOk();
     }
 
 

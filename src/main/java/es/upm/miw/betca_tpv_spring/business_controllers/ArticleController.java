@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.business_services.Barcode;
 import es.upm.miw.betca_tpv_spring.documents.Article;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
+import es.upm.miw.betca_tpv_spring.dtos.ArticleSearchDto;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
@@ -101,5 +102,11 @@ public class ArticleController {
                 then(this.articleReactRepository.saveAll(article).next().map(ArticleDto::new));
 
 
+    }
+
+    public Flux<ArticleDto> searchArticleByDescriptionOrProvider(ArticleSearchDto articleSearchDto) {
+        return this.articleReactRepository.findByDescriptionLikeOrProvider(articleSearchDto.getDescription(),articleSearchDto.getProvider())
+                .switchIfEmpty(Flux.error(new BadRequestException("Params not found")))
+                .map(ArticleDto::new);
     }
 }
