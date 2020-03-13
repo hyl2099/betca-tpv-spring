@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Service
@@ -173,8 +174,8 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- sendings");
 
         Staff[] staff = {
-                new Staff(1,"6661"),
-                new Staff(2,"6662")
+                new Staff("1", "6661", "3", "13", 4, LocalDateTime.of(2020,03,13,9,0,0)),
+                new Staff("2", "6662", "3", "13", 0, LocalDateTime.of(2020,03,13,8,0,0))
         };
         this.staffRepository.saveAll(Arrays.asList(staff));
         LogManager.getLogger(this.getClass()).warn("        ------- staffs");
