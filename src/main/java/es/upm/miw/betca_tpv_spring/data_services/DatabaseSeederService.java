@@ -41,6 +41,7 @@ public class DatabaseSeederService {
     private TagRepository tagRepository;
     private CustomerDiscountRepository customerDiscountRepository;
     private SendingsRepository sendingsRepository;
+    private StaffRepository staffRepository;
     @Autowired
     public DatabaseSeederService(
             TicketRepository ticketRepository,
@@ -58,7 +59,8 @@ public class DatabaseSeederService {
             TagRepository tagRepository,
             ArticlesFamilyRepository articlesFamilyRepository,
             CustomerDiscountRepository customerDiscountRepository,
-            SendingsRepository sendingsRepository
+            SendingsRepository sendingsRepository,
+            StaffRepository staffRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -76,6 +78,7 @@ public class DatabaseSeederService {
         this.tagRepository = tagRepository;
         this.customerDiscountRepository = customerDiscountRepository;
         this.sendingsRepository = sendingsRepository;
+        this.staffRepository = staffRepository;
     }
 
     @PostConstruct
@@ -129,7 +132,7 @@ public class DatabaseSeederService {
         this.userRepository.deleteAll();
         this.voucherRepository.deleteAll();
         this.sendingsRepository.deleteAll();
-
+        this.staffRepository.deleteAll();
         // -------------------------------------------------------------------------
         this.initialize();
     }
@@ -169,6 +172,12 @@ public class DatabaseSeederService {
         this.sendingsRepository.saveAll(Arrays.asList(sendings));
         LogManager.getLogger(this.getClass()).warn("        ------- sendings");
 
+        Staff[] staff = {
+                new Staff(1,"6661"),
+                new Staff(2,"6662")
+        };
+        this.staffRepository.saveAll(Arrays.asList(staff));
+        LogManager.getLogger(this.getClass()).warn("        ------- staffs");
 
         Provider[] providers = {
                 Provider.builder("pro1").nif("12345678b").address("C/TPV-pro, 1").phone("9166666601").email("p1@gmail.com").note("p1").active(true).build(),
