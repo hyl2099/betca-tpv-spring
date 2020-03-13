@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
 @RestController
 @RequestMapping(ProviderResource.PROVIDERS)
@@ -43,6 +45,12 @@ public class ProviderResource {
     @PostMapping(produces = {"application/json"})
     public Mono<ProviderDto> create(@RequestBody ProviderCreationDto providerCreationDto) {
         return this.providerController.create(providerCreationDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = ID)
+    public Mono<ProviderDto> update(@PathVariable String id, @Valid @RequestBody ProviderDto providerDto) {
+        return this.providerController.update(id, providerDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
