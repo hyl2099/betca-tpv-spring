@@ -174,8 +174,9 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- sendings");
 
         Staff[] staff = {
-                new Staff("1", "6661","2020", "3", "13", 4, LocalDateTime.of(2020,03,13,9,0,0)),
-                new Staff("2", "6662", "2020","3", "13", 0, LocalDateTime.of(2020,03,13,8,0,0))
+                new Staff("1", "6661","2020", "3", "13", 4, LocalDateTime.of(2020,3,13,9,0,0)),
+                new Staff("2", "6662", "2020","3", "13", 2, LocalDateTime.of(2020,3,13,8,0,0)),
+                new Staff("3", "6663", "2020","3", "13", 0, LocalDateTime.of(2020,3,13,7,0,0))
         };
         this.staffRepository.saveAll(Arrays.asList(staff));
         LogManager.getLogger(this.getClass()).warn("        ------- staffs");
