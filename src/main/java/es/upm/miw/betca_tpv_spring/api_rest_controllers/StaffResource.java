@@ -12,14 +12,14 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(StaffResource.STAFF)
+@RequestMapping(StaffResource.STAFFS)
 public class StaffResource {
 
-    public static final String STAFF = "/staffs";
-    public static final String MOBILE = "/{mobile}";
-    public static final String YEAR = "/{year}";
-    public static final String MONTH = "/{month}";
-    public static final String DAY = "/{day}";
+    public static final String STAFFS = "/staffs";
+//    public static final String MOBILE = "/{mobile}";
+//    public static final String YEAR = "/{year}";
+//    public static final String MONTH = "/{month}";
+//    public static final String DAY = "/{day}";
 
     private StaffController staffController;
 
@@ -33,11 +33,21 @@ public class StaffResource {
                                                  @RequestParam String year,
                                                  @RequestParam String month,
                                                  @RequestParam String day) {
-        if (mobile == null && year == null && month == null && day == null) {
+        Staff staff = new Staff(mobile, year, month, day);
+        if ((mobile == null || mobile.equals("") || mobile.equals("null")) &&
+                (year == null || year.equals("") || year.equals("null")) &&
+                (month == null || month.equals("") || month.equals("null")) &&
+                (day == null || day.equals("") || day.equals("null"))) {
             return this.staffController.readAll()
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+        } else if ((mobile != null && !mobile.equals("") && !mobile.equals("null")) &&
+                (year != null && !year.equals("") && !year.equals("null")) &&
+                (month != null && !month.equals("") && !month.equals("null")) &&
+                (day != null && !day.equals("") && !day.equals("null"))) {
+            return this.staffController.findByMobileAndYearAndMonthAndDay(staff)
+                    .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         } else {
-            return this.staffController.findByMobileAndYearAndMonthAndDay(mobile, year, month, day)
+            return this.staffController.findByMobileOrYearOrMonthOrDay(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         }
     }
@@ -47,6 +57,5 @@ public class StaffResource {
         return this.staffController.createStaffRecord(staffDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
-
 
 }
