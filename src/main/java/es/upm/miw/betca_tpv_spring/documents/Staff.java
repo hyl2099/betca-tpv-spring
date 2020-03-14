@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class Staff {
     @Id
     private String id;
+
     private String mobile;
     private String year;
     private String month;
@@ -19,14 +20,23 @@ public class Staff {
     public Staff() {
     }
 
-    public Staff(String id, String mobile, String year, String month, String day, Integer workHours, LocalDateTime lastLoginTime) {
-        this.id = id;
+    public Staff(String mobile, String year, String month, String day, Integer workHours, LocalDateTime lastLoginTime) {
         this.mobile = mobile;
         this.year = year;
         this.month = month;
         this.day = day;
         this.workHours = workHours;
         this.lastLoginTime = lastLoginTime;
+    }
+
+    public Staff(String mobile, String year, String month, String day) {
+        this.mobile = mobile;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+
+    public Staff(Staff staff) {
     }
 
     public String getId() {

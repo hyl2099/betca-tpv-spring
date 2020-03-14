@@ -30,8 +30,7 @@ public class StaffDto {
         this.lastLoginTime = staff.getLastLoginTime();
     }
 
-    public StaffDto(String id, String mobile, String year, String month, String day, Integer workHours, LocalDateTime lastLoginTime) {
-        this.id = id;
+    public StaffDto(String mobile, String year, String month, String day, Integer workHours, LocalDateTime lastLoginTime) {
         this.mobile = mobile;
         this.year = year;
         this.month = month;
