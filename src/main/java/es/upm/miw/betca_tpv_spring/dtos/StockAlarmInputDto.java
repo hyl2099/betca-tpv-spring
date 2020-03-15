@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
 import es.upm.miw.betca_tpv_spring.documents.AlarmArticle;
+import es.upm.miw.betca_tpv_spring.documents.StockAlarm;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
@@ -23,6 +24,10 @@ public class StockAlarmInputDto {
         this.warning = warning;
         this.critical = critical;
         this.alarmArticle = alarmArticle;
+    }
+
+    public StockAlarmInputDto(StockAlarm stockAlarm) {
+
     }
 
     public String getDescription() {
