@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.Staff;
 import es.upm.miw.betca_tpv_spring.dtos.StaffDto;
+import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.StaffReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,6 +53,21 @@ public class StaffController {
                 staffDto.getLastLoginTime()
         );
         return staffReactRepository.save(staff);
+    }
+
+    public Mono<Staff> update(String id, StaffDto staffDto) {
+        Mono<Staff> provider = this.staffReactRepository.findById(id).
+                switchIfEmpty(Mono.error(new NotFoundException("Staff id mobile year month day " +
+                        staffDto.getId() + staffDto.getMobile() + staffDto.getYear() + staffDto.getMonth() + staffDto.getDay())))
+                .map(newStaff -> {
+                    newStaff.setWorkHours(staffDto.getWorkHours());
+                    newStaff.setLastLoginTime(staffDto.getLastLoginTime());
+                    return newStaff;
+                });
+
+        return Mono.
+                when(provider).
+                then(this.staffReactRepository.saveAll(provider).next().map(Staff::new));
     }
 
 

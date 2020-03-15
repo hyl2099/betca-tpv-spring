@@ -147,6 +147,7 @@ public class VoucherResourceIT {
         assertNotNull(voucher);
         assertEquals(listVouchers.get(1).getId(), voucher.getId());
         assertNotNull(voucher.getDateOfUse());
+
     }
 
     @Test

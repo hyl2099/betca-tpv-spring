@@ -217,4 +217,74 @@ public class StaffResourceIT {
         assertNotNull(newStaffList);
         assertEquals("3", newStaffList.get(0).getMonth());
     }
+
+
+    @Test
+    void testUpdate(){
+        System.out.println(this.restService.loginAdmin(this.webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(contextPath + STAFFS)
+                        .queryParam("mobile", null)
+                        .queryParam("year", null)
+                        .queryParam("month", null)
+                        .queryParam("day", null)
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk().expectBodyList(StaffDto.class)
+                .returnResult().getResponseBody().toString()
+        );
+
+        List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(contextPath + STAFFS)
+                        .queryParam("mobile", "6661")
+                        .queryParam("year", "2020")
+                        .queryParam("month", "3")
+                        .queryParam("day", "13")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(StaffDto.class)
+                .returnResult().getResponseBody();
+
+        this.restService.loginAdmin(this.webTestClient)
+                .put()
+                .uri(contextPath + STAFFS  + "/" + newStaffList.get(0).getId())
+                .body(BodyInserters.fromObject(
+                new Staff(
+                        "6661",
+                        "2020",
+                        "3",
+                        "13",
+                        100,
+                        LocalDateTime.of(2020,03,13,9,0,0)
+                )))
+                .exchange()
+                .expectStatus().isOk();
+
+
+        List<StaffDto> lastStaffList = this.restService.loginAdmin(this.webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(contextPath + STAFFS)
+                        .queryParam("mobile", "6661")
+                        .queryParam("year", "2020")
+                        .queryParam("month", "3")
+                        .queryParam("day", "13")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk().expectBodyList(StaffDto.class)
+                .returnResult().getResponseBody();
+
+
+        assertNotNull(newStaffList);
+        assertEquals("100", lastStaffList.get(0).getWorkHours().toString());
+        assertEquals(LocalDateTime.of(2020,03,13,9,0,0), lastStaffList.get(0).getLastLoginTime());
+    }
+
 }
