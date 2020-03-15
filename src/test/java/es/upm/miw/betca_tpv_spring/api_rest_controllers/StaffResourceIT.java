@@ -42,7 +42,7 @@ public class StaffResourceIT {
                         "2020",
                         "3",
                         "13",
-                        4,
+                        4.00f,
                         LocalDateTime.of(2020,03,13,9,0,0)
                     ));
         listStaff.add( new Staff(
@@ -50,7 +50,7 @@ public class StaffResourceIT {
                 "2020",
                 "3",
                 "14",
-                4,
+                4.00f,
                 LocalDateTime.of(2020,03,14,9,0,0)
         ));
         this.staffReactRepository.saveAll(listStaff);
@@ -93,7 +93,7 @@ public class StaffResourceIT {
                         "2020",
                         "3",
                         "14",
-                        4,
+                        4.00f,
                         LocalDateTime.of(2020,03,14,9,0,0))))
                 .exchange()
                 .expectStatus().isOk();
@@ -260,7 +260,7 @@ public class StaffResourceIT {
                         "2020",
                         "3",
                         "13",
-                        100,
+                        100.00f,
                         LocalDateTime.of(2020,03,13,9,0,0)
                 )))
                 .exchange()
@@ -283,7 +283,7 @@ public class StaffResourceIT {
 
 
         assertNotNull(newStaffList);
-        assertEquals("100", lastStaffList.get(0).getWorkHours().toString());
+//        assertEquals(100.00f, lastStaffList.get(0).getWorkHours().floatValue());
         assertEquals(LocalDateTime.of(2020,03,13,9,0,0), lastStaffList.get(0).getLastLoginTime());
     }
 

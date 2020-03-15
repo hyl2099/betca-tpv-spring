@@ -17,10 +17,6 @@ public class StaffResource {
 
     public static final String STAFFS = "/staffs";
     public static final String ID = "/{id}";
-    public static final String MOBILE = "/{mobile}";
-    public static final String YEAR = "/{year}";
-    public static final String MONTH = "/{month}";
-    public static final String DAY = "/{day}";
 
     private StaffController staffController;
 
@@ -59,15 +55,6 @@ public class StaffResource {
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
-//    @PutMapping(value = ID, produces = {"application/json"})
-//    public Mono<Staff> update(@PathVariable String id,
-////                              @PathVariable String year,
-////                              @PathVariable String month,
-////                              @PathVariable String day,
-//                              @Valid @RequestBody StaffDto staffDto) {
-//        return this.staffController.update(id, staffDto)
-//                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
-//    }
 
     @PutMapping(value = ID, produces = {"application/json"})
     public Mono<Staff> update(@PathVariable String id,@Valid @RequestBody StaffDto staffDto) {
