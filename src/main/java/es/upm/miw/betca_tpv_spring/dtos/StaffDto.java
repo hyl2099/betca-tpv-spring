@@ -12,7 +12,7 @@ public class StaffDto {
     private String year;
     private String month;
     private String day;
-    private Integer workHours;
+    private Float workHours;
     private LocalDateTime lastLoginTime;
 
 
@@ -30,7 +30,7 @@ public class StaffDto {
         this.lastLoginTime = staff.getLastLoginTime();
     }
 
-    public StaffDto(String mobile, String year, String month, String day, Integer workHours, LocalDateTime lastLoginTime) {
+    public StaffDto(String mobile, String year, String month, String day, Float workHours, LocalDateTime lastLoginTime) {
         this.mobile = mobile;
         this.year = year;
         this.month = month;
@@ -86,11 +86,11 @@ public class StaffDto {
         this.day = day;
     }
 
-    public Integer getWorkHours() {
+    public Float getWorkHours() {
         return workHours;
     }
 
-    public void setWorkHours(Integer workHours) {
+    public void setWorkHours(Float workHours) {
         this.workHours = workHours;
     }
 
