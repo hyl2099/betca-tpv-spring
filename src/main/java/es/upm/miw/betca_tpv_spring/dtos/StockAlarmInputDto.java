@@ -27,7 +27,7 @@ public class StockAlarmInputDto {
     }
 
     public StockAlarmInputDto(StockAlarm stockAlarm) {
-
+        this(stockAlarm.getDescription(), stockAlarm.getProvider(), stockAlarm.getWarning(), stockAlarm.getCritical(), stockAlarm.getAlarmArticle());
     }
 
     public String getDescription() {

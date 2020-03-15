@@ -43,6 +43,7 @@ public class DatabaseSeederService {
     private CustomerDiscountRepository customerDiscountRepository;
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
+    private StockAlarmRepository stockAlarmRepository;
     @Autowired
     public DatabaseSeederService(
             TicketRepository ticketRepository,
@@ -61,7 +62,8 @@ public class DatabaseSeederService {
             ArticlesFamilyRepository articlesFamilyRepository,
             CustomerDiscountRepository customerDiscountRepository,
             SendingsRepository sendingsRepository,
-            StaffRepository staffRepository
+            StaffRepository staffRepository,
+            StockAlarmRepository stockAlarmRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -80,6 +82,7 @@ public class DatabaseSeederService {
         this.customerDiscountRepository = customerDiscountRepository;
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
+        this.stockAlarmRepository = stockAlarmRepository;
     }
 
     @PostConstruct
@@ -134,6 +137,7 @@ public class DatabaseSeederService {
         this.voucherRepository.deleteAll();
         this.sendingsRepository.deleteAll();
         this.staffRepository.deleteAll();
+        this.stockAlarmRepository.deleteAll();
         // -------------------------------------------------------------------------
         this.initialize();
     }
@@ -301,6 +305,18 @@ public class DatabaseSeederService {
         };
         this.customerDiscountRepository.saveAll(Arrays.asList(customerDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customerDiscounts");
+
+        AlarmArticle[] alarmArticles ={
+                new AlarmArticle("1",1,1),
+                new AlarmArticle("2",2,2)
+        };
+
+        StockAlarm[] stockAlarms ={
+                new StockAlarm("111","1111","upm",1,1,alarmArticles),
+                new StockAlarm("222","2222","upm",2,2,alarmArticles)
+        };
+        this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
+        LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
     }
 
 }
