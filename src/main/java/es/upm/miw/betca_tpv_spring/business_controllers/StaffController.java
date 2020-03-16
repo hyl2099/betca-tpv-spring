@@ -23,13 +23,12 @@ public class StaffController {
     }
 
 
-    public Flux<Staff> findByMobileOrYearOrMonthOrDay(Staff staff) {
+    public Flux<Staff> findByMobileOrYearOrMonth(Staff staff) {
         return this.staffReactRepository
-                .findByMobileOrYearOrMonthOrDay(
+                .findByMobileOrYearOrMonth(
                         staff.getMobile(),
                         staff.getYear(),
-                        staff.getMonth(),
-                        staff.getDay()
+                        staff.getMonth()
                         );
     }
 
@@ -40,6 +39,40 @@ public class StaffController {
                         staff.getYear(),
                         staff.getMonth(),
                         staff.getDay()
+                );
+    }
+
+    public Flux<Staff> findByMobileAndYearAndMonth(Staff staff) {
+        return this.staffReactRepository
+                .findByMobileAndYearAndMonth(
+                        staff.getMobile(),
+                        staff.getYear(),
+                        staff.getMonth()
+                );
+    }
+
+    public Flux<Staff> findByMobileAndYear(Staff staff) {
+        return this.staffReactRepository
+                .findByMobileAndYear(
+                        staff.getMobile(),
+                        staff.getYear()
+                );
+    }
+
+
+    public Flux<Staff> findByMobileAndMonth(Staff staff) {
+        return this.staffReactRepository
+                .findByMobileAndMonth(
+                        staff.getMobile(),
+                        staff.getMonth()
+                );
+    }
+
+    public Flux<Staff> findByYearAndMonth(Staff staff) {
+        return this.staffReactRepository
+                .findByYearAndMonth(
+                        staff.getYear(),
+                        staff.getMonth()
                 );
     }
 
