@@ -27,18 +27,13 @@ public class ArticlesFamilyController {
     @Autowired
     private FamilyCompositeRepository familyCompositeRepository;
 
-//    public Mono<ArticlesFamilyDto> readArticlesFamilyList(String description) {
-//        return this.articlesFamilyReactRepository.findByReference(description)
-//                .map(ArticlesFamilyDto::new);
-//    }
-
     public Mono<FamilyCompositeDto> readFamilyCompositeArticlesList(String description) {
         return this.familyCompositeReactRepository.findByReference(description)
                 .map(FamilyCompositeDto::new);
     }
 
-    public List<ArticlesFamilyDto> readArticlesFamilyList(String description) {
-        FamilyComposite family = familyCompositeRepository.findFirstByDescription(description);
+    public List<ArticlesFamilyDto> readArticlesFamilyList(String reference) {
+        FamilyComposite family = familyCompositeRepository.findFirstByReference(reference);
         List<ArticlesFamilyDto> dtos = new ArrayList<>();
         for (ArticlesFamily articlesFamily : family.getArticlesFamilyList()) {
             dtos.add(new ArticlesFamilyDto(articlesFamily));

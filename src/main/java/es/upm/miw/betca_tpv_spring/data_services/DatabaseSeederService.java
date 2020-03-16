@@ -200,8 +200,8 @@ public class DatabaseSeederService {
                         .retailPrice("10.12").stock(8).tax(Tax.FREE).provider(providers[0]).build(),
                 Article.builder("8400000000048").reference("ref-a4").description("descrip-a4")
                         .retailPrice("0.23").stock(1).tax(Tax.REDUCED).provider(providers[0]).build(),
-                Article.builder("8400000000055").retailPrice("0.23").stock(0).tax(Tax.SUPER_REDUCED)
-                        .provider(providers[0]).build(),
+                Article.builder("8400000000055").reference("ref-a5").description("descrip-a5")
+                        .retailPrice("0.23").stock(0).tax(Tax.SUPER_REDUCED).provider(providers[0]).build(),
                 Article.builder("8400000000062").reference("ref-a6").description("descrip-a6")
                         .retailPrice("0.01").stock(0).discontinued(true).provider(providers[1]).build(),
                 Article.builder("8400000000079").reference("Zz Polo T2").description("Zarzuela - Polo T2")
