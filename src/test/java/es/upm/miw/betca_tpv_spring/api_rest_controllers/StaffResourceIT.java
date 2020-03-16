@@ -158,7 +158,7 @@ public class StaffResourceIT {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(contextPath + STAFFS + '?'
-                        + "mobile=" + "6661" + "&year=" + null + "&month=" + null + "&day=" + null
+                        + "mobile=" + "" + "&year=" + "2020" + "&month=" + "" + "&day=" + null
                 )
                 .exchange()
                 .expectStatus().isOk()

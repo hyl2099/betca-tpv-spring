@@ -43,8 +43,44 @@ public class StaffResource {
                 (day != null && !day.equals("") && !day.equals("null"))) {
             return this.staffController.findByMobileAndYearAndMonthAndDay(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-        } else {
-            return this.staffController.findByMobileOrYearOrMonthOrDay(staff)
+        } else if ((mobile == null || mobile.equals("") || mobile.equals("null")) &&
+                (day == null || day.equals("") || day.equals("null"))) {
+            if(year == null || year.equals("") || year.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else if (month == null || month.equals("") || month.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else {
+                return this.staffController.findByYearAndMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            }
+        } else if ((year == null || year.equals("") || year.equals("null")) &&
+                (day == null || day.equals("") || day.equals("null"))){
+            if(mobile == null || mobile.equals("") || mobile.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else if (month == null || month.equals("") || month.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else {
+                return this.staffController.findByMobileAndMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            }
+        } else if ((month == null || month.equals("") || month.equals("null"))&&
+                (day == null || day.equals("") || day.equals("null"))){
+            if(mobile == null || mobile.equals("") || mobile.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else if (year == null || year.equals("") || year.equals("null")){
+                return this.staffController.findByMobileOrYearOrMonth(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            } else {
+                return this.staffController.findByMobileAndYear(staff)
+                        .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+            }
+        } else{
+            return this.staffController.findByMobileAndYearAndMonth(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         }
     }
