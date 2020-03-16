@@ -37,8 +37,16 @@ public class ArticlesFamilyController {
                 .map(FamilyCompositeDto::new);
     }
 
-    public List<ArticlesFamilyDto> readArticlesFamilyList(String description) {
-        FamilyComposite family = familyCompositeRepository.findFirstByDescription(description);
+//    public List<ArticlesFamilyDto> readArticlesFamilyList(String description) {
+//        FamilyComposite family = familyCompositeRepository.findFirstByDescription(description);
+//        List<ArticlesFamilyDto> dtos = new ArrayList<>();
+//        for (ArticlesFamily articlesFamily : family.getArticlesFamilyList()) {
+//            dtos.add(new ArticlesFamilyDto(articlesFamily));
+//        }
+//        return dtos;
+//    }
+    public List<ArticlesFamilyDto> readArticlesFamilyList(String reference) {
+        FamilyComposite family = familyCompositeRepository.findFirstByReference(reference);
         List<ArticlesFamilyDto> dtos = new ArrayList<>();
         for (ArticlesFamily articlesFamily : family.getArticlesFamilyList()) {
             dtos.add(new ArticlesFamilyDto(articlesFamily));
