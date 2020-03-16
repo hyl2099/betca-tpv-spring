@@ -66,7 +66,7 @@ public class OrderResourceIT {
 
     @Test
     void testSearchOrderWithOnlyDescriptionField() {
-        this.restService.loginAdmin(webTestClient)
+        List<OrderDto> orderDtoList = this.restService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder
                         .path(contextPath + ORDERS)
                         .queryParam("description", "order")
@@ -74,7 +74,10 @@ public class OrderResourceIT {
                         .queryParam("closingDate", "null")
                         .build())
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBodyList(OrderDto.class)
+                .returnResult().getResponseBody();
+
     }
 
     @Test
