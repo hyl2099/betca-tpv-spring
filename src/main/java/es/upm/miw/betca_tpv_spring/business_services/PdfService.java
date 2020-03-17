@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_spring.business_services;
 
-import es.upm.miw.betca_tpv_spring.documents.Shopping;
-import es.upm.miw.betca_tpv_spring.documents.ShoppingState;
-import es.upm.miw.betca_tpv_spring.documents.Ticket;
-import es.upm.miw.betca_tpv_spring.documents.Voucher;
+import es.upm.miw.betca_tpv_spring.documents.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -123,5 +120,10 @@ public class PdfService {
             this.addFootVoucher(pdf);
             return pdf.build();
         });
+    }
+
+    public Mono<Byte[]> generateInvoice(Mono<Invoice> invoiceMono) {
+        //TODO GameEngineers generate the pdf for invoice
+        return null;
     }
 }
