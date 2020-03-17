@@ -3,7 +3,6 @@ package es.upm.miw.betca_tpv_spring.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class OrderSearchDto {
 
@@ -11,7 +10,7 @@ public class OrderSearchDto {
     private String description;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String provider;
+    private String providerId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime closingDate;
@@ -19,9 +18,9 @@ public class OrderSearchDto {
     public OrderSearchDto(){
     }
 
-    public OrderSearchDto(String description, String provider, LocalDateTime closingDate) {
+    public OrderSearchDto(String description, String providerId, LocalDateTime closingDate) {
         this.description = description;
-        this.provider = provider;
+        this.providerId = providerId;
         this.closingDate = closingDate;
     }
 
@@ -33,12 +32,12 @@ public class OrderSearchDto {
         this.description = description;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public LocalDateTime getClosingDate() {
@@ -53,7 +52,7 @@ public class OrderSearchDto {
     public String toString() {
         return "OrderSearchDto{" +
                 "description='" + description + '\'' +
-                ", provider='" + provider + '\'' +
+                ", provider='" + providerId + '\'' +
                 ", closingDate=" + closingDate +
                 '}';
     }

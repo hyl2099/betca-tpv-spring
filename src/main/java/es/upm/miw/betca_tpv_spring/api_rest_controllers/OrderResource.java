@@ -29,7 +29,9 @@ public class OrderResource {
     }
 
     @GetMapping
-    public Flux<Order> search(@RequestParam String description, @RequestParam String provider, @RequestParam String closingDate){
+    public Flux<Order> search(@RequestParam (required = false) String description,
+                              @RequestParam (required = false) String provider,
+                              @RequestParam (required = false) String closingDate){
         OrderSearchDto orderSearchDto;
 
         if(closingDate.equals("null")){
