@@ -22,7 +22,7 @@ public class SendingsResourceIT {
     private String contextPath;
 
     @Test
-     void createSendings(){
+    void createSendings() {
         SendingsCreationDto sendingsCreationDto = new SendingsCreationDto();
 
         this.restService.loginAdmin(this.webTestClient)
@@ -33,7 +33,7 @@ public class SendingsResourceIT {
     }
 
     @Test
-     void testReadAll(){
+    void testReadAll() {
         this.restService.loginAdmin(this.webTestClient)
                 .get().uri(contextPath + SENDINGS)
                 .exchange()

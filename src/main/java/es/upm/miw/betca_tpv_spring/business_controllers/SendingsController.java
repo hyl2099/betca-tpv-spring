@@ -15,13 +15,13 @@ public class SendingsController {
     private SendingsReactRepository sendingsReactRepository;
 
     @Autowired
-    public SendingsController(SendingsReactRepository sendingsReactRepository){
+    public SendingsController(SendingsReactRepository sendingsReactRepository) {
         this.sendingsReactRepository = sendingsReactRepository;
     }
 
-    public Mono<Sendings> readSendings(String id){
+    public Mono<Sendings> readSendings(String id) {
         return this.sendingsReactRepository.findById(id)
-            .switchIfEmpty(Mono.error(new NotFoundException("Sending id (" + id + ")")));
+                .switchIfEmpty(Mono.error(new NotFoundException("Sending id (" + id + ")")));
     }
 
     public Flux<Sendings> readAll() {

@@ -44,6 +44,7 @@ public class DatabaseSeederService {
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
+
     @Autowired
     public DatabaseSeederService(
             TicketRepository ticketRepository,
@@ -169,18 +170,18 @@ public class DatabaseSeederService {
         this.voucherRepository.saveAll(Arrays.asList(vouchers));
         LogManager.getLogger(this.getClass()).warn("        ------- vouchers");
 
-        Sendings[] sendings ={
-                new Sendings("202003114","all-roles"),
-                new Sendings("202003115","u002"),
-                new Sendings("202003116","u003"),
+        Sendings[] sendings = {
+                new Sendings("202003114", "all-roles"),
+                new Sendings("202003115", "u002"),
+                new Sendings("202003116", "u003"),
         };
         this.sendingsRepository.saveAll(Arrays.asList(sendings));
         LogManager.getLogger(this.getClass()).warn("        ------- sendings");
 
         Staff[] staff = {
-                new Staff("6661","2020", "3", "13", 4.00f, LocalDateTime.of(2020,3,13,9,0,0)),
-                new Staff("6662", "2020","3", "13", 2.00f, LocalDateTime.of(2020,3,13,8,0,0)),
-                new Staff("6663", "2020","3", "13", 0.00f, LocalDateTime.of(2020,3,13,7,0,0))
+                new Staff("6661", "2020", "3", "13", 4.00f, LocalDateTime.of(2020, 3, 13, 9, 0, 0)),
+                new Staff("6662", "2020", "3", "13", 2.00f, LocalDateTime.of(2020, 3, 13, 8, 0, 0)),
+                new Staff("6663", "2020", "3", "13", 0.00f, LocalDateTime.of(2020, 3, 13, 7, 0, 0))
         };
         this.staffRepository.saveAll(Arrays.asList(staff));
         LogManager.getLogger(this.getClass()).warn("        ------- staffs");
@@ -304,19 +305,19 @@ public class DatabaseSeederService {
         this.orderRepository.saveAll(Arrays.asList(orders));
         LogManager.getLogger(this.getClass()).warn("        ------- orders");
         CustomerDiscount[] customerDiscounts = {
-                new CustomerDiscount("discount1",BigDecimal.TEN, BigDecimal.TEN, users[4])
+                new CustomerDiscount("discount1", BigDecimal.TEN, BigDecimal.TEN, users[4])
         };
         this.customerDiscountRepository.saveAll(Arrays.asList(customerDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customerDiscounts");
 
-        AlarmArticle[] alarmArticles ={
-                new AlarmArticle("1",1,1),
-                new AlarmArticle("2",2,2)
+        AlarmArticle[] alarmArticles = {
+                new AlarmArticle("1", 1, 1),
+                new AlarmArticle("2", 2, 2)
         };
 
-        StockAlarm[] stockAlarms ={
-                new StockAlarm("111","1111","upm",1,1,alarmArticles),
-                new StockAlarm("222","2222","upm",2,2,alarmArticles)
+        StockAlarm[] stockAlarms = {
+                new StockAlarm("111", "1111", "upm", 1, 1, alarmArticles),
+                new StockAlarm("222", "2222", "upm", 2, 2, alarmArticles)
         };
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");

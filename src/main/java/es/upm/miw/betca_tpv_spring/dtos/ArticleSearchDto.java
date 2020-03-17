@@ -38,7 +38,7 @@ public class ArticleSearchDto {
         return "ArticleSearchDto{" +
                 "description=" + this.description +
                 ", provider=" + this.provider +
-                 '\'' +
+                '\'' +
                 '}';
     }
 }

@@ -3,8 +3,6 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.documents.Voucher;
 import es.upm.miw.betca_tpv_spring.dtos.VoucherCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.VoucherDto;
-import es.upm.miw.betca_tpv_spring.dtos.VoucherSearchDto;
-import es.upm.miw.betca_tpv_spring.repositories.VoucherReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.VoucherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,17 +12,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.VoucherResource.VOUCHERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 @ApiTestConfig
 public class VoucherResourceIT {
@@ -73,7 +68,7 @@ public class VoucherResourceIT {
     }
 
     @Test
-    void testCreateVoucherWithNegativeValue(){
+    void testCreateVoucherWithNegativeValue() {
         VoucherCreationDto voucherCreationDto = new VoucherCreationDto(BigDecimal.valueOf(-5.05));
 
         this.restService.loginAdmin(this.webTestClient)
@@ -88,10 +83,10 @@ public class VoucherResourceIT {
         List<VoucherDto> voucherList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                    .path(contextPath + VOUCHERS)
-                    .queryParam("id", listVouchers.get(0).getId())
-                    .queryParam("firstDate", listVouchers.get(0).getCreationDate())
-                    .queryParam("finalDate", LocalDateTime.now()).build())
+                        .path(contextPath + VOUCHERS)
+                        .queryParam("id", listVouchers.get(0).getId())
+                        .queryParam("firstDate", listVouchers.get(0).getCreationDate())
+                        .queryParam("finalDate", LocalDateTime.now()).build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(VoucherDto.class)
@@ -153,7 +148,7 @@ public class VoucherResourceIT {
     @Test
     void testConsumeVoucherWithBadId() {
         this.restService.loginAdmin(this.webTestClient)
-                .put().uri(contextPath + VOUCHERS + "/ThisIsAFakeId" )
+                .put().uri(contextPath + VOUCHERS + "/ThisIsAFakeId")
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -161,7 +156,7 @@ public class VoucherResourceIT {
     @Test
     void testPrintVoucher() {
         this.restService.loginAdmin(this.webTestClient)
-                .get().uri(contextPath + VOUCHERS + "/" + listVouchers.get(2).getId() + "/print" )
+                .get().uri(contextPath + VOUCHERS + "/" + listVouchers.get(2).getId() + "/print")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -169,7 +164,7 @@ public class VoucherResourceIT {
     @Test
     void testPrintVoucherWithBadId() {
         this.restService.loginAdmin(this.webTestClient)
-                .get().uri(contextPath + VOUCHERS + "/thisIsAFakeId" + "/print" )
+                .get().uri(contextPath + VOUCHERS + "/thisIsAFakeId" + "/print")
                 .exchange()
                 .expectStatus().isNotFound();
     }

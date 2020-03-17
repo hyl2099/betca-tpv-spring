@@ -15,13 +15,13 @@ class StockAlarmReactRepositoryIT {
     private StockAlarmReactRepository stockAlarmReactRepository;
 
     @Test
-    void testReadAllAndDatabaseSeeder(){
+    void testReadAllAndDatabaseSeeder() {
         StepVerifier
                 .create(this.stockAlarmReactRepository.findAll())
                 .expectNextMatches(stockAlarm -> {
                     assertEquals("111", stockAlarm.getId());
-                    assertEquals("1111",stockAlarm.getDescription());
-                    assertEquals("upm",stockAlarm.getProvider());
+                    assertEquals("1111", stockAlarm.getDescription());
+                    assertEquals("upm", stockAlarm.getProvider());
                     assertEquals(new Integer(1), stockAlarm.getWarning());
                     assertEquals(new Integer(1), stockAlarm.getCritical());
                     assertNotNull(stockAlarm.getAlarmArticle());
@@ -29,8 +29,8 @@ class StockAlarmReactRepositoryIT {
                 })
                 .expectNextMatches(stockAlarm -> {
                     assertEquals("222", stockAlarm.getId());
-                    assertEquals("2222",stockAlarm.getDescription());
-                    assertEquals("upm",stockAlarm.getProvider());
+                    assertEquals("2222", stockAlarm.getDescription());
+                    assertEquals("upm", stockAlarm.getProvider());
                     assertNotNull(stockAlarm.getAlarmArticle());
                     assertEquals(new Integer(2), stockAlarm.getWarning());
                     assertEquals(new Integer(2), stockAlarm.getCritical());

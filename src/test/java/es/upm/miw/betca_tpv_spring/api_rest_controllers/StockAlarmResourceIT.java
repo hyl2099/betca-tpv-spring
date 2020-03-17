@@ -20,9 +20,9 @@ class StockAlarmResourceIT {
     private String contextPath;
 
     @Test
-    void testStockAlarmReadAll(){
+    void testStockAlarmReadAll() {
         this.restService.loginAdmin(webTestClient)
-                .get().uri(contextPath+STOCK_ALARMS)
+                .get().uri(contextPath + STOCK_ALARMS)
                 .exchange()
                 .expectStatus().isOk();
     }

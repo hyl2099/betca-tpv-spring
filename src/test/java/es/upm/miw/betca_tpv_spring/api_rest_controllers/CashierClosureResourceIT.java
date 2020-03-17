@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
+import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
@@ -75,6 +76,57 @@ class CashierClosureResourceIT {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.STATE)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testPatchCashierDeposit() {
+        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(new BigDecimal(10), "Moving");
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + CASHIER_CLOSURES)
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.DEPOSIT)
+                .body(BodyInserters.fromObject(cashMovementInputDto))
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
+                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void testPatchCashierNegativeDeposit() {
+        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(new BigDecimal(-10), "Moving");
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + CASHIER_CLOSURES)
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.DEPOSIT)
+                .body(BodyInserters.fromObject(cashMovementInputDto))
+                .exchange()
+                .expectStatus().isBadRequest();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
+                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void testPatchCashierDepositWithCashierClosedBadRequest() {
+        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(new BigDecimal(10), "Moving");
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.DEPOSIT)
+                .body(BodyInserters.fromObject(cashMovementInputDto))
                 .exchange()
                 .expectStatus().isBadRequest();
     }

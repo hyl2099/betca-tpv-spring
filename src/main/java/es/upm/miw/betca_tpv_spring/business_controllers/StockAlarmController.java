@@ -17,7 +17,7 @@ public class StockAlarmController {
         this.stockAlarmReactRepository = stockAlarmReactRepository;
     }
 
-    public Flux<StockAlarmInputDto> readAll(){
+    public Flux<StockAlarmInputDto> readAll() {
         return this.stockAlarmReactRepository.findAll()
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
                 .map(StockAlarmInputDto::new);

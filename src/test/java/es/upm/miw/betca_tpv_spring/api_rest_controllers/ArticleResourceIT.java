@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
-import es.upm.miw.betca_tpv_spring.documents.Tax;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.util.UriBuilder;
 
 import java.math.BigDecimal;
 
@@ -81,13 +79,12 @@ class ArticleResourceIT {
     @Test
     void testSearchArticle() {
         this.restService.loginAdmin(webTestClient)
-                .get().uri(uriBuilder ->  uriBuilder
+                .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + ARTICLES + SEARCH)
-                .queryParam("description","null")
+                .queryParam("description", "null")
                 .queryParam("provider", this.providerRepository.findAll().get(1).getId()).build()
         ).exchange().expectStatus().isOk();
     }
-
 
 
 }

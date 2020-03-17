@@ -7,9 +7,10 @@ public class SendingsCreationDto {
 
     private String id;
 
-    public SendingsCreationDto(){ }
+    public SendingsCreationDto() {
+    }
 
-    public SendingsCreationDto(String id){
+    public SendingsCreationDto(String id) {
         this.id = id;
     }
 
