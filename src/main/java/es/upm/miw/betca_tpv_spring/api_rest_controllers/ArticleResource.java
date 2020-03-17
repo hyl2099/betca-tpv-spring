@@ -37,7 +37,7 @@ public class ArticleResource {
     @GetMapping
     public Flux<ArticleDto> readAll() {
         return this.articleController.readAll()
-                .doOnNext(log->LogManager.getLogger(this.getClass()).debug(log));
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
     @PostMapping
@@ -55,7 +55,7 @@ public class ArticleResource {
     @GetMapping(value = SEARCH)
     public Flux<ArticleDto> searchArticleByDescriptionOrProvider(@RequestParam(required = false) String description,
                                                                  @RequestParam(required = false) String provider) {
-        ArticleSearchDto articleSearchDto = new ArticleSearchDto(description,provider);
+        ArticleSearchDto articleSearchDto = new ArticleSearchDto(description, provider);
         return this.articleController.searchArticleByDescriptionOrProvider(articleSearchDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }

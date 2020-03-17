@@ -3,7 +3,6 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.documents.Staff;
 import es.upm.miw.betca_tpv_spring.dtos.StaffDto;
 import es.upm.miw.betca_tpv_spring.repositories.StaffReactRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,21 +36,21 @@ public class StaffResourceIT {
     @BeforeEach
     void seedDatabase() {
         listStaff = new LinkedList<>();
-        listStaff.add( new Staff(
-                        "6662",
-                        "2020",
-                        "3",
-                        "13",
-                        4.00f,
-                        LocalDateTime.of(2020,03,13,9,0,0)
-                    ));
-        listStaff.add( new Staff(
+        listStaff.add(new Staff(
+                "6662",
+                "2020",
+                "3",
+                "13",
+                4.00f,
+                LocalDateTime.of(2020, 03, 13, 9, 0, 0)
+        ));
+        listStaff.add(new Staff(
                 "6669",
                 "2020",
                 "3",
                 "14",
                 4.00f,
-                LocalDateTime.of(2020,03,14,9,0,0)
+                LocalDateTime.of(2020, 03, 14, 9, 0, 0)
         ));
         this.staffReactRepository.saveAll(listStaff);
 
@@ -60,7 +59,7 @@ public class StaffResourceIT {
 
 
     @Test
-    void createStaffRecordTest(){
+    void createStaffRecordTest() {
         this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + STAFFS)
                 .body(BodyInserters.fromObject(listStaff.get(1)))
@@ -86,7 +85,7 @@ public class StaffResourceIT {
 
 
     @Test
-    void createStaffRecordTest2(){
+    void createStaffRecordTest2() {
         this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + STAFFS)
                 .body(BodyInserters.fromObject(new Staff("6669",
@@ -94,13 +93,13 @@ public class StaffResourceIT {
                         "3",
                         "14",
                         4.00f,
-                        LocalDateTime.of(2020,03,14,9,0,0))))
+                        LocalDateTime.of(2020, 03, 14, 9, 0, 0))))
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
-    void testReadAll(){
+    void testReadAll() {
         this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -116,7 +115,7 @@ public class StaffResourceIT {
     }
 
     @Test
-    void testReadAll2(){
+    void testReadAll2() {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -135,7 +134,7 @@ public class StaffResourceIT {
     }
 
     @Test
-    void testReadAll3(){
+    void testReadAll3() {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(contextPath + STAFFS + '?'
@@ -149,12 +148,8 @@ public class StaffResourceIT {
     }
 
 
-
-
-
-
     @Test
-    void testReadByMobileMonthDay1(){
+    void testReadByMobileMonthDay1() {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(contextPath + STAFFS + '?'
@@ -171,9 +166,8 @@ public class StaffResourceIT {
     }
 
 
-
     @Test
-    void testReadByMobileMonthDay(){
+    void testReadByMobileMonthDay() {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -196,7 +190,7 @@ public class StaffResourceIT {
     }
 
     @Test
-    void testReadByMobileMonthDay2(){
+    void testReadByMobileMonthDay2() {
         List<StaffDto> newStaffList = this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -220,7 +214,7 @@ public class StaffResourceIT {
 
 
     @Test
-    void testUpdate(){
+    void testUpdate() {
         System.out.println(this.restService.loginAdmin(this.webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -253,16 +247,16 @@ public class StaffResourceIT {
 
         this.restService.loginAdmin(this.webTestClient)
                 .put()
-                .uri(contextPath + STAFFS  + "/" + newStaffList.get(0).getId())
+                .uri(contextPath + STAFFS + "/" + newStaffList.get(0).getId())
                 .body(BodyInserters.fromObject(
-                new Staff(
-                        "6661",
-                        "2020",
-                        "3",
-                        "13",
-                        100.00f,
-                        LocalDateTime.of(2020,03,13,9,0,0)
-                )))
+                        new Staff(
+                                "6661",
+                                "2020",
+                                "3",
+                                "13",
+                                100.00f,
+                                LocalDateTime.of(2020, 03, 13, 9, 0, 0)
+                        )))
                 .exchange()
                 .expectStatus().isOk();
 
@@ -284,7 +278,7 @@ public class StaffResourceIT {
 
         assertNotNull(newStaffList);
 //        assertEquals(100.00f, lastStaffList.get(0).getWorkHours().floatValue());
-        assertEquals(LocalDateTime.of(2020,03,13,9,0,0), lastStaffList.get(0).getLastLoginTime());
+        assertEquals(LocalDateTime.of(2020, 03, 13, 9, 0, 0), lastStaffList.get(0).getLastLoginTime());
     }
 
 }

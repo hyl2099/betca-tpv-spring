@@ -11,7 +11,7 @@ public class VoucherCreationDto {
     @BigDecimalPositive
     BigDecimal value;
 
-    public VoucherCreationDto(){
+    public VoucherCreationDto() {
         // Empty for framework
     }
 

@@ -24,7 +24,7 @@ public class ArticlesFamilyResource {
     private ArticlesFamilyController articlesFamilyController;
 
     @GetMapping(value = FAMILY_COMPOSITE)
-    public Mono<FamilyCompositeDto> readInFamilyComposite(@Valid @RequestParam String description){
+    public Mono<FamilyCompositeDto> readInFamilyComposite(@Valid @RequestParam String description) {
         return articlesFamilyController.readFamilyCompositeArticlesList(description);
     }
 

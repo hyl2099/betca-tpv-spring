@@ -21,10 +21,12 @@ public class SendingsResource {
     private SendingsController sendingsController;
 
     @Autowired
-    public SendingsResource(SendingsController sendingsController){this.sendingsController = sendingsController; }
+    public SendingsResource(SendingsController sendingsController) {
+        this.sendingsController = sendingsController;
+    }
 
     @GetMapping
-    public Flux<Sendings> readAll(){
+    public Flux<Sendings> readAll() {
         return this.sendingsController.readAll()
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
@@ -36,7 +38,7 @@ public class SendingsResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Sendings> createSendings(@Valid @RequestBody SendingsCreationDto sendingsCreationDto){
+    public Mono<Sendings> createSendings(@Valid @RequestBody SendingsCreationDto sendingsCreationDto) {
         return this.sendingsController.createSendings(sendingsCreationDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }

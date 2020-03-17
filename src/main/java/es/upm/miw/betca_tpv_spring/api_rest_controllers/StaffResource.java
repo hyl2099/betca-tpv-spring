@@ -21,15 +21,15 @@ public class StaffResource {
     private StaffController staffController;
 
     @Autowired
-    public StaffResource(StaffController staffController){
+    public StaffResource(StaffController staffController) {
         this.staffController = staffController;
     }
 
     @GetMapping
-    public Flux<Staff> findByMobileAndYearAndMonthAndDay(@RequestParam  String mobile,
-                                                 @RequestParam String year,
-                                                 @RequestParam String month,
-                                                 @RequestParam String day) {
+    public Flux<Staff> findByMobileAndYearAndMonthAndDay(@RequestParam String mobile,
+                                                         @RequestParam String year,
+                                                         @RequestParam String month,
+                                                         @RequestParam String day) {
         Staff staff = new Staff(mobile, year, month, day);
         if ((mobile == null || mobile.equals("") || mobile.equals("null")) &&
                 (year == null || year.equals("") || year.equals("null")) &&
@@ -45,10 +45,10 @@ public class StaffResource {
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         } else if ((mobile == null || mobile.equals("") || mobile.equals("null")) &&
                 (day == null || day.equals("") || day.equals("null"))) {
-            if(year == null || year.equals("") || year.equals("null")){
+            if (year == null || year.equals("") || year.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-            } else if (month == null || month.equals("") || month.equals("null")){
+            } else if (month == null || month.equals("") || month.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             } else {
@@ -56,45 +56,45 @@ public class StaffResource {
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             }
         } else if ((year == null || year.equals("") || year.equals("null")) &&
-                (day == null || day.equals("") || day.equals("null"))){
-            if(mobile == null || mobile.equals("") || mobile.equals("null")){
+                (day == null || day.equals("") || day.equals("null"))) {
+            if (mobile == null || mobile.equals("") || mobile.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-            } else if (month == null || month.equals("") || month.equals("null")){
+            } else if (month == null || month.equals("") || month.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             } else {
                 return this.staffController.findByMobileAndMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             }
-        } else if ((month == null || month.equals("") || month.equals("null"))&&
-                (day == null || day.equals("") || day.equals("null"))){
-            if(mobile == null || mobile.equals("") || mobile.equals("null")){
+        } else if ((month == null || month.equals("") || month.equals("null")) &&
+                (day == null || day.equals("") || day.equals("null"))) {
+            if (mobile == null || mobile.equals("") || mobile.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-            } else if (year == null || year.equals("") || year.equals("null")){
+            } else if (year == null || year.equals("") || year.equals("null")) {
                 return this.staffController.findByMobileOrYearOrMonth(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             } else {
                 return this.staffController.findByMobileAndYear(staff)
                         .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
             }
-        } else{
+        } else {
             return this.staffController.findByMobileAndYearAndMonth(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         }
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Staff> createStaffRecord(@Valid @RequestBody StaffDto staffDto){
+    public Mono<Staff> createStaffRecord(@Valid @RequestBody StaffDto staffDto) {
         return this.staffController.createStaffRecord(staffDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
 
     @PutMapping(value = ID, produces = {"application/json"})
-    public Mono<Staff> update(@PathVariable String id,@Valid @RequestBody StaffDto staffDto) {
-        return this.staffController.update(id,staffDto)
+    public Mono<Staff> update(@PathVariable String id, @Valid @RequestBody StaffDto staffDto) {
+        return this.staffController.update(id, staffDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

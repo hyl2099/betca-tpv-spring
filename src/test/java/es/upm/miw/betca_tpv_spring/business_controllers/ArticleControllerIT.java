@@ -112,16 +112,16 @@ class ArticleControllerIT {
         StepVerifier
                 .create(this.articleController.readArticle("8400000000017"))
                 .expectNextMatches(articleDto1 -> {
-                        assertTrue("articulo editado".equals(articleDto1.getDescription()));
-                        assertTrue(this.providerRepository.findAll().get(1).getId().equals(articleDto1.getProvider()));
-                        return true;
-                }
+                            assertTrue("articulo editado".equals(articleDto1.getDescription()));
+                            assertTrue(this.providerRepository.findAll().get(1).getId().equals(articleDto1.getProvider()));
+                            return true;
+                        }
                 )
                 .expectComplete()
                 .verify();
 
         StepVerifier
-                .create(this.articleController.updateArticle("8400000000017",articleDto2))
+                .create(this.articleController.updateArticle("8400000000017", articleDto2))
                 .expectNextMatches(articleDto1 -> {
                             assertTrue("Zarzuela - Falda T2".equals(articleDto1.getDescription()));
                             assertTrue(this.providerRepository.findAll().get(0).getId().equals(articleDto1.getProvider()));
@@ -134,7 +134,7 @@ class ArticleControllerIT {
 
     @Test
     void testSearchArticleByDescriptionOrProvider() {
-        ArticleSearchDto articleSearchDto = new ArticleSearchDto("null",this.providerRepository.findAll().get(1).getId());
+        ArticleSearchDto articleSearchDto = new ArticleSearchDto("null", this.providerRepository.findAll().get(1).getId());
         StepVerifier
                 .create(this.articleController.searchArticleByDescriptionOrProvider(articleSearchDto))
                 .expectNextCount(6)

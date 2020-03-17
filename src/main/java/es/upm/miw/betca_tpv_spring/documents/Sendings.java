@@ -15,7 +15,7 @@ public class Sendings {
     private LocalDateTime creationDate;
     private Boolean estado;
 
-    public Sendings(){
+    public Sendings() {
         this.reference = new Encode().generateUUIDUrlSafe();
         this.creationDate = LocalDateTime.now();
         this.estado = false;
@@ -27,7 +27,7 @@ public class Sendings {
         this.username = username;
     }
 
-    public Boolean enEstado(){
+    public Boolean enEstado() {
         return estado;
     }
 

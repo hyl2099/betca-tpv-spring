@@ -14,7 +14,7 @@ public class StaffController {
     private StaffReactRepository staffReactRepository;
 
     @Autowired
-    public StaffController(StaffReactRepository staffReactRepository){
+    public StaffController(StaffReactRepository staffReactRepository) {
         this.staffReactRepository = staffReactRepository;
     }
 
@@ -29,7 +29,7 @@ public class StaffController {
                         staff.getMobile(),
                         staff.getYear(),
                         staff.getMonth()
-                        );
+                );
     }
 
     public Flux<Staff> findByMobileAndYearAndMonthAndDay(Staff staff) {

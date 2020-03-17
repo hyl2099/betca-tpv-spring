@@ -105,7 +105,7 @@ public class ArticleController {
     }
 
     public Flux<ArticleDto> searchArticleByDescriptionOrProvider(ArticleSearchDto articleSearchDto) {
-        return this.articleReactRepository.findByDescriptionLikeOrProvider(articleSearchDto.getDescription(),articleSearchDto.getProvider())
+        return this.articleReactRepository.findByDescriptionLikeOrProvider(articleSearchDto.getDescription(), articleSearchDto.getProvider())
                 .switchIfEmpty(Flux.error(new BadRequestException("Params not found")))
                 .map(ArticleDto::new);
     }
