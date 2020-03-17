@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.CashierClosureController;
+import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
@@ -20,6 +21,7 @@ public class CashierClosureResource {
     public static final String CASHIER_CLOSURES = "/cashier-closures";
     public static final String LAST = "/last";
     public static final String STATE = "/state";
+    public static final String DEPOSIT = "/deposit";
 
     private CashierClosureController cashierClosureController;
 
@@ -49,6 +51,12 @@ public class CashierClosureResource {
     @PatchMapping(value = LAST)
     public Mono<Void> closeCashierClosure(@Valid @RequestBody CashierClosureInputDto cashierClosureInputDto) {
         return cashierClosureController.close(cashierClosureInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PatchMapping(value = LAST + DEPOSIT)
+    public Mono<Void> cashierDeposit(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
+        return cashierClosureController.deposit(cashMovementInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

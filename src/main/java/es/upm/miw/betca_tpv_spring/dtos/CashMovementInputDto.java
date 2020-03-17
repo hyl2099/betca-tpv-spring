@@ -1,10 +1,13 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
+import es.upm.miw.betca_tpv_spring.dtos.validations.BigDecimalPositive;
+
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class CashMovementInputDto {
 
+    @BigDecimalPositive
     @NotNull
     private BigDecimal cashMovement;
 

@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CashierClosure;
+import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
@@ -67,4 +68,12 @@ public class CashierClosureController {
         return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
     }
 
+    public Mono<Void> deposit(CashMovementInputDto cashMovementInputDto) {
+        Mono<CashierClosure> cashierClosure = this.lastCashierClosureStateAssure(true)
+                .map(last -> {
+                    last.deposit(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
+                    return last;
+                });
+        return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
+    }
 }
