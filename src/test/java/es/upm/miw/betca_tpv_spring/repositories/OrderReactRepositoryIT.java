@@ -15,12 +15,49 @@ class OrderReactRepositoryIT {
     private OrderReactRepository orderReactRepository;
 
     @Autowired
+    private ProviderRepository providerRepository;
+
+    @Autowired
     private DatabaseSeederService databaseSeederService;
 
     @Test
     void testFindAllAndDatabaseSeeder() {
         StepVerifier
                 .create(this.orderReactRepository.findAll())
+                .expectNextMatches(order -> {
+                    assertEquals("order1", order.getDescription());
+                    assertNotNull(order.getId());
+                    assertNotNull(order.getOpeningDate());
+                    assertNull(order.getClosingDate());
+                    assertNotNull(order.getOrderLines());
+                    assertFalse(order.toString().matches("@"));
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByDescriptionLikeOrProvider(){
+        StepVerifier
+                .create(this.orderReactRepository.findByDescriptionLikeOrProvider("null", this.providerRepository.findAll().get(1)))
+                .expectNextMatches(order -> {
+                    assertEquals("order1", order.getDescription());
+                    assertNotNull(order.getId());
+                    assertNotNull(order.getOpeningDate());
+                    assertNull(order.getClosingDate());
+                    assertNotNull(order.getOrderLines());
+                    assertFalse(order.toString().matches("@"));
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByDescriptionLikeOrProviderAndClosingDateIsNull(){
+        StepVerifier
+                .create(this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull("order1", null))
                 .expectNextMatches(order -> {
                     assertEquals("order1", order.getDescription());
                     assertNotNull(order.getId());

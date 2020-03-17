@@ -26,22 +26,17 @@ public class OrderController {
 
     public Flux<Order> searchOrder(OrderSearchDto orderSearchDto) {
         Provider provider;
-        String description = null;
 
-        if (orderSearchDto.getProviderId() == "null"){
+        if (orderSearchDto.getProviderId().equals("null")){
             provider = null;
         } else {
             provider = this.providerRepository.findById(orderSearchDto.getProviderId()).get();
         }
 
-        if (orderSearchDto.getDescription() != "null") {
-            description = orderSearchDto.getDescription();
-        }
-
         if (orderSearchDto.getClosingDate() == null) {
-            return this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull(description, provider, null);
+            return this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull(orderSearchDto.getDescription(), provider);
         } else {
-            return this.orderReactRepository.findByDescriptionLikeOrProvider(description, provider);
+            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), provider);
         }
     }
 }

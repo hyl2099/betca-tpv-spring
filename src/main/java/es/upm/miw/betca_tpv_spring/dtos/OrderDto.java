@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
+import es.upm.miw.betca_tpv_spring.documents.Provider;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -10,7 +11,7 @@ public class OrderDto {
 
     private String description;
 
-    private String provider;
+    private Provider provider;
 
     private LocalDateTime openingDate;
 
@@ -22,6 +23,13 @@ public class OrderDto {
     public OrderDto(){
     }
 
+    public OrderDto(String description, Provider provider, LocalDateTime openingDate, OrderLine[] orderLines) {
+        this.description = description;
+        this.provider = provider;
+        this.openingDate = openingDate;
+        this.orderLines = orderLines;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -30,11 +38,11 @@ public class OrderDto {
         this.description = description;
     }
 
-    public String getProvider() {
+    public Provider getProvider() {
         return provider;
     }
 
-    public void setProvider(String provider) {
+    public void setProvider(Provider provider) {
         this.provider = provider;
     }
 

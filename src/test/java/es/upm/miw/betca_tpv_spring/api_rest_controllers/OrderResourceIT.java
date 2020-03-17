@@ -68,11 +68,11 @@ public class OrderResourceIT {
     void testSearchOrderWithOnlyDescriptionField() {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder
-                .path(contextPath + ORDERS)
-                .queryParam("description", "order")
-                .queryParam("provider", "null")
-                .queryParam("closingDate", "null")
-                .build())
+                        .path(contextPath + ORDERS)
+                        .queryParam("description", "order")
+                        .queryParam("provider", "null")
+                        .queryParam("closingDate", "null")
+                        .build())
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -82,7 +82,7 @@ public class OrderResourceIT {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + ORDERS)
-                .queryParam("description", "null")
+                .queryParam("description", "order")
                 .queryParam("provider", this.providerRepository.findAll().get(1).getId())
                 .queryParam("closingDate", "null")
                 .build())

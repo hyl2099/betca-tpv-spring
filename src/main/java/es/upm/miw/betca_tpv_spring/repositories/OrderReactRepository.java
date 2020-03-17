@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public interface OrderReactRepository extends ReactiveSortingRepository<Order, String> {
 
-    Flux<Order> findByDescriptionLikeOrProviderAndClosingDateIsNull(String description, Provider provider, LocalDateTime closingDate);
+    Flux<Order> findByDescriptionLikeOrProviderAndClosingDateIsNull(String description, Provider provider);
 
     Flux<Order> findByDescriptionLikeOrProvider(String description, Provider provider);
 }
