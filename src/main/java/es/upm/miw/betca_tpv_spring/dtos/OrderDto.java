@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 public class OrderDto {
 
+    private String id;
+
     private String description;
 
     private Provider provider;
@@ -18,16 +20,25 @@ public class OrderDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime closingDate;
 
-    private OrderLine[] orderLines;
+    private OrderLineDto[] orderLines;
 
     public OrderDto(){
+        // Empty for framework
     }
 
-    public OrderDto(String description, Provider provider, LocalDateTime openingDate, OrderLine[] orderLines) {
+    public OrderDto(String description, Provider provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
         this.description = description;
         this.provider = provider;
         this.openingDate = openingDate;
         this.orderLines = orderLines;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -62,19 +73,20 @@ public class OrderDto {
         this.closingDate = closingDate;
     }
 
-    public OrderLine[] getOrderLines() {
+    public OrderLineDto[] getOrderLines() {
         return orderLines;
     }
 
-    public void setOrderLines(OrderLine[] orderLines) {
+    public void setOrderLines(OrderLineDto[] orderLines) {
         this.orderLines = orderLines;
     }
 
     @Override
     public String toString() {
         return "OrderDto{" +
-                "description='" + description + '\'' +
-                ", provider='" + provider + '\'' +
+                "id='" + id + '\'' +
+                ", description='" + description + '\'' +
+                ", provider=" + provider +
                 ", openingDate=" + openingDate +
                 ", closingDate=" + closingDate +
                 ", orderLines=" + Arrays.toString(orderLines) +
