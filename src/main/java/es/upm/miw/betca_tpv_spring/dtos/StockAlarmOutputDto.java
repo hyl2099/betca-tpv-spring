@@ -14,13 +14,12 @@ public class StockAlarmOutputDto extends StockAlarmInputDto {
     }
 
     public StockAlarmOutputDto(String id, String description, String provider, Integer warning, Integer critical, AlarmArticle[] alarmArticle) {
-        super(description,provider,warning,critical,alarmArticle);
+        super(description, provider, warning, critical, alarmArticle);
         this.id = id;
     }
 
     public StockAlarmOutputDto(StockAlarm stockAlarm) {
-        this(stockAlarm.getId(),stockAlarm.getDescription(), stockAlarm.getProvider(), stockAlarm.getWarning()
-                , stockAlarm.getCritical(), stockAlarm.getAlarmArticle());
+        this(stockAlarm.getId(), stockAlarm.getDescription(), stockAlarm.getProvider(), stockAlarm.getWarning(), stockAlarm.getCritical(), stockAlarm.getAlarmArticle());
     }
 
     public String getId() {

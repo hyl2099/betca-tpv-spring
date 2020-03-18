@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.documents.StockAlarm;
 import es.upm.miw.betca_tpv_spring.dtos.StockAlarmInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.StockAlarmOutputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
+import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.StockAlarmReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,5 +37,21 @@ public class StockAlarmController {
         );
         return this.stockAlarmReactRepository.save(stockAlarm)
                 .map(StockAlarmOutputDto::new);
+    }
+
+    public Mono<StockAlarmOutputDto> updateStockAlarm(String stockAlarmId, StockAlarmInputDto stockAlarmInputDto){
+        Mono<StockAlarm> stockAlarm = this.stockAlarmReactRepository.findById(stockAlarmId)
+                .switchIfEmpty(Mono.error(new NotFoundException("StockAlarm Id"+ stockAlarmId)))
+                .map(stockAlarm1 -> {
+                    stockAlarm1.setDescription(stockAlarmInputDto.getDescription());
+                    stockAlarm1.setProvider(stockAlarmInputDto.getProvider());
+                    stockAlarm1.setWarning(stockAlarmInputDto.getWarning());
+                    stockAlarm1.setCritical(stockAlarmInputDto.getCritical());
+                    stockAlarm1.setAlarmArticle(stockAlarmInputDto.getAlarmArticle());
+                    return stockAlarm1;
+                });
+        return Mono
+                .when(stockAlarm)
+                .then(this.stockAlarmReactRepository.saveAll(stockAlarm).next().map(StockAlarmOutputDto::new));
     }
 }
