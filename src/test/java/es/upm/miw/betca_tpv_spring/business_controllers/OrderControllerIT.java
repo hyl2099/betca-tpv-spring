@@ -32,13 +32,13 @@ public class OrderControllerIT {
     @BeforeEach
     void seed(){
         OrderLineDto[] orderLines = {
-                new OrderLineDto(this.articleRepository.findAll().get(0), 10),
-                new OrderLineDto(this.articleRepository.findAll().get(1), 8),
-                new OrderLineDto(this.articleRepository.findAll().get(2), 6),
-                new OrderLineDto(this.articleRepository.findAll().get(3), 4),
+                new OrderLineDto(this.articleRepository.findAll().get(0).getCode(), 10),
+                new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+                new OrderLineDto(this.articleRepository.findAll().get(3).getCode(), 4),
         };
 
-        this.orderDto = new OrderDto("order0", this.providerRepository.findAll().get(0), LocalDateTime.now(), orderLines);
+        this.orderDto = new OrderDto("order0", this.providerRepository.findAll().get(0).getId(), LocalDateTime.now(), orderLines);
     }
 
     @Test
@@ -65,9 +65,8 @@ public class OrderControllerIT {
         StepVerifier
                 .create(this.orderController.createOrder(orderCreationDto))
                 .expectNextMatches(order -> {
-                    assertNotNull(order.getId());
                     assertEquals("orderPrueba", order.getDescription());
-                    assertEquals(this.providerRepository.findAll().get(1).getId(), order.getProvider().getId());
+                    assertEquals(this.providerRepository.findAll().get(1).getId(), order.getProvider());
                     assertNotNull(order.getOpeningDate());
                     assertEquals(4, order.getOrderLines().length);
                     return true;

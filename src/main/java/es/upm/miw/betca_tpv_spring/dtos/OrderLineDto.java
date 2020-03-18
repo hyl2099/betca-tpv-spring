@@ -4,7 +4,7 @@ import es.upm.miw.betca_tpv_spring.documents.Article;
 
 public class OrderLineDto {
 
-    private Article article;
+    private String article;
     private Integer requiredAmount;
     private Integer finalAmount;
 
@@ -12,22 +12,22 @@ public class OrderLineDto {
         // empty for framework
     }
 
-    public OrderLineDto(Article article, Integer requiredAmount) {
+    public OrderLineDto(String article, Integer requiredAmount) {
         this.article = article;
         this.requiredAmount = requiredAmount;
     }
 
-    public OrderLineDto(Article article, Integer requiredAmount, Integer finalAmount) {
+    public OrderLineDto(String article, Integer requiredAmount, Integer finalAmount) {
         this.article = article;
         this.requiredAmount = requiredAmount;
         this.finalAmount = finalAmount;
     }
 
-    public Article getArticle() {
+    public String getArticle() {
         return article;
     }
 
-    public void setArticle(Article article) {
+    public void setArticle(String article) {
         this.article = article;
     }
 
