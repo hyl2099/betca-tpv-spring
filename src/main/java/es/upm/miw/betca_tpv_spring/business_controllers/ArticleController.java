@@ -9,6 +9,7 @@ import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
+import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,16 @@ public class ArticleController {
     private ArticleReactRepository articleReactRepository;
     private ProviderReactRepository providerReactRepository;
     private ProviderRepository providerRepository;
+    private ArticleRepository articleRepository;
     private long eanCode;
 
     @Autowired
     public ArticleController(ArticleReactRepository articleReactRepository,
-                             ProviderReactRepository providerReactRepository, ProviderRepository providerRepository) {
+                             ProviderReactRepository providerReactRepository, ProviderRepository providerRepository, ArticleRepository articleRepository) {
         this.articleReactRepository = articleReactRepository;
         this.providerReactRepository = providerReactRepository;
         this.providerRepository = providerRepository;
+        this.articleRepository = articleRepository;
         this.eanCode = FIRST_CODE_ARTICLE;
     }
 
@@ -61,7 +64,10 @@ public class ArticleController {
     public Mono<ArticleDto> createArticle(ArticleDto articleDto) {
         String code = articleDto.getCode();
         if (code == null) {
-            code = new Barcode().generateEan13code(this.eanCode++);
+            code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0,12)) + 1);
+            if (Long.parseLong(code.substring(7,12)) > 99999L) {
+                return Mono.error(new BadRequestException("Index out of range"));
+            }
         }
         Mono<Void> noExistsByIdAssured = this.noExistsByIdAssured(code);
         int stock = (articleDto.getStock() == null) ? 10 : articleDto.getStock();

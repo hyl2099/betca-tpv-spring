@@ -86,5 +86,17 @@ class ArticleResourceIT {
         ).exchange().expectStatus().isOk();
     }
 
+    @Test
+    void testCreateArticle() {
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + ARTICLES)
+                .body(
+                        BodyInserters.fromObject(
+                                new ArticleDto(null, "nueva", "nuevo", new BigDecimal("20"), 10)
+                        )
+                ).exchange().expectStatus().isOk().expectBody(ArticleDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
 
 }
