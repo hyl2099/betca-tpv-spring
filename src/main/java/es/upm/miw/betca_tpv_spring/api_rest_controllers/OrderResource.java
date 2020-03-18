@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.business_controllers.OrderController;
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,9 @@ public class OrderResource {
     }
 
     @GetMapping
-    public Flux<Order> search(@RequestParam (required = false) String description,
-                              @RequestParam (required = false) String provider,
-                              @RequestParam (required = false) String closingDate){
+    public Flux<OrderDto> search(@RequestParam (required = false) String description,
+                                 @RequestParam (required = false) String provider,
+                                 @RequestParam (required = false) String closingDate){
         OrderSearchDto orderSearchDto;
 
         if(closingDate.equals("null")){
@@ -45,7 +46,7 @@ public class OrderResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Order> createOrder(@Valid @RequestBody OrderCreationDto orderCreationDto){
+    public Mono<OrderDto> createOrder(@Valid @RequestBody OrderCreationDto orderCreationDto){
         return this.orderController.createOrder(orderCreationDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }

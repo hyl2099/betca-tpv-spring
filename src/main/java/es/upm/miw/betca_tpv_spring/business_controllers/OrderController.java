@@ -4,7 +4,10 @@ import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
+import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
+import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
@@ -29,7 +32,7 @@ public class OrderController {
         this.articleRepository = articleRepository;
     }
 
-    public Flux<Order> searchOrder(OrderSearchDto orderSearchDto) {
+    public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
         Provider provider;
 
         if (orderSearchDto.getProviderId().equals("null")){
@@ -39,13 +42,17 @@ public class OrderController {
         }
 
         if (orderSearchDto.getClosingDate() == null) {
-            return this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull(orderSearchDto.getDescription(), provider);
+            return this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull(orderSearchDto.getDescription(), provider)
+                    .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                    .map(OrderDto::new);
         } else {
-            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), provider);
+            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), provider)
+                    .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                    .map(OrderDto::new);
         }
     }
 
-    public Mono<Order> createOrder(OrderCreationDto orderCreationDto){
+    public Mono<OrderDto> createOrder(OrderCreationDto orderCreationDto){
         Provider provider;
         if (orderCreationDto.getProviderId() == null) {
             provider = null;
@@ -59,6 +66,6 @@ public class OrderController {
             orderLines[i] = new OrderLine(this.articleRepository.findById(articleId).get(), orderCreationDto.getOrderLines()[i].getRequiredAmount());
         }
 
-        return this.orderReactRepository.save(new Order(orderCreationDto.getDescription(), provider, orderLines));
+        return this.orderReactRepository.save(new Order(orderCreationDto.getDescription(), provider, orderLines)).map(OrderDto::new);
     }
 }

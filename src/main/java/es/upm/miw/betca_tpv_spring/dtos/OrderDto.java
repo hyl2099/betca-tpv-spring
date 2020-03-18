@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
 
@@ -13,7 +14,7 @@ public class OrderDto {
 
     private String description;
 
-    private Provider provider;
+    private String provider;
 
     private LocalDateTime openingDate;
 
@@ -26,11 +27,26 @@ public class OrderDto {
         // Empty for framework
     }
 
-    public OrderDto(String description, Provider provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
+    public OrderDto(String description, String provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
         this.description = description;
         this.provider = provider;
         this.openingDate = openingDate;
         this.orderLines = orderLines;
+    }
+
+    public OrderDto(String description, String provider, LocalDateTime openingDate) {
+        this.description = description;
+        this.provider = provider;
+        this.openingDate = openingDate;
+    }
+
+    public OrderDto(Order order) {
+        this(order.getDescription(), order.getProvider().getId(), order.getOpeningDate());
+        OrderLineDto[] orderLineDtos = new OrderLineDto[order.getOrderLines().length];
+        for (int i = 0; i < order.getOrderLines().length; i++) {
+            orderLineDtos[i] = new OrderLineDto(order.getOrderLines()[i].getArticle().getCode(), order.getOrderLines()[i].getRequiredAmount());
+        }
+        this.setOrderLines(orderLineDtos);
     }
 
     public String getId() {
@@ -49,11 +65,11 @@ public class OrderDto {
         this.description = description;
     }
 
-    public Provider getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(Provider provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 
