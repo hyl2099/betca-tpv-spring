@@ -22,6 +22,7 @@ public class CashierClosureResource {
     public static final String LAST = "/last";
     public static final String STATE = "/state";
     public static final String DEPOSIT = "/deposit";
+    public static final String WITHDRAWAL = "/withdrawal";
 
     private CashierClosureController cashierClosureController;
 
@@ -57,6 +58,12 @@ public class CashierClosureResource {
     @PatchMapping(value = LAST + DEPOSIT)
     public Mono<Void> cashierDeposit(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
         return cashierClosureController.deposit(cashMovementInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PatchMapping(value = LAST + WITHDRAWAL)
+    public Mono<Void> cashierWithdrawal(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
+        return cashierClosureController.withdrawal(cashMovementInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
