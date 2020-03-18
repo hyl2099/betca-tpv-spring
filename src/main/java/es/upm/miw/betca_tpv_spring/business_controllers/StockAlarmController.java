@@ -39,7 +39,7 @@ public class StockAlarmController {
                 .map(StockAlarmOutputDto::new);
     }
 
-    public Mono<StockAlarmOutputDto> updateStockAlarm(String stockAlarmId, StockAlarmInputDto stockAlarmInputDto){
+    public Mono<StockAlarmOutputDto> updateStockAlarm(String stockAlarmId, StockAlarmInputDto stockAlarmInputDto) {
         Mono<StockAlarm> stockAlarm = this.stockAlarmReactRepository.findById(stockAlarmId)
                 .switchIfEmpty(Mono.error(new NotFoundException("StockAlarm Id"+ stockAlarmId)))
                 .map(stockAlarm1 -> {
@@ -53,5 +53,12 @@ public class StockAlarmController {
         return Mono
                 .when(stockAlarm)
                 .then(this.stockAlarmReactRepository.saveAll(stockAlarm).next().map(StockAlarmOutputDto::new));
+    }
+
+    public Mono<Void> deleteStockAlarm(String stockAlarmId) {
+        Mono<StockAlarm> stockAlarm = this.stockAlarmReactRepository.findById(stockAlarmId);
+        return Mono
+                .when(stockAlarm)
+                .then(this.stockAlarmReactRepository.deleteById(stockAlarmId));
     }
 }
