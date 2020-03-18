@@ -27,6 +27,9 @@ public class ArticleFamilyCompleteDto {
     public ArticleFamilyCompleteDto() {
     }
 
+    public ArticleFamilyCompleteDto(FamilyType familyType, String description, List<ArticlesFamily> articlesFamilyList) {
+    }
+
 
     public String getDescription() {
         return description;
