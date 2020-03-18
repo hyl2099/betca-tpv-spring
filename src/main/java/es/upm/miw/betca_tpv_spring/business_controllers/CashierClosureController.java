@@ -76,4 +76,13 @@ public class CashierClosureController {
                 });
         return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
     }
+
+    public Mono<Void> withdrawal(CashMovementInputDto cashMovementInputDto) {
+        Mono<CashierClosure> cashierClosure = this.lastCashierClosureStateAssure(true).map(last -> {
+            last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
+            return last;
+        });
+        return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
+    }
+
 }

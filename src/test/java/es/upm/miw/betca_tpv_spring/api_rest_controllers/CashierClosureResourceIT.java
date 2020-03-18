@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
-import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.math.BigDecimal;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.CashierClosureResource.CASHIER_CLOSURES;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -129,6 +128,40 @@ class CashierClosureResourceIT {
                 .body(BodyInserters.fromObject(cashMovementInputDto))
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testPatchCashierWithdrawal() {
+        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + CASHIER_CLOSURES)
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.DEPOSIT)
+                .body(BodyInserters.fromObject(new CashMovementInputDto(new BigDecimal(20), "Moving")))
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.WITHDRAWAL)
+                .body(BodyInserters.fromObject(cashMovementInputDto))
+                .exchange()
+                .expectStatus().isOk();
+        CashierStateOutputDto cashierStateOutputDto = this.restService.loginAdmin(webTestClient)
+                .get().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST + CashierClosureResource.STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierStateOutputDto.class)
+                .returnResult().getResponseBody();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
+                .body(BodyInserters.fromObject(new CashierClosureInputDto(new BigDecimal(100), new BigDecimal(100), "")))
+                .exchange()
+                .expectStatus().isOk();
+        assertNotNull(cashierStateOutputDto);
+        assertEquals(0, cashierStateOutputDto.getTotalCash().compareTo(BigDecimal.TEN));
     }
 
 }
