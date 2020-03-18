@@ -48,7 +48,7 @@ public class OrderControllerIT {
         StepVerifier
                 .create(this.orderController.searchOrder(orderSearchDto))
                 .expectNextCount(1)
-                .expectComplete()
+                .thenCancel()
                 .verify();
     }
 
