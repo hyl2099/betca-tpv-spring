@@ -2,6 +2,8 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.ArticlesFamily;
 import es.upm.miw.betca_tpv_spring.documents.FamilyComposite;
+import es.upm.miw.betca_tpv_spring.documents.FamilyType;
+import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
 import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
 import es.upm.miw.betca_tpv_spring.dtos.FamilyCompositeDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticlesFamilyReactRepository;
@@ -27,10 +29,29 @@ public class ArticlesFamilyController {
     @Autowired
     private FamilyCompositeRepository familyCompositeRepository;
 
-    public Mono<FamilyCompositeDto> readFamilyCompositeArticlesList(String description) {
-        return this.familyCompositeReactRepository.findByReference(description)
-                .map(FamilyCompositeDto::new);
+//    public Mono<FamilyCompositeDto> readFamilyCompositeArticlesList(String description) {
+//        return this.familyCompositeReactRepository.findByReference(description)
+//                .map(FamilyCompositeDto::new);
+//    }
+
+
+
+    public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
+        ArticlesFamily familyComplete = familyCompositeRepository.findFirstByDescription(description);
+        List<ArticleFamilyCompleteDto> dtos = new ArrayList<>();
+        System.out.println("familyComplete");
+        System.out.println(familyComplete);
+        for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
+            if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
+                dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
+            }
+        }
+        System.out.println(dtos);
+
+        return dtos;
+
     }
+
 
     public List<ArticlesFamilyDto> readArticlesFamilyList(String reference) {
         FamilyComposite family = familyCompositeRepository.findFirstByReference(reference);

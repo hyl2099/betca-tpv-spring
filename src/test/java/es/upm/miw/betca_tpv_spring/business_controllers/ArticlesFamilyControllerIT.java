@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
@@ -24,12 +25,8 @@ public class ArticlesFamilyControllerIT {
     }
 
     @Test
-    void testReadFamilyCompositeArticlesList() {
-        StepVerifier
-                .create(this.articlesFamilyController.readFamilyCompositeArticlesList("root"))
-                .expectNextCount(1)
-                .expectComplete()
-                .verify();
+    void testReadFamilyCompositeArticlesList(){
+        assertNotNull(articlesFamilyController.readArticlesFamilyList("root"));
     }
 
     @Test

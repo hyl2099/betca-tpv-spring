@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.ArticlesFamilyController;
+import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
 import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
 import es.upm.miw.betca_tpv_spring.dtos.FamilyCompositeDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,12 @@ public class ArticlesFamilyResource {
     @Autowired
     private ArticlesFamilyController articlesFamilyController;
 
+//    @GetMapping(value = FAMILY_COMPOSITE)
+//    public Mono<FamilyCompositeDto> readInFamilyComposite(@Valid @RequestParam String description) {
+//        return articlesFamilyController.readFamilyCompositeArticlesList(description);
+//    }
     @GetMapping(value = FAMILY_COMPOSITE)
-    public Mono<FamilyCompositeDto> readInFamilyComposite(@Valid @RequestParam String description) {
+    public List<ArticleFamilyCompleteDto> readInFamilyComposite(@Valid @RequestParam String description){
         return articlesFamilyController.readFamilyCompositeArticlesList(description);
     }
 
