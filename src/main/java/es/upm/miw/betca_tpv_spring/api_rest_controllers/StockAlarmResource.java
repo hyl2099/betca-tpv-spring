@@ -2,13 +2,13 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.StockAlarmController;
 import es.upm.miw.betca_tpv_spring.dtos.StockAlarmInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.StockAlarmOutputDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
 @RestController
@@ -17,6 +17,7 @@ import reactor.core.publisher.Flux;
 public class StockAlarmResource {
 
     public static final String STOCK_ALARMS = "/stock-alarms";
+    public static final String STOCK_ALARMS_ID = "/{stockAlarmId}";
     private StockAlarmController stockAlarmController;
 
     @Autowired
@@ -25,8 +26,26 @@ public class StockAlarmResource {
     }
 
     @GetMapping
-    public Flux<StockAlarmInputDto> readAll() {
+    public Flux<StockAlarmOutputDto> readAll() {
         return this.stockAlarmController.readAll()
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PostMapping
+    public Mono<StockAlarmOutputDto> createStockAlarm(@RequestBody StockAlarmInputDto stockAlarmInputDto){
+        return this.stockAlarmController.createStockAlarm(stockAlarmInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = STOCK_ALARMS_ID)
+    public Mono<StockAlarmOutputDto> updateStockAlarm(@PathVariable String stockAlarmId, @RequestBody StockAlarmInputDto stockAlarmInputDto){
+        return this.stockAlarmController.updateStockAlarm(stockAlarmId,stockAlarmInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @DeleteMapping(value = STOCK_ALARMS_ID)
+    public Mono<Void> deleteStockAlarm(@PathVariable String stockAlarmId) {
+        return this.stockAlarmController.deleteStockAlarm(stockAlarmId)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }

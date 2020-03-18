@@ -15,7 +15,8 @@ public class StockAlarmInputDto {
     private Integer critical;
     private AlarmArticle[] alarmArticle;
 
-    public StockAlarmInputDto() {
+    public StockAlarmInputDto(@NotNull String description) {
+        this.description = description;
     }
 
     public StockAlarmInputDto(@NotNull String description, String provider, Integer warning, Integer critical, AlarmArticle[] alarmArticle) {
@@ -50,24 +51,12 @@ public class StockAlarmInputDto {
         return warning;
     }
 
-    public void setWarning(Integer warning) {
-        this.warning = warning;
-    }
-
     public Integer getCritical() {
         return critical;
     }
 
-    public void setCritical(Integer critical) {
-        this.critical = critical;
-    }
-
     public AlarmArticle[] getAlarmArticle() {
         return alarmArticle;
-    }
-
-    public void setAlarmArticle(AlarmArticle[] alarmArticle) {
-        this.alarmArticle = alarmArticle;
     }
 
     @Override

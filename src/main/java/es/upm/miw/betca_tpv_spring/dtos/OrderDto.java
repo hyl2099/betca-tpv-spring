@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
 
@@ -9,25 +10,51 @@ import java.util.Arrays;
 
 public class OrderDto {
 
+    private String id;
+
     private String description;
 
-    private Provider provider;
+    private String provider;
 
     private LocalDateTime openingDate;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime closingDate;
 
-    private OrderLine[] orderLines;
+    private OrderLineDto[] orderLines;
 
     public OrderDto(){
+        // Empty for framework
     }
 
-    public OrderDto(String description, Provider provider, LocalDateTime openingDate, OrderLine[] orderLines) {
+    public OrderDto(String description, String provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
         this.description = description;
         this.provider = provider;
         this.openingDate = openingDate;
         this.orderLines = orderLines;
+    }
+
+    public OrderDto(String description, String provider, LocalDateTime openingDate) {
+        this.description = description;
+        this.provider = provider;
+        this.openingDate = openingDate;
+    }
+
+    public OrderDto(Order order) {
+        this(order.getDescription(), order.getProvider().getId(), order.getOpeningDate());
+        OrderLineDto[] orderLineDtos = new OrderLineDto[order.getOrderLines().length];
+        for (int i = 0; i < order.getOrderLines().length; i++) {
+            orderLineDtos[i] = new OrderLineDto(order.getOrderLines()[i].getArticle().getCode(), order.getOrderLines()[i].getRequiredAmount());
+        }
+        this.setOrderLines(orderLineDtos);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -38,11 +65,11 @@ public class OrderDto {
         this.description = description;
     }
 
-    public Provider getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(Provider provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 
@@ -62,19 +89,20 @@ public class OrderDto {
         this.closingDate = closingDate;
     }
 
-    public OrderLine[] getOrderLines() {
+    public OrderLineDto[] getOrderLines() {
         return orderLines;
     }
 
-    public void setOrderLines(OrderLine[] orderLines) {
+    public void setOrderLines(OrderLineDto[] orderLines) {
         this.orderLines = orderLines;
     }
 
     @Override
     public String toString() {
         return "OrderDto{" +
-                "description='" + description + '\'' +
-                ", provider='" + provider + '\'' +
+                "id='" + id + '\'' +
+                ", description='" + description + '\'' +
+                ", provider=" + provider +
                 ", openingDate=" + openingDate +
                 ", closingDate=" + closingDate +
                 ", orderLines=" + Arrays.toString(orderLines) +

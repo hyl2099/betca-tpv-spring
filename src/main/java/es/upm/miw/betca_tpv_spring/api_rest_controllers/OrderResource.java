@@ -2,16 +2,17 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.OrderController;
 import es.upm.miw.betca_tpv_spring.documents.Order;
+import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
@@ -29,9 +30,9 @@ public class OrderResource {
     }
 
     @GetMapping
-    public Flux<Order> search(@RequestParam (required = false) String description,
-                              @RequestParam (required = false) String provider,
-                              @RequestParam (required = false) String closingDate){
+    public Flux<OrderDto> search(@RequestParam (required = false) String description,
+                                 @RequestParam (required = false) String provider,
+                                 @RequestParam (required = false) String closingDate){
         OrderSearchDto orderSearchDto;
 
         if(closingDate.equals("null")){
@@ -42,5 +43,11 @@ public class OrderResource {
 
         return this.orderController.searchOrder(orderSearchDto)
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PostMapping(produces = {"application/json"})
+    public Mono<OrderDto> createOrder(@Valid @RequestBody OrderCreationDto orderCreationDto){
+        return this.orderController.createOrder(orderCreationDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
