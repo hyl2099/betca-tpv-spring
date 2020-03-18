@@ -28,6 +28,14 @@ public class StockAlarm {
         this.alarmArticle = alarmArticle;
     }
 
+    public StockAlarm(String description, String provider, Integer warning, Integer critical, AlarmArticle[] alarmArticle) {
+        this.description = description;
+        this.provider = provider;
+        this.warning = warning;
+        this.critical = critical;
+        this.alarmArticle = alarmArticle;
+    }
+
     public String getId() {
         return id;
     }

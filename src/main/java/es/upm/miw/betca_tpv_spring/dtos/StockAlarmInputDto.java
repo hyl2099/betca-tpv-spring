@@ -15,7 +15,8 @@ public class StockAlarmInputDto {
     private Integer critical;
     private AlarmArticle[] alarmArticle;
 
-    public StockAlarmInputDto() {
+    public StockAlarmInputDto(@NotNull String description) {
+        this.description = description;
     }
 
     public StockAlarmInputDto(@NotNull String description, String provider, Integer warning, Integer critical, AlarmArticle[] alarmArticle) {
