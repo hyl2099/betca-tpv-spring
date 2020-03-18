@@ -297,8 +297,11 @@ public class DatabaseSeederService {
                 new OrderLine(articles[3], 4),
         };
         Order[] orders = {
-                new Order("order1", providers[0], orderLines)
+                new Order("order1", providers[0], orderLines),
+                new Order("order2", providers[1], orderLines),
+                new Order("order3", providers[1], orderLines)
         };
+        orders[1].close();
         this.orderRepository.saveAll(Arrays.asList(orders));
         LogManager.getLogger(this.getClass()).warn("        ------- orders");
         CustomerDiscount[] customerDiscounts = {
