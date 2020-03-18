@@ -3,7 +3,9 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
+import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderLineCreationDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -100,7 +103,7 @@ public class OrderResourceIT {
                 .queryParam("closingDate", LocalDateTime.now().toString())
                 .build())
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isNotFound();
     }
 
     @Test
@@ -127,5 +130,30 @@ public class OrderResourceIT {
                 .build())
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void testCreateOrder(){
+        OrderLineCreationDto[] orderLines = {
+                new OrderLineCreationDto(this.articleRepository.findAll().get(0).getCode(), 10),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(2).getCode(), 6),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(3).getCode(), 4),
+        };
+
+        OrderDto orderDto = this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + ORDERS)
+                .body(BodyInserters.fromObject(
+                        new OrderCreationDto("orderPruebaas", this.providerRepository.findAll().get(1).getId(), orderLines)
+                ))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+
+        assertNotNull(orderDto.getOpeningDate());
+        assertEquals(4, orderDto.getOrderLines().length);
+        assertEquals(this.providerRepository.findAll().get(1).getId(), orderDto.getProvider());
+        assertEquals("orderPruebaas", orderDto.getDescription());
     }
 }
