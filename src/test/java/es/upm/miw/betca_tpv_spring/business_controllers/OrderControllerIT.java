@@ -80,7 +80,7 @@ public class OrderControllerIT {
 
     @Test
     void testDeleteOrder(){
-        String id = this.orderRepository.findAll().get(0).getId();
+        String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
                 .create(this.orderController.deleteOrder(id))
                 .expectComplete()
