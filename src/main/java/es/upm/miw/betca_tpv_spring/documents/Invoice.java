@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_spring.documents;
 
-import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,11 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Document
 public class Invoice {
@@ -33,13 +28,13 @@ public class Invoice {
         creationDate = LocalDateTime.now();
     }
 
-    public Invoice(int idOfYear, User user, Ticket ticket, BigDecimal tax, BigDecimal baseTax) {
+    public Invoice(int idOfYear, User user, Ticket ticket) {
         this();
         this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
         this.user = user;
         this.ticket = ticket;
-        this.tax = tax;
-        this.baseTax = baseTax;
+//        this.tax = tax;
+//        this.baseTax = baseTax;
     }
 
     public String getId() {
@@ -68,6 +63,22 @@ public class Invoice {
 
     public User getUser() {
         return user;
+    }
+
+    public void setBaseTax(BigDecimal baseTax) {
+        this.baseTax = baseTax;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
