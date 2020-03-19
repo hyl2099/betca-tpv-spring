@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.TestConfig;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
+import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class OrderControllerIT {
@@ -26,6 +26,9 @@ public class OrderControllerIT {
 
     @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     private OrderDto orderDto;
 
@@ -71,6 +74,15 @@ public class OrderControllerIT {
                     assertEquals(4, order.getOrderLines().length);
                     return true;
                 })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testDeleteOrder(){
+        String id = this.orderRepository.findAll().get(1).getId();
+        StepVerifier
+                .create(this.orderController.deleteOrder(id))
                 .expectComplete()
                 .verify();
     }

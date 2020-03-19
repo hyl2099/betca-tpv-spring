@@ -68,4 +68,11 @@ public class OrderController {
 
         return this.orderReactRepository.save(new Order(orderCreationDto.getDescription(), provider, orderLines)).map(OrderDto::new);
     }
+
+    public Mono<Void> deleteOrder(String orderId){
+        Mono<Order> order = this.orderReactRepository.findById(orderId);
+        return Mono
+                .when(order)
+                .then(this.orderReactRepository.deleteById(orderId));
+    }
 }
