@@ -79,6 +79,26 @@ public class OrderControllerIT {
     }
 
     @Test
+    void testUpdateOrder(){
+        String id = this.orderRepository.findAll().get(1).getId();
+        OrderLineDto[] orderLines = {
+                new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+        };
+        StepVerifier
+                .create(this.orderController
+                        .updateOrder(id, new OrderDto("cambiado", this.providerRepository.findAll().get(1).getId(), LocalDateTime.now(), orderLines)))
+                .expectNextMatches(orderDtoData -> {
+                    assertEquals(this.orderRepository.findById(id).get().getId(), orderDtoData.getId());
+                    assertEquals(this.orderRepository.findById(id).get().getDescription(), orderDtoData.getDescription());
+                    assertEquals(this.orderRepository.findById(id).get().getOrderLines().length, orderDtoData.getOrderLines().length);
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
     void testDeleteOrder(){
         String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
@@ -86,4 +106,5 @@ public class OrderControllerIT {
                 .expectComplete()
                 .verify();
     }
+
 }
