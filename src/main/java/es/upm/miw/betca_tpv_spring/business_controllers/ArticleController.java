@@ -73,6 +73,8 @@ public class ArticleController {
         int stock = (articleDto.getStock() == null) ? 10 : articleDto.getStock();
         Article article = Article.builder(code).description(articleDto.getDescription())
                 .retailPrice(articleDto.getRetailPrice()).reference(articleDto.getReference()).stock(stock).build();
+        if(articleDto.getTax() != null)
+            article.setTax(articleDto.getTax());
         Mono<Void> provider;
         if (articleDto.getProvider() == null) {
             provider = Mono.empty();
