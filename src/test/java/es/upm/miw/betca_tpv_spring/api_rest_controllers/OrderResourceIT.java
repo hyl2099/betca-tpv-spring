@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_spring.documents.Provider;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
@@ -167,6 +168,28 @@ public class OrderResourceIT {
                 .exchange()
                 .expectStatus().isOk();
         assertEquals(Optional.empty(), this.orderRepository.findById(this.ordersList.get(2).getId()));
+    }
+
+    @Test
+    void testUpdateOrder(){
+        OrderLineDto[] orderLines = {
+                new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+        };
+        OrderDto orderDto = this.restService.loginAdmin(webTestClient)
+                .put().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(1).getId())
+                .body(BodyInserters.fromObject(
+                        new OrderDto("cambiado", this.providerRepository.findAll().get(1).getId(), LocalDateTime.now(), orderLines)
+                ))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+
+        Order order = this.orderRepository.findById(this.ordersList.get(1).getId()).get();
+        assertEquals(order.getId(), orderDto.getId());
+        assertEquals(order.getDescription(), orderDto.getDescription());
+        assertEquals(order.getOrderLines().length, orderDto.getOrderLines().length);
     }
 
 }

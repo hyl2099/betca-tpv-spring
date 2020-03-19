@@ -58,4 +58,10 @@ public class OrderResource {
         return this.orderController.deleteOrder(id)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
+
+    @PutMapping(value = ORDER_ID, produces = {"application/json"})
+    public Mono<OrderDto> updateOrder(@PathVariable String id, @Valid @RequestBody OrderDto orderDto){
+        return this.orderController.updateOrder(id, orderDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
 }

@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
+import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class ArticleResourceIT {
 
     @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
+    private ArticleRepository articleRepository;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -92,10 +96,11 @@ class ArticleResourceIT {
                 .post().uri(contextPath + ARTICLES)
                 .body(
                         BodyInserters.fromObject(
-                                new ArticleDto(null, "nueva", "nuevo", new BigDecimal("20"), 10)
+                                new ArticleDto("8400000000093", "nueva", "nuevo", new BigDecimal("20"), 10)
                         )
                 ).exchange().expectStatus().isOk().expectBody(ArticleDto.class)
                 .value(Assertions::assertNotNull);
+        this.articleRepository.deleteById("8400000000093");
     }
 
 
