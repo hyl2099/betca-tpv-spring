@@ -20,11 +20,14 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDERS;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_ID;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @ApiTestConfig
 public class OrderResourceIT {
@@ -156,4 +159,14 @@ public class OrderResourceIT {
         assertEquals(this.providerRepository.findAll().get(1).getId(), orderDto.getProvider());
         assertEquals("orderPruebaas", orderDto.getDescription());
     }
+
+    @Test
+    void testDeleteOrderWithCorrectId(){
+        this.restService.loginAdmin(webTestClient)
+                .delete().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(2).getId())
+                .exchange()
+                .expectStatus().isOk();
+        assertEquals(Optional.empty(), this.orderRepository.findById(this.ordersList.get(2).getId()));
+    }
+
 }
