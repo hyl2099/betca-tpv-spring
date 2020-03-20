@@ -27,6 +27,21 @@ public class OrderDto {
         // Empty for framework
     }
 
+    public OrderDto(String id, String description, String provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
+        this.id = id;
+        this.description = description;
+        this.provider = provider;
+        this.openingDate = openingDate;
+        this.orderLines = orderLines;
+    }
+
+    public OrderDto(String id, String description, String provider, LocalDateTime openingDate) {
+        this.id = id;
+        this.description = description;
+        this.provider = provider;
+        this.openingDate = openingDate;
+    }
+
     public OrderDto(String description, String provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
         this.description = description;
         this.provider = provider;
@@ -34,14 +49,8 @@ public class OrderDto {
         this.orderLines = orderLines;
     }
 
-    public OrderDto(String description, String provider, LocalDateTime openingDate) {
-        this.description = description;
-        this.provider = provider;
-        this.openingDate = openingDate;
-    }
-
     public OrderDto(Order order) {
-        this(order.getDescription(), order.getProvider().getId(), order.getOpeningDate());
+        this(order.getId(), order.getDescription(), order.getProvider().getId(), order.getOpeningDate());
         OrderLineDto[] orderLineDtos = new OrderLineDto[order.getOrderLines().length];
         for (int i = 0; i < order.getOrderLines().length; i++) {
             orderLineDtos[i] = new OrderLineDto(order.getOrderLines()[i].getArticle().getCode(), order.getOrderLines()[i].getRequiredAmount());

@@ -65,7 +65,7 @@ public class ArticleController {
         String code = articleDto.getCode();
         if (code == null) {
             code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0,12)) + 1);
-            if (Long.parseLong(code.substring(7,12)) > 99999L) {
+            if (code.length()==13 && Long.parseLong(code.substring(7,12)) > 99999L) {
                 return Mono.error(new BadRequestException("Index out of range"));
             }
         }

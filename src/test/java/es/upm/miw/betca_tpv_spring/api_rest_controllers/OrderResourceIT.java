@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_spring.documents.Provider;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
@@ -20,11 +21,14 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDERS;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_ID;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @ApiTestConfig
 public class OrderResourceIT {
@@ -156,4 +160,36 @@ public class OrderResourceIT {
         assertEquals(this.providerRepository.findAll().get(1).getId(), orderDto.getProvider());
         assertEquals("orderPruebaas", orderDto.getDescription());
     }
+
+    @Test
+    void testDeleteOrderWithCorrectId(){
+        this.restService.loginAdmin(webTestClient)
+                .delete().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(2).getId())
+                .exchange()
+                .expectStatus().isOk();
+        assertEquals(Optional.empty(), this.orderRepository.findById(this.ordersList.get(2).getId()));
+    }
+
+    @Test
+    void testUpdateOrder(){
+        OrderLineDto[] orderLines = {
+                new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+        };
+        OrderDto orderDto = this.restService.loginAdmin(webTestClient)
+                .put().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(1).getId())
+                .body(BodyInserters.fromObject(
+                        new OrderDto("cambiado", this.providerRepository.findAll().get(1).getId(), LocalDateTime.now(), orderLines)
+                ))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+
+        Order order = this.orderRepository.findById(this.ordersList.get(1).getId()).get();
+        assertEquals(order.getId(), orderDto.getId());
+        assertEquals(order.getDescription(), orderDto.getDescription());
+        assertEquals(order.getOrderLines().length, orderDto.getOrderLines().length);
+    }
+
 }

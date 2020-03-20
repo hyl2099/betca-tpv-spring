@@ -22,6 +22,8 @@ public class OrderResource {
 
     public static final String ORDERS = "/orders";
 
+    public static final String ORDER_ID = "/{id}";
+
     private OrderController orderController;
 
     @Autowired
@@ -48,6 +50,18 @@ public class OrderResource {
     @PostMapping(produces = {"application/json"})
     public Mono<OrderDto> createOrder(@Valid @RequestBody OrderCreationDto orderCreationDto){
         return this.orderController.createOrder(orderCreationDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @DeleteMapping(value = ORDER_ID)
+    public Mono<Void> deleteOrder(@PathVariable String id){
+        return this.orderController.deleteOrder(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = ORDER_ID, produces = {"application/json"})
+    public Mono<OrderDto> updateOrder(@PathVariable String id, @Valid @RequestBody OrderDto orderDto){
+        return this.orderController.updateOrder(id, orderDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
