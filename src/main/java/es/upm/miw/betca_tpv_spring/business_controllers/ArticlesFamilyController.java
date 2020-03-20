@@ -1,11 +1,13 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
+import es.upm.miw.betca_tpv_spring.documents.Article;
 import es.upm.miw.betca_tpv_spring.documents.ArticlesFamily;
 import es.upm.miw.betca_tpv_spring.documents.FamilyComposite;
 import es.upm.miw.betca_tpv_spring.documents.FamilyType;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
 import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
 import es.upm.miw.betca_tpv_spring.dtos.FamilyCompositeDto;
+import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ArticlesFamilyReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.FamilyCompositeReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.FamilyCompositeRepository;
@@ -29,6 +31,9 @@ public class ArticlesFamilyController {
     @Autowired
     private FamilyCompositeRepository familyCompositeRepository;
 
+    @Autowired
+    private ArticleRepository articleRepository;
+
 //    public Mono<FamilyCompositeDto> readFamilyCompositeArticlesList(String description) {
 //        return this.familyCompositeReactRepository.findByReference(description)
 //                .map(FamilyCompositeDto::new);
@@ -37,16 +42,34 @@ public class ArticlesFamilyController {
 
 
     public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
-        ArticlesFamily familyComplete = familyCompositeRepository.findFirstByDescription(description);
+        FamilyComposite familyComplete = familyCompositeRepository.findFirstByDescription(description);
         List<ArticleFamilyCompleteDto> dtos = new ArrayList<>();
-        System.out.println("familyComplete");
+        System.out.println("description: " + description);
+        System.out.println("familyCompleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         System.out.println(familyComplete);
-        for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
-            if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
-                dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
+        System.out.println("articles family listttttt");
+        System.out.println(familyComplete.getArticlesFamilyList());
+
+        if (familyComplete.getFamilyType() == FamilyType.ARTICLES) {
+            System.out.println("goes for articles");
+            for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
+                if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
+                }
+                if (articlesFamily.getFamilyType() == FamilyType.ARTICLE) {
+                    Article article = articleRepository.findByCode(articlesFamily.getArticleIdList().get(0));
+                    System.out.println("ARTICLE");
+                    System.out.println(article);
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), article.getCode(), article.getDescription(), article.getRetailPrice()));
+                }
+                if (articlesFamily.getFamilyType() == FamilyType.SIZES) {
+                    System.out.println("SIZES");
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getReference(), articlesFamily.getDescription()));
+                }
             }
+            System.out.println(dtos);
         }
-        System.out.println(dtos);
+
 
         return dtos;
 
