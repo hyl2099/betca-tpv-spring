@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDERS;
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_ID;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_CLOSE;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -209,6 +210,28 @@ public class OrderResourceIT {
                 .get().uri(contextPath + ORDERS + ORDER_ID, "idIncorrecto")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testCloseOrder(){
+        for (OrderLine orderLine: this.ordersList.get(0).getOrderLines()) {
+            orderLine.setFinalAmount(5);
+        }
+        OrderDto orderDto = this.restService.loginAdmin(webTestClient)
+                .put().uri(contextPath + ORDERS + ORDER_CLOSE + ORDER_ID, this.ordersList.get(0).getId())
+                .body(BodyInserters.fromObject(
+                        new OrderDto(this.ordersList.get(0))
+                ))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+
+        assertNotNull(orderDto.getClosingDate());
+        assertEquals(10, orderDto.getOrderLines()[0].getFinalAmount().intValue());
+        assertEquals(8, orderDto.getOrderLines()[1].getFinalAmount().intValue());
+        assertEquals(6, orderDto.getOrderLines()[2].getFinalAmount().intValue());
+        assertEquals(4, orderDto.getOrderLines()[3].getFinalAmount().intValue());
     }
 
 }
