@@ -62,6 +62,10 @@ public class ArticlesFamilyController {
                     System.out.println(article);
                     dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), article.getCode(), article.getDescription(), article.getRetailPrice()));
                 }
+                if (articlesFamily.getFamilyType() == FamilyType.SIZES) {
+                    System.out.println("SIZES");
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getReference(), articlesFamily.getDescription()));
+                }
             }
             System.out.println(dtos);
         }
