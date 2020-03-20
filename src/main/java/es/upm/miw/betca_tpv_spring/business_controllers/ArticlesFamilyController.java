@@ -56,10 +56,16 @@ public class ArticlesFamilyController {
                 if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
                     dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
                 }
-
+                if (articlesFamily.getFamilyType() == FamilyType.ARTICLE) {
+                    Article article = articleRepository.findByCode(articlesFamily.getArticleIdList().get(0));
+                    System.out.println("ARTICLE");
+                    System.out.println(article);
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), article.getCode(), article.getDescription(), article.getRetailPrice()));
+                }
             }
             System.out.println(dtos);
         }
+
 
         return dtos;
 
