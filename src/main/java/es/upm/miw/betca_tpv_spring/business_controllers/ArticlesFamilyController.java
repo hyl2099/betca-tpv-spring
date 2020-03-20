@@ -42,14 +42,24 @@ public class ArticlesFamilyController {
 
 
     public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
-        ArticlesFamily familyComplete = familyCompositeRepository.findFirstByDescription(description);
+        FamilyComposite familyComplete = familyCompositeRepository.findFirstByDescription(description);
         List<ArticleFamilyCompleteDto> dtos = new ArrayList<>();
+        System.out.println("description: " + description);
         System.out.println("familyCompleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         System.out.println(familyComplete);
         System.out.println("articles family listttttt");
         System.out.println(familyComplete.getArticlesFamilyList());
-        System.out.println("family type");
-        System.out.println(familyComplete.getFamilyType());
+
+        if (familyComplete.getFamilyType() == FamilyType.ARTICLES) {
+            System.out.println("goes for articles");
+            for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
+                if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
+                    dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
+                }
+
+            }
+            System.out.println(dtos);
+        }
 
         return dtos;
 

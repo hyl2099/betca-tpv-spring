@@ -28,12 +28,22 @@ public class ArticleFamilyCompleteDto {
     }
 
     public ArticleFamilyCompleteDto(FamilyType familyType, String description, List<ArticlesFamily> articlesFamilyList) {
+        this.familyType = familyType;
+        this.description = description;
+        this.articlesFamilyList = articlesFamilyList;
     }
 
     public ArticleFamilyCompleteDto(FamilyType familyType, String code, String description, BigDecimal retailPrice) {
+        this.familyType = familyType;
+        this.code = code;
+        this.description = description;
+        this.retailPrice = retailPrice;
     }
 
     public ArticleFamilyCompleteDto(FamilyType familyType, String reference, String description) {
+        this.familyType = familyType;
+        this.reference = reference;
+        this.description = description;
     }
 
 
