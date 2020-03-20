@@ -64,4 +64,10 @@ public class OrderResource {
         return this.orderController.updateOrder(id, orderDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
+
+    @GetMapping(value = ORDER_ID)
+    public Mono<OrderDto> getOrder(@PathVariable String id){
+        return this.orderController.getOrder(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
 }

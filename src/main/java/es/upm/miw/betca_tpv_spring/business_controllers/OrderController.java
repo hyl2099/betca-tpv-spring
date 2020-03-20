@@ -97,4 +97,9 @@ public class OrderController {
                 .then(this.orderReactRepository.saveAll(order).next())
                 .map(OrderDto::new);
     }
+
+    public Mono<OrderDto> getOrder(String orderId){
+        return this.orderReactRepository.findById(orderId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId))).map(OrderDto::new);
+    }
 }

@@ -75,11 +75,11 @@ public class OrderResourceIT {
     void testSearchOrderWithOnlyDescriptionField() {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder
-                        .path(contextPath + ORDERS)
-                        .queryParam("description", "order")
-                        .queryParam("provider", "null")
-                        .queryParam("closingDate", "null")
-                        .build())
+                .path(contextPath + ORDERS)
+                .queryParam("description", "order")
+                .queryParam("provider", "null")
+                .queryParam("closingDate", "null")
+                .build())
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -137,7 +137,7 @@ public class OrderResourceIT {
     }
 
     @Test
-    void testCreateOrder(){
+    void testCreateOrder() {
         OrderLineCreationDto[] orderLines = {
                 new OrderLineCreationDto(this.articleRepository.findAll().get(0).getCode(), 10),
                 new OrderLineCreationDto(this.articleRepository.findAll().get(1).getCode(), 8),
@@ -162,7 +162,7 @@ public class OrderResourceIT {
     }
 
     @Test
-    void testDeleteOrderWithCorrectId(){
+    void testDeleteOrderWithCorrectId() {
         this.restService.loginAdmin(webTestClient)
                 .delete().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(2).getId())
                 .exchange()
@@ -171,7 +171,7 @@ public class OrderResourceIT {
     }
 
     @Test
-    void testUpdateOrder(){
+    void testUpdateOrder() {
         OrderLineDto[] orderLines = {
                 new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
                 new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
@@ -190,6 +190,25 @@ public class OrderResourceIT {
         assertEquals(order.getId(), orderDto.getId());
         assertEquals(order.getDescription(), orderDto.getDescription());
         assertEquals(order.getOrderLines().length, orderDto.getOrderLines().length);
+    }
+
+    @Test
+    void testGetOrder() {
+        OrderDto order = this.restService.loginAdmin(webTestClient)
+                .get().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(1).getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+        assertEquals(this.orderRepository.findById(this.ordersList.get(1).getId()).get().getId(), order.getId());
+    }
+
+    @Test
+    void testGetOrderNotFound() {
+        this.restService.loginAdmin(webTestClient)
+                .get().uri(contextPath + ORDERS + ORDER_ID, "idIncorrecto")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
 }
