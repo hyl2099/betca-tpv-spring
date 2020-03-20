@@ -30,6 +30,12 @@ public class ArticleFamilyCompleteDto {
     public ArticleFamilyCompleteDto(FamilyType familyType, String description, List<ArticlesFamily> articlesFamilyList) {
     }
 
+    public ArticleFamilyCompleteDto(FamilyType familyType, String code, String description, BigDecimal retailPrice) {
+    }
+
+    public ArticleFamilyCompleteDto(FamilyType familyType, String reference, String description) {
+    }
+
 
     public String getDescription() {
         return description;

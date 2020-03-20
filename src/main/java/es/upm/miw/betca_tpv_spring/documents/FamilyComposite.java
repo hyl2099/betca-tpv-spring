@@ -10,8 +10,13 @@ import java.util.List;
 public class FamilyComposite extends ArticlesFamily {
 
     private String description;
-    @DBRef(lazy = true)
-    private List<ArticlesFamily> articlesFamilyList;
+//    @DBRef(lazy = true)
+//    private List<ArticlesFamily> articlesFamilyList;
+    private List<ArticlesFamily> articlesFamilyList = getArticlesFamilyList();
+
+    public FamilyComposite(){
+
+    }
 
     public FamilyComposite(FamilyType familyType, String reference, String description) {
         super(familyType, reference);
@@ -68,5 +73,12 @@ public class FamilyComposite extends ArticlesFamily {
                 + ", articlesFamilyList=" + list + "]";
     }
 
-
+    @Override
+    public List<String> getArticleIdList() {
+        List<String> articleIdList = new ArrayList<>();
+        for (ArticlesFamily articlesFamily : this.articlesFamilyList) {
+            articleIdList.addAll(articlesFamily.getArticleIdList());
+        }
+        return articleIdList;
+    }
 }

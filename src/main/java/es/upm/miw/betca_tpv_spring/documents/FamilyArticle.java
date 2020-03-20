@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.documents;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +36,10 @@ public class FamilyArticle extends ArticlesFamily {
     @Override
     public void remove(ArticlesFamily familyComponent) {
         // Do nothing
+    }
+    @Override
+    public List<String> getArticleIdList() {
+        return Arrays.asList(this.article.getCode());
     }
 
     @Override

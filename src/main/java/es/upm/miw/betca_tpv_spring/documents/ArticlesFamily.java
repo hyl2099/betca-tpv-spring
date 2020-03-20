@@ -13,6 +13,9 @@ public abstract class ArticlesFamily {
     private FamilyType familyType;
     private String reference;
 
+    public ArticlesFamily() {
+    }
+
     public ArticlesFamily(FamilyType familyType, String reference) {
         this.familyType = familyType;
         this.reference = reference;
@@ -38,11 +41,14 @@ public abstract class ArticlesFamily {
 
     public abstract List<ArticlesFamily> getArticlesFamilyList();
 
+     public abstract List<String> getArticleIdList();
+
     public abstract void add(ArticlesFamily articlesFamily);
 
     public abstract void remove(ArticlesFamily articlesFamily);
 
     public abstract Article getArticle();
+
 
     @Override
     public int hashCode() {
