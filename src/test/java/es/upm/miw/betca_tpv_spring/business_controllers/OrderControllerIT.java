@@ -99,6 +99,23 @@ public class OrderControllerIT {
     }
 
     @Test
+    void testGetOrder(){
+        String id = this.orderRepository.findAll().get(1).getId();
+        StepVerifier
+                .create(this.orderController.getOrder(id))
+                .expectNextMatches(orderDto1 -> {
+                    assertEquals(id, orderDto1.getId());
+                    assertEquals(this.orderRepository.findById(id).get().getDescription(), orderDto1.getDescription());
+                    assertEquals(this.orderRepository.findById(id).get().getOrderLines().length, orderDto1.getOrderLines().length);
+                    assertEquals(this.orderRepository.findById(id).get().getOpeningDate(), orderDto1.getOpeningDate());
+                    assertEquals(this.orderRepository.findById(id).get().getClosingDate(), orderDto1.getClosingDate());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
     void testDeleteOrder(){
         String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
