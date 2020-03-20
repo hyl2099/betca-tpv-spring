@@ -24,6 +24,8 @@ public class OrderResource {
 
     public static final String ORDER_ID = "/{id}";
 
+    public static final String ORDER_CLOSE = "/close";
+
     private OrderController orderController;
 
     @Autowired
@@ -68,6 +70,12 @@ public class OrderResource {
     @GetMapping(value = ORDER_ID)
     public Mono<OrderDto> getOrder(@PathVariable String id){
         return this.orderController.getOrder(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = ORDER_CLOSE + ORDER_ID)
+    public Mono<OrderDto> closeOrder(@PathVariable String id, @Valid @RequestBody OrderDto orderDto){
+        return this.orderController.closeOrder(id, orderDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }

@@ -1,11 +1,14 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
-import es.upm.miw.betca_tpv_spring.documents.Article;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class OrderLineDto {
 
     private String article;
+
     private Integer requiredAmount;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer finalAmount;
 
     public OrderLineDto() {

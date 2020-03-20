@@ -33,7 +33,7 @@ public class OrderControllerIT {
     private OrderDto orderDto;
 
     @BeforeEach
-    void seed(){
+    void seed() {
         OrderLineDto[] orderLines = {
                 new OrderLineDto(this.articleRepository.findAll().get(0).getCode(), 10),
                 new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
@@ -56,7 +56,7 @@ public class OrderControllerIT {
     }
 
     @Test
-    void testCreateOrder(){
+    void testCreateOrder() {
         OrderLineCreationDto[] orderLines = {
                 new OrderLineCreationDto(this.articleRepository.findAll().get(0).getCode(), 10),
                 new OrderLineCreationDto(this.articleRepository.findAll().get(1).getCode(), 8),
@@ -79,7 +79,7 @@ public class OrderControllerIT {
     }
 
     @Test
-    void testUpdateOrder(){
+    void testUpdateOrder() {
         String id = this.orderRepository.findAll().get(1).getId();
         OrderLineDto[] orderLines = {
                 new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
@@ -99,7 +99,7 @@ public class OrderControllerIT {
     }
 
     @Test
-    void testGetOrder(){
+    void testGetOrder() {
         String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
                 .create(this.orderController.getOrder(id))
@@ -116,7 +116,7 @@ public class OrderControllerIT {
     }
 
     @Test
-    void testDeleteOrder(){
+    void testDeleteOrder() {
         String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
                 .create(this.orderController.deleteOrder(id))
@@ -124,4 +124,25 @@ public class OrderControllerIT {
                 .verify();
     }
 
+    @Test
+    void testCloseOrder() {
+        this.orderDto.getOrderLines()[0].setFinalAmount(7);
+        this.orderDto.getOrderLines()[1].setFinalAmount(8);
+        this.orderDto.getOrderLines()[2].setFinalAmount(1);
+        this.orderDto.getOrderLines()[3].setFinalAmount(5);
+
+        StepVerifier
+                .create(this.orderController
+                        .closeOrder(this.orderRepository.findAll().get(1).getId(), this.orderDto))
+                .expectNextMatches(orderDtoData -> {
+                    assertNotNull(orderDtoData.getClosingDate());
+                    assertEquals(7, orderDtoData.getOrderLines()[0].getFinalAmount().intValue());
+                    assertEquals(8, orderDtoData.getOrderLines()[1].getFinalAmount().intValue());
+                    assertEquals(1, orderDtoData.getOrderLines()[2].getFinalAmount().intValue());
+                    assertEquals(5, orderDtoData.getOrderLines()[3].getFinalAmount().intValue());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }

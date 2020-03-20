@@ -8,8 +8,8 @@ import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
-import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
@@ -27,17 +27,21 @@ public class OrderController {
 
     private ArticleRepository articleRepository;
 
+    private ArticleReactRepository articleReactRepository;
+
     @Autowired
-    public OrderController(OrderReactRepository orderReactRepository, ProviderRepository providerRepository, ArticleRepository articleRepository) {
+    public OrderController(OrderReactRepository orderReactRepository, ProviderRepository providerRepository, ArticleRepository articleRepository,
+                           ArticleReactRepository articleReactRepository) {
         this.orderReactRepository = orderReactRepository;
         this.providerRepository = providerRepository;
         this.articleRepository = articleRepository;
+        this.articleReactRepository = articleReactRepository;
     }
 
     public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
         Provider provider;
 
-        if (orderSearchDto.getProviderId().equals("null")){
+        if (orderSearchDto.getProviderId().equals("null")) {
             provider = null;
         } else {
             provider = this.providerRepository.findById(orderSearchDto.getProviderId()).get();
@@ -54,7 +58,7 @@ public class OrderController {
         }
     }
 
-    public Mono<OrderDto> createOrder(OrderCreationDto orderCreationDto){
+    public Mono<OrderDto> createOrder(OrderCreationDto orderCreationDto) {
         Provider provider;
         if (orderCreationDto.getProviderId() == null) {
             provider = null;
@@ -63,7 +67,7 @@ public class OrderController {
         }
         OrderLine[] orderLines = new OrderLine[orderCreationDto.getOrderLines().length];
         String articleId;
-        for (int i = 0; i < orderCreationDto.getOrderLines().length; i++){
+        for (int i = 0; i < orderCreationDto.getOrderLines().length; i++) {
             articleId = orderCreationDto.getOrderLines()[i].getArticleId();
             orderLines[i] = new OrderLine(this.articleRepository.findById(articleId).get(), orderCreationDto.getOrderLines()[i].getRequiredAmount());
         }
@@ -71,17 +75,17 @@ public class OrderController {
         return this.orderReactRepository.save(new Order(orderCreationDto.getDescription(), provider, orderLines)).map(OrderDto::new);
     }
 
-    public Mono<Void> deleteOrder(String orderId){
+    public Mono<Void> deleteOrder(String orderId) {
         Mono<Order> order = this.orderReactRepository.findById(orderId);
         return Mono
                 .when(order)
                 .then(this.orderReactRepository.deleteById(orderId));
     }
 
-    public Mono<OrderDto> updateOrder(String orderId, OrderDto orderDto){
+    public Mono<OrderDto> updateOrder(String orderId, OrderDto orderDto) {
         Mono<Order> order = this.orderReactRepository.findById(orderId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId)))
-                .map(orderData ->{
+                .map(orderData -> {
                     orderData.setDescription(orderDto.getDescription());
                     OrderLine[] orderLines = new OrderLine[orderDto.getOrderLines().length];
                     for (int i = 0; i < orderDto.getOrderLines().length; i++) {
@@ -98,8 +102,29 @@ public class OrderController {
                 .map(OrderDto::new);
     }
 
-    public Mono<OrderDto> getOrder(String orderId){
+    public Mono<OrderDto> getOrder(String orderId) {
         return this.orderReactRepository.findById(orderId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId))).map(OrderDto::new);
+    }
+
+    public Mono<OrderDto> closeOrder(String orderId, OrderDto orderDto) {
+        Mono<Order> order = this.orderReactRepository.findById(orderId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId)))
+                .map(orderToClose -> {
+                    OrderLine[] orderLines = new OrderLine[orderDto.getOrderLines().length];
+                    for (int i = 0; i < orderDto.getOrderLines().length; i++) {
+                        OrderLineDto orderLineDto = orderDto.getOrderLines()[i];
+                        Article article = this.articleRepository.findById(orderLineDto.getArticle()).get();
+                        orderLines[i] = new OrderLine(article, orderLineDto.getRequiredAmount());
+                        orderLines[i].setFinalAmount(orderLineDto.getFinalAmount());
+                    }
+                    orderToClose.setOrderLines(orderLines);
+                    orderToClose.close();
+                    return orderToClose;
+                });
+        return Mono
+                .when(order)
+                .then(this.orderReactRepository.saveAll(order).next())
+                .map(OrderDto::new);
     }
 }
