@@ -40,7 +40,6 @@ public class ArticlesFamilyController {
 //    }
 
 
-
     public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
         FamilyComposite familyComplete = familyCompositeRepository.findFirstByDescription(description);
         List<ArticleFamilyCompleteDto> dtos = new ArrayList<>();
@@ -51,26 +50,24 @@ public class ArticlesFamilyController {
         System.out.println(familyComplete.getArticlesFamilyList());
 
         if (familyComplete.getFamilyType() == FamilyType.ARTICLES) {
-            System.out.println("goes for articles");
             for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
                 if (articlesFamily.getFamilyType() == FamilyType.ARTICLES) {
                     dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getDescription(), articlesFamily.getArticlesFamilyList()));
                 }
                 if (articlesFamily.getFamilyType() == FamilyType.ARTICLE) {
                     Article article = articleRepository.findByCode(articlesFamily.getArticleIdList().get(0));
-                    System.out.println("ARTICLE");
-                    System.out.println(article);
                     dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), article.getCode(), article.getDescription(), article.getRetailPrice()));
                 }
                 if (articlesFamily.getFamilyType() == FamilyType.SIZES) {
-                    System.out.println("SIZES");
                     dtos.add(new ArticleFamilyCompleteDto(articlesFamily.getFamilyType(), articlesFamily.getReference(), articlesFamily.getDescription()));
                 }
             }
-            System.out.println(dtos);
+        } else if (familyComplete.getFamilyType() == FamilyType.SIZES) {
+            for (ArticlesFamily articlesFamily : familyComplete.getArticlesFamilyList()) {
+                Article article = articleRepository.findByCode(articlesFamily.getArticleIdList().get(0));
+                dtos.add(new ArticleFamilyCompleteDto(article.getReference().split("T")[1], article.getStock(), article.getRetailPrice(), article.getCode()));
+            }
         }
-
-
         return dtos;
 
     }

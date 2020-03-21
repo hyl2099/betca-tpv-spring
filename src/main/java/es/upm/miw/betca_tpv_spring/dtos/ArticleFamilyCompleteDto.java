@@ -46,6 +46,12 @@ public class ArticleFamilyCompleteDto {
         this.description = description;
     }
 
+    public ArticleFamilyCompleteDto(String size, Integer stock, BigDecimal retailPrice, String code) {
+        this.code = code;
+        this.size = size;
+        this.retailPrice = retailPrice;
+        this.stock = stock;
+    }
 
     public String getDescription() {
         return description;
