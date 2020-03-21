@@ -26,12 +26,8 @@ public class ArticlesFamilyControllerIT {
 
     @Test
     void testReadFamilyCompositeArticlesList(){
-        assertNotNull(articlesFamilyController.readArticlesFamilyList("root"));
+        assertNotNull(articlesFamilyController.readFamilyCompositeArticlesList("root"));
     }
 
-    @Test
-    void testReadArticlesFamilyList() {
-        assertNotNull(articlesFamilyController.readArticlesFamilyList("root"));
-    }
 
 }

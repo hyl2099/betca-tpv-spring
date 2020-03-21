@@ -19,23 +19,14 @@ public class ArticlesFamilyResource {
 
     public static final String FAMILY_COMPOSITE = "/familydescription";
 
-    public static final String DESCRIPTION = "/{description}";
-
     @Autowired
     private ArticlesFamilyController articlesFamilyController;
 
-//    @GetMapping(value = FAMILY_COMPOSITE)
-//    public Mono<FamilyCompositeDto> readInFamilyComposite(@Valid @RequestParam String description) {
-//        return articlesFamilyController.readFamilyCompositeArticlesList(description);
-//    }
     @GetMapping(value = FAMILY_COMPOSITE)
     public List<ArticleFamilyCompleteDto> readInFamilyComposite(@Valid @RequestParam String description){
         return articlesFamilyController.readFamilyCompositeArticlesList(description);
     }
 
-    @GetMapping(value = DESCRIPTION)
-    public List<ArticlesFamilyDto> readArticlesFamilyList(@PathVariable String description) {
-        return articlesFamilyController.readArticlesFamilyList(description);
-    }
+
 
 }
