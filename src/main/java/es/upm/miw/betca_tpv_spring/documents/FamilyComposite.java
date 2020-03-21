@@ -10,12 +10,11 @@ import java.util.List;
 public class FamilyComposite extends ArticlesFamily {
 
     private String description;
-//    @DBRef(lazy = true)
-//    private List<ArticlesFamily> articlesFamilyList;
+
+    @DBRef(lazy = true)
     private List<ArticlesFamily> articlesFamilyList = getArticlesFamilyList();
 
     public FamilyComposite(){
-
     }
 
     public FamilyComposite(FamilyType familyType, String reference, String description) {

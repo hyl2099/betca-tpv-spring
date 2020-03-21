@@ -5,7 +5,6 @@ import es.upm.miw.betca_tpv_spring.documents.ArticlesFamily;
 import es.upm.miw.betca_tpv_spring.documents.FamilyComposite;
 import es.upm.miw.betca_tpv_spring.documents.FamilyType;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
-import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.FamilyCompositeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
