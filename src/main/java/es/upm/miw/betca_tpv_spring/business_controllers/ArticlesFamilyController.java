@@ -5,7 +5,6 @@ import es.upm.miw.betca_tpv_spring.documents.ArticlesFamily;
 import es.upm.miw.betca_tpv_spring.documents.FamilyComposite;
 import es.upm.miw.betca_tpv_spring.documents.FamilyType;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
-import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.FamilyCompositeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +50,4 @@ public class ArticlesFamilyController {
 
     }
 
-
-    public List<ArticlesFamilyDto> readArticlesFamilyList(String reference) {
-        FamilyComposite family = familyCompositeRepository.findFirstByReference(reference);
-        List<ArticlesFamilyDto> dtos = new ArrayList<>();
-        for (ArticlesFamily articlesFamily : family.getArticlesFamilyList()) {
-            dtos.add(new ArticlesFamilyDto(articlesFamily));
-        }
-        return dtos;
-    }
 }
