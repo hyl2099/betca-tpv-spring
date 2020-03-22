@@ -31,6 +31,24 @@ class InvoiceReactRepositoryIT {
                     assertFalse(invoice.toString().matches("@"));
                     return true;
                 })
+                .expectNextCount(1)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testfindFirstByOrderByCreationDateDescIdDesc(){
+        StepVerifier
+                .create(this.invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc())
+                .expectNextMatches(invoice -> {
+                    assertEquals(2, invoice.simpleId());
+                    assertEquals(LocalDate.now().getYear() + "2", invoice.getId());
+                    assertNotNull(invoice.getCreationDate());
+                    assertNotNull(invoice.getUser());
+                    assertNotNull(invoice.getTicket());
+                    assertFalse(invoice.toString().matches("@"));
+                    return true;
+                })
                 .expectComplete()
                 .verify();
     }

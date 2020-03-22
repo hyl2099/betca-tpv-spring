@@ -1,10 +1,8 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_services.PdfService;
-import es.upm.miw.betca_tpv_spring.documents.Article;
-import es.upm.miw.betca_tpv_spring.documents.Invoice;
-import es.upm.miw.betca_tpv_spring.documents.Shopping;
-import es.upm.miw.betca_tpv_spring.documents.Ticket;
+import es.upm.miw.betca_tpv_spring.documents.*;
+import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.InvoiceReactRepository;
@@ -45,10 +43,29 @@ public class InvoiceController {
         Invoice invoice = new Invoice(0, null, null);
         Mono<Ticket> ticket = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
                 .switchIfEmpty(Mono.error(new NotFoundException("Last Ticket not found")))
-                .doOnNext(invoice::setTicket);
+                .doOnNext(ticket1 -> {
+                    invoice.setTicket(ticket1);
+                    invoice.setUser(ticket1.getUser());
+                })
+                .handle((ticket1, synchronousSink) -> {
+                    User user = ticket1.getUser();
+                    if (ticket1.getUser() == null || isUserCompletedForInvoice(user))
+                        synchronousSink.error(new BadRequestException("User not completed"));
+                    else if (ticket1.isDebt())
+                        synchronousSink.error(new BadRequestException("Ticket is debt"));
+                    else
+                        synchronousSink.complete();
+                });
+
         Mono<Integer> nextId = this.nextIdStartingYearly()
                 .doOnNext(invoice::setId);
         return Mono.when(ticket, nextId).then(calculateBaseAndTax(invoice).then(invoiceReactRepository.save(invoice)));
+    }
+
+    private boolean isUserCompletedForInvoice(User user){
+        return (user.getUsername() != null && user.getUsername().trim() != "")
+                && (user.getAddress() != null && user.getAddress().trim() != "")
+                && (user.getDni() != null && user.getDni().trim() != "");
     }
 
     private Mono<Invoice> calculateBaseAndTax(Invoice invoice) {
