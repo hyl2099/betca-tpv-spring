@@ -123,8 +123,22 @@ public class OrderController {
                     return orderToClose;
                 });
         return Mono
-                .when(order)
+                .when(order, updateArticlesStockAssured(orderDto))
                 .then(this.orderReactRepository.saveAll(order).next())
                 .map(OrderDto::new);
+    }
+
+    public Mono<Void> updateArticlesStockAssured(OrderDto orderDto){
+        Flux<Article> articlesFlux = Flux.empty();
+        for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineDto.getArticle() + ")")))
+                    .map(article -> {
+                        article.setStock(article.getStock() + orderLineDto.getFinalAmount());
+                        return article;
+                    });
+            articlesFlux = Flux.merge(this.articleReactRepository.saveAll(articleReact));
+        }
+        return articlesFlux.then();
     }
 }
