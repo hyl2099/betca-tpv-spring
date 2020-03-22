@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_spring.documents.Article;
 import es.upm.miw.betca_tpv_spring.documents.Invoice;
 import es.upm.miw.betca_tpv_spring.documents.Shopping;
 import es.upm.miw.betca_tpv_spring.documents.Ticket;
+import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.InvoiceReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
@@ -13,6 +14,10 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,25 +41,46 @@ public class InvoiceController {
         this.articleReactRepository = articleReactRepository;
     }
 
-    public Mono<Invoice> create() {
-        Mono<Invoice> ticketMono = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
-                .map(t -> {
-                    List<String> articleCodes = Stream.of(t.getShoppingList())
-                            .map(Shopping::getArticleId)
-                            .collect(Collectors.toList());
-//                    articleReactRepository.findByCodeIn(articleCodes)
-//                            .reduce(article -> {
-//
-//                            });
-                    return null;
-                });
+    public Mono<Invoice> createInvoice() {
+        Invoice invoice = new Invoice(0, null, null);
+        Mono<Ticket> ticket = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
+                .switchIfEmpty(Mono.error(new NotFoundException("Last Ticket not found")))
+                .doOnNext(invoice::setTicket);
+        Mono<Integer> nextId = this.nextIdStartingYearly()
+                .doOnNext(invoice::setId);
+        return Mono.when(ticket, nextId).then(calculateBaseAndTax(invoice).then(invoiceReactRepository.save(invoice)));
+    }
 
-        //TODO GameEngineers mapping of ticket and generate invoice with taxes
+    private Mono<Invoice> calculateBaseAndTax(Invoice invoice) {
+        Flux<Article> articlesFlux = Flux.empty(); // Esto representa el flujo  de articulos del ticket
+        for (Shopping shopping : invoice.getTicket().getShoppingList()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(shopping.getArticleId())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
+                    .doOnNext(article -> {
+                        BigDecimal articleTaxRate = BigDecimal.ONE.divide(article.getTax().getRate(), BigDecimal.ROUND_UP);
+                        BigDecimal articleTax = article.getRetailPrice().multiply(articleTaxRate);
+                        invoice.setTax(invoice.getTax().add(articleTax));
+                        BigDecimal articleBaseTax = article.getRetailPrice().subtract(articleTax);
+                        invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
+                    }); //aqui se modifica invoice y se le añade base & tax de éste artículo
+            articlesFlux = Flux.merge(articleReact); // con esto creamos un flujo compuesto por todos los accesos a BBDD, nos sirve para sincronizar
+        }
+        return articlesFlux.then(Mono.just(invoice));  //Cuando se ha terminado todos los acceso a BBDD, creamos el mono de invoice ya actualizado con base & tax
+    }
 
-        return null;
+    private Mono<Integer> nextIdStartingYearly() {
+        return invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc()
+                .map(invoice -> {
+                    if (invoice.getCreationDate().isAfter(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
+                        return invoice.simpleId() + 1;
+                    } else {
+                        return 1;
+                    }
+                })
+                .switchIfEmpty(Mono.just(1));
     }
 
     public Mono<Byte[]> createAndPdf() {
-        return pdfService.generateInvoice(this.create());
+        return pdfService.generateInvoice(this.createInvoice());
     }
 }

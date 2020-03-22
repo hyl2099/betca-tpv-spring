@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(InvoiceResource.INVOICES)
 public class InvoiceResource {
+
     public static final String INVOICES = "/invoices";
 
     private InvoiceController invoiceController;

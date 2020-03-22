@@ -19,6 +19,11 @@ public class Invoice {
     private LocalDateTime creationDate;
     private BigDecimal baseTax;
     private BigDecimal tax;
+
+    public void setId(int idOfYear) {
+        this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
+    }
+
     @DBRef
     private Ticket ticket;
     @DBRef
@@ -33,8 +38,8 @@ public class Invoice {
         this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
         this.user = user;
         this.ticket = ticket;
-//        this.tax = tax;
-//        this.baseTax = baseTax;
+        this.tax = BigDecimal.ZERO;
+        this.baseTax = BigDecimal.ZERO;
     }
 
     public String getId() {
@@ -45,7 +50,7 @@ public class Invoice {
         return ticket;
     }
 
-    public LocalDateTime getCreationDated() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 

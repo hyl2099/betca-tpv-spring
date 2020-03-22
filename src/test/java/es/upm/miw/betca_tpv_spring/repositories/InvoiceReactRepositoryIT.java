@@ -25,7 +25,7 @@ class InvoiceReactRepositoryIT {
                 .expectNextMatches(invoice -> {
                     assertEquals(1, invoice.simpleId());
                     assertEquals(LocalDate.now().getYear() + "1", invoice.getId());
-                    assertNotNull(invoice.getCreationDated());
+                    assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
                     assertFalse(invoice.toString().matches("@"));
