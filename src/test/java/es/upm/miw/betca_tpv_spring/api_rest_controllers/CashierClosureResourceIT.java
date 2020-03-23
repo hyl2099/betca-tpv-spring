@@ -165,11 +165,31 @@ class CashierClosureResourceIT {
                 .returnResult().getResponseBody();
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
-                .body(BodyInserters.fromObject(new CashierClosureInputDto(new BigDecimal(100), new BigDecimal(100), "")))
+                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
                 .exchange()
                 .expectStatus().isOk();
         assertNotNull(cashierStateOutputDto);
         assertEquals(0, cashierStateOutputDto.getTotalCash().compareTo(BigDecimal.TEN));
+    }
+
+    @Test
+    void testPatchCashierWithdrawalWithoutCash() {
+        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + CASHIER_CLOSURES)
+                .exchange()
+                .expectStatus().isOk();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
+                + CashierClosureResource.WITHDRAWAL)
+                .body(BodyInserters.fromObject(cashMovementInputDto))
+                .exchange()
+                .expectStatus().isBadRequest();
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
+                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
+                .exchange()
+                .expectStatus().isOk();
     }
 
 }
