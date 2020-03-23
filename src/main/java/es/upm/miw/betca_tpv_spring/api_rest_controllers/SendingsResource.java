@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.business_controllers.SendingsController;
 import es.upm.miw.betca_tpv_spring.documents.Sendings;
 import es.upm.miw.betca_tpv_spring.dtos.SendingsCreationDto;
+import es.upm.miw.betca_tpv_spring.dtos.SendingsDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,12 @@ public class SendingsResource {
     @PostMapping(produces = {"application/json"})
     public Mono<Sendings> createSendings(@Valid @RequestBody SendingsCreationDto sendingsCreationDto) {
         return this.sendingsController.createSendings(sendingsCreationDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = TICKET_ID)
+    public Mono<SendingsDto> update(@PathVariable String id, @Valid @RequestBody SendingsDto sendingsDto) {
+        return this.sendingsController.update(id, sendingsDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
