@@ -82,7 +82,7 @@ public class CashierClosureController {
                 .handle((last, sink) -> {
                     BigDecimal finalCash = last.getInitialCash().add(last.getSalesCash())
                             .add(last.getDeposit()).subtract(last.getWithdrawal());
-                    if (cashMovementInputDto.getCashMovement().compareTo(finalCash) != 1) {
+                    if (cashMovementInputDto.getCashMovement().compareTo(finalCash) < 1) {
                         last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
                         sink.next(last);
                     } else {

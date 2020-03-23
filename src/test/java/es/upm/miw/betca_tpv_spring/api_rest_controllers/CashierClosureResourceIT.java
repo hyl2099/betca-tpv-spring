@@ -3,6 +3,8 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,13 @@ class CashierClosureResourceIT {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
+    private CashMovementInputDto cashMovementInputDto;
+
+    @BeforeEach
+    void init(){
+        cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
+    }
 
     @Test
     void testFindCashierClosureLast() {
@@ -81,11 +90,7 @@ class CashierClosureResourceIT {
 
     @Test
     void testPatchCashierDeposit() {
-        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
-        this.restService.loginAdmin(webTestClient)
-                .post().uri(contextPath + CASHIER_CLOSURES)
-                .exchange()
-                .expectStatus().isOk();
+        cashierOpen();
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.DEPOSIT)
@@ -98,38 +103,25 @@ class CashierClosureResourceIT {
                 .expectStatus().isOk()
                 .expectBody(CashierStateOutputDto.class)
                 .returnResult().getResponseBody();
-        this.restService.loginAdmin(webTestClient)
-                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
-                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
-                .exchange()
-                .expectStatus().isOk();
+        cashierClosed();
         assertNotNull(cashierStateOutputDto);
         assertEquals(0, cashierStateOutputDto.getTotalCash().compareTo(BigDecimal.TEN));
     }
 
     @Test
     void testPatchCashierNegativeDeposit() {
-        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(new BigDecimal(-10), "Moving");
-        this.restService.loginAdmin(webTestClient)
-                .post().uri(contextPath + CASHIER_CLOSURES)
-                .exchange()
-                .expectStatus().isOk();
+        cashierOpen();
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.DEPOSIT)
-                .body(BodyInserters.fromObject(cashMovementInputDto))
+                .body(BodyInserters.fromObject(new CashMovementInputDto(new BigDecimal(-10), "Moving")))
                 .exchange()
                 .expectStatus().isBadRequest();
-        this.restService.loginAdmin(webTestClient)
-                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
-                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
-                .exchange()
-                .expectStatus().isOk();
+        cashierClosed();
     }
 
     @Test
     void testPatchCashierDepositWithCashierClosedBadRequest() {
-        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(new BigDecimal(10), "Moving");
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.DEPOSIT)
@@ -140,11 +132,7 @@ class CashierClosureResourceIT {
 
     @Test
     void testPatchCashierWithdrawal() {
-        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
-        this.restService.loginAdmin(webTestClient)
-                .post().uri(contextPath + CASHIER_CLOSURES)
-                .exchange()
-                .expectStatus().isOk();
+        cashierOpen();
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.DEPOSIT)
@@ -163,28 +151,31 @@ class CashierClosureResourceIT {
                 .expectStatus().isOk()
                 .expectBody(CashierStateOutputDto.class)
                 .returnResult().getResponseBody();
-        this.restService.loginAdmin(webTestClient)
-                .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
-                .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
-                .exchange()
-                .expectStatus().isOk();
+        cashierClosed();
         assertNotNull(cashierStateOutputDto);
         assertEquals(0, cashierStateOutputDto.getTotalCash().compareTo(BigDecimal.TEN));
     }
 
     @Test
     void testPatchCashierWithdrawalWithoutCash() {
-        CashMovementInputDto cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
-        this.restService.loginAdmin(webTestClient)
-                .post().uri(contextPath + CASHIER_CLOSURES)
-                .exchange()
-                .expectStatus().isOk();
+        cashierOpen();
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST
                 + CashierClosureResource.WITHDRAWAL)
                 .body(BodyInserters.fromObject(cashMovementInputDto))
                 .exchange()
                 .expectStatus().isBadRequest();
+        cashierClosed();
+    }
+
+    void cashierOpen(){
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + CASHIER_CLOSURES)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    void cashierClosed(){
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
                 .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
