@@ -37,7 +37,7 @@ class CashierClosureResourceIT {
     private CashMovementInputDto cashMovementInputDto;
 
     @BeforeEach
-    void init(){
+    void init() {
         cashMovementInputDto = new CashMovementInputDto(BigDecimal.TEN, "Moving");
     }
 
@@ -168,14 +168,14 @@ class CashierClosureResourceIT {
         cashierClosed();
     }
 
-    void cashierOpen(){
+    void cashierOpen() {
         this.restService.loginAdmin(webTestClient)
                 .post().uri(contextPath + CASHIER_CLOSURES)
                 .exchange()
                 .expectStatus().isOk();
     }
 
-    void cashierClosed(){
+    void cashierClosed() {
         this.restService.loginAdmin(webTestClient)
                 .patch().uri(contextPath + CASHIER_CLOSURES + CashierClosureResource.LAST)
                 .body(BodyInserters.fromObject(new CashierClosureInputDto(BigDecimal.ZERO, BigDecimal.ZERO, "")))
