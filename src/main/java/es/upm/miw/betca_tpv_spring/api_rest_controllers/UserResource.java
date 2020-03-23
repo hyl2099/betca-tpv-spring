@@ -42,7 +42,7 @@ public class UserResource {
     }
 
     @GetMapping(value = MOBILE_ID)
-    public Mono<UserDto> read(@PathVariable String mobile, @AuthenticationPrincipal User activeUser) {
+    public Mono<UserDto> read(@PathVariable String mobile) {
         return this.userController.readUser(mobile, SecurityContextHolder.getContext().getAuthentication().getName(),
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
