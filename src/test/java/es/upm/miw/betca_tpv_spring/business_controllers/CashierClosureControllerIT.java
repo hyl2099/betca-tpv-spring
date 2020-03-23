@@ -76,7 +76,7 @@ class CashierClosureControllerIT {
         StepVerifier
                 .create(cashierClosureController.withdrawal(new CashMovementInputDto(BigDecimal.TEN, "")))
                 .expectErrorMatches(err -> {
-                    assertEquals(err.getMessage(), "Bad Request Exception (400). Not enough cash, you can only withdraw 0€");
+                    assertEquals("Bad Request Exception (400). Not enough cash, you can only withdraw 0€", err.getMessage());
                     return true;
                 })
                 .verify();
