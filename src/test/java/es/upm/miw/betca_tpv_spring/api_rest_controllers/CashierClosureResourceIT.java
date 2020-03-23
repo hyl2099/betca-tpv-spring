@@ -191,5 +191,4 @@ class CashierClosureResourceIT {
                 .exchange()
                 .expectStatus().isOk();
     }
-
 }

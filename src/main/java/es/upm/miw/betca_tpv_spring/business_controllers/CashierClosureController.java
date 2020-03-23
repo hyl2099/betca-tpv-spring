@@ -86,7 +86,7 @@ public class CashierClosureController {
                         last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
                         sink.next(last);
                     } else {
-                        String msg = "Not enough cash, you can only withdraw" + finalCash + "€";
+                        String msg = "Not enough cash, you can only withdraw " + finalCash + "€";
                         sink.error(new BadRequestException(msg));
                     }
                 });
