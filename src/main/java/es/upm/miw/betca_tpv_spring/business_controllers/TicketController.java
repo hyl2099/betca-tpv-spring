@@ -60,7 +60,7 @@ public class TicketController {
                         article.setStock(article.getStock() - shoppingDto.getAmount());
                         return article;
                     });
-            articlesFlux = Flux.merge(articleReactRepository.saveAll(articleReact));
+            articlesFlux = articlesFlux.mergeWith(articleReactRepository.saveAll(articleReact));
         }
         return articlesFlux.then();
     }

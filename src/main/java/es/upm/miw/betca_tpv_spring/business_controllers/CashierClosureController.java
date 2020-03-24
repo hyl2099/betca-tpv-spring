@@ -78,11 +78,19 @@ public class CashierClosureController {
     }
 
     public Mono<Void> withdrawal(CashMovementInputDto cashMovementInputDto) {
-        Mono<CashierClosure> cashierClosure = this.lastCashierClosureStateAssure(true).map(last -> {
-            last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
-            return last;
-        });
-        return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
+        Mono<CashierClosure> cashierClosureMono = this.lastCashierClosureStateAssure(true)
+                .handle((last, sink) -> {
+                    BigDecimal finalCash = last.getInitialCash().add(last.getSalesCash())
+                            .add(last.getDeposit()).subtract(last.getWithdrawal());
+                    if (cashMovementInputDto.getCashMovement().compareTo(finalCash) < 1) {
+                        last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
+                        sink.next(last);
+                    } else {
+                        String msg = "Not enough cash, you can only withdraw " + finalCash + "€";
+                        sink.error(new BadRequestException(msg));
+                    }
+                });
+        return this.cashierClosureReactRepository.saveAll(cashierClosureMono).then();
     }
 
 }
