@@ -125,13 +125,11 @@ public class OrderController {
                     orderToClose.close();
                     return orderToClose;
                 });
-        return Mono
-                .when(order, updateArticlesStockAssured(orderDto))
-                .then(this.orderReactRepository.saveAll(order).next())
-                .map(OrderDto::new);
+        Mono.when(order).then(updateArticlesStockAssured(orderDto));
+        return this.orderReactRepository.saveAll(order).next().map(OrderDto::new);
     }
 
-    public Mono<Void> updateArticlesStockAssured(OrderDto orderDto){
+    private Mono<Void> updateArticlesStockAssured(OrderDto orderDto){
         Flux<Article> articlesFlux = Flux.empty();
         for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
             Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())
