@@ -18,6 +18,9 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class OrderController {
 
@@ -122,9 +125,21 @@ public class OrderController {
                     orderToClose.close();
                     return orderToClose;
                 });
-        return Mono
-                .when(order)
-                .then(this.orderReactRepository.saveAll(order).next())
-                .map(OrderDto::new);
+        Mono.when(order).then(updateArticlesStockAssured(orderDto));
+        return this.orderReactRepository.saveAll(order).next().map(OrderDto::new);
+    }
+
+    private Mono<Void> updateArticlesStockAssured(OrderDto orderDto){
+        Flux<Article> articlesFlux = Flux.empty();
+        for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineDto.getArticle() + ")")))
+                    .map(article -> {
+                        article.setStock(article.getStock() + orderLineDto.getFinalAmount());
+                        return article;
+                    });
+            articlesFlux = articlesFlux.mergeWith(this.articleReactRepository.saveAll(articleReact));
+        }
+        return articlesFlux.then();
     }
 }
