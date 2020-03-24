@@ -18,6 +18,9 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class OrderController {
 
@@ -137,7 +140,7 @@ public class OrderController {
                         article.setStock(article.getStock() + orderLineDto.getFinalAmount());
                         return article;
                     });
-            articlesFlux = Flux.merge(this.articleReactRepository.saveAll(articleReact));
+            articlesFlux = articlesFlux.mergeWith(this.articleReactRepository.saveAll(articleReact));
         }
         return articlesFlux.then();
     }
