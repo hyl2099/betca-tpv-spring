@@ -9,16 +9,16 @@ import es.upm.miw.betca_tpv_spring.repositories.InvoiceReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 @Controller
 public class InvoiceController {
@@ -43,13 +43,14 @@ public class InvoiceController {
         Invoice invoice = new Invoice(0, null, null);
         Mono<Ticket> ticket = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
                 .switchIfEmpty(Mono.error(new NotFoundException("Last Ticket not found")))
-                .doOnNext(ticket1 -> {
+                .map(ticket1 -> {
                     invoice.setTicket(ticket1);
                     invoice.setUser(ticket1.getUser());
+                    return ticket1;
                 })
                 .handle((ticket1, synchronousSink) -> {
                     User user = ticket1.getUser();
-                    if (ticket1.getUser() == null || isUserCompletedForInvoice(user))
+                    if (ticket1.getUser() == null || !isUserCompletedForInvoice(user))
                         synchronousSink.error(new BadRequestException("User not completed"));
                     else if (ticket1.isDebt())
                         synchronousSink.error(new BadRequestException("Ticket is debt"));
@@ -58,31 +59,37 @@ public class InvoiceController {
                 });
 
         Mono<Integer> nextId = this.nextIdStartingYearly()
-                .doOnNext(invoice::setId);
-        return Mono.when(ticket, nextId).then(calculateBaseAndTax(invoice).then(invoiceReactRepository.save(invoice)));
+                .map(Id -> {
+                    invoice.setId(Id);
+                    return Id;
+                });
+        return Mono.when(ticket, nextId).then(calculateBaseAndTax(invoice)).then(invoiceReactRepository.save(invoice));
     }
 
     private boolean isUserCompletedForInvoice(User user){
-        return (user.getUsername() != null && user.getUsername().trim() != "")
-                && (user.getAddress() != null && user.getAddress().trim() != "")
-                && (user.getDni() != null && user.getDni().trim() != "");
+        return (user.getUsername() != null && !user.getUsername().trim().equals(""))
+                && (user.getAddress() != null && !user.getAddress().trim().equals(""))
+                && (user.getDni() != null && !user.getDni().trim().equals(""));
     }
 
     private Mono<Invoice> calculateBaseAndTax(Invoice invoice) {
-        Flux<Article> articlesFlux = Flux.empty(); // Esto representa el flujo  de articulos del ticket
-        for (Shopping shopping : invoice.getTicket().getShoppingList()) {
+        Flux<Article> articlesFlux = Flux.empty();
+        Shopping[] ticketShoppingList = Arrays.stream(invoice.getTicket().getShoppingList())
+                .filter(shopping -> shopping.getAmount() >= 1)
+                .toArray(Shopping[]::new);
+        for (Shopping shopping : ticketShoppingList) {
             Mono<Article> articleReact = this.articleReactRepository.findById(shopping.getArticleId())
                     .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
                     .doOnNext(article -> {
-                        BigDecimal articleTaxRate = BigDecimal.ONE.divide(article.getTax().getRate(), BigDecimal.ROUND_UP);
-                        BigDecimal articleTax = article.getRetailPrice().multiply(articleTaxRate);
+                        BigDecimal articleTaxRate = BigDecimal.ONE.divide(article.getTax().getRate(), RoundingMode.HALF_UP);
+                        BigDecimal articleTax = shopping.getShoppingTotal().multiply(articleTaxRate);
                         invoice.setTax(invoice.getTax().add(articleTax));
-                        BigDecimal articleBaseTax = article.getRetailPrice().subtract(articleTax);
+                        BigDecimal articleBaseTax = shopping.getShoppingTotal().subtract(articleTax);
                         invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
-                    }); //aqui se modifica invoice y se le añade base & tax de éste artículo
-            articlesFlux = Flux.merge(articleReact); // con esto creamos un flujo compuesto por todos los accesos a BBDD, nos sirve para sincronizar
+                    });
+            articlesFlux = Flux.merge(articleReact);
         }
-        return articlesFlux.then(Mono.just(invoice));  //Cuando se ha terminado todos los acceso a BBDD, creamos el mono de invoice ya actualizado con base & tax
+        return articlesFlux.then(Mono.just(invoice));
     }
 
     private Mono<Integer> nextIdStartingYearly() {
@@ -97,6 +104,7 @@ public class InvoiceController {
                 .switchIfEmpty(Mono.just(1));
     }
 
+    @Transactional
     public Mono<Byte[]> createAndPdf() {
         return pdfService.generateInvoice(this.createInvoice());
     }

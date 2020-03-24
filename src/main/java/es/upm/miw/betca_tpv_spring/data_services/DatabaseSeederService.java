@@ -241,6 +241,8 @@ public class DatabaseSeederService {
                         new Shopping[]{shoppingList[2]}, users[4], "note"),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
@@ -249,8 +251,10 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
                 new Invoice(1, users[4], tickets[1]),
-                new Invoice(2, users[4], tickets[0]),
+                new Invoice(2, null, tickets[3])
         };
+        invoices[1].setTax(new BigDecimal("0.0368"));
+        invoices[1].setBaseTax(new BigDecimal("0.8832"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
         Budget[] budgets = {

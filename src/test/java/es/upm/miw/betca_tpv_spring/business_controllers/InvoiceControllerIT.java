@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,9 +27,12 @@ public class InvoiceControllerIT {
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getTicket());
                     assertNotNull(invoice.getUser());
-                    assertEquals()
-
+                    assertEquals(new BigDecimal("15.6216"), invoice.getBaseTax());
+                    assertEquals(new BigDecimal("0.0184"), invoice.getTax());
+                    return true;
                 })
+                .expectComplete()
+                .verify();
 
     }
 
