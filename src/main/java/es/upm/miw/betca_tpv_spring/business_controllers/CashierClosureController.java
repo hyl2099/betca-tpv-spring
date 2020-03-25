@@ -1,14 +1,12 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CashierClosure;
-import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -91,6 +89,12 @@ public class CashierClosureController {
                     }
                 });
         return this.cashierClosureReactRepository.saveAll(cashierClosureMono).then();
+    }
+
+    public Flux<CashierClosureSearchDto> readAll(){
+        return this.cashierClosureReactRepository.findAll()
+                .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
+                .map(CashierClosureSearchDto::new);
     }
 
 }
