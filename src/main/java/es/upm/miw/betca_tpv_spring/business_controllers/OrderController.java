@@ -40,7 +40,7 @@ public class OrderController {
 
     public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
         if (orderSearchDto.getClosingDate().equals("null")) {
-            if(orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")){
+            if (orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")) {
                 return this.orderReactRepository.findAll()
                         .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
                         .filter(order -> order.getClosingDate() == null)
@@ -51,7 +51,7 @@ public class OrderController {
                     .filter(order -> order.getClosingDate() == null)
                     .map(OrderDto::new);
         } else {
-            if(orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")){
+            if (orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")) {
                 return this.orderReactRepository.findAll()
                         .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
                         .filter(order -> order.getClosingDate() != null)
@@ -82,7 +82,8 @@ public class OrderController {
     }
 
     public Mono<Void> deleteOrder(String orderId) {
-        Mono<Order> order = this.orderReactRepository.findById(orderId);
+        Mono<Order> order = this.orderReactRepository.findById(orderId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Order id:" + orderId)));
         return Mono
                 .when(order)
                 .then(this.orderReactRepository.deleteById(orderId));
@@ -132,7 +133,7 @@ public class OrderController {
         return this.orderReactRepository.saveAll(order).next().map(OrderDto::new);
     }
 
-    private Mono<Void> updateArticlesStockAssured(OrderDto orderDto){
+    private Mono<Void> updateArticlesStockAssured(OrderDto orderDto) {
         Flux<Article> articlesFlux = Flux.empty();
         for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
             Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())

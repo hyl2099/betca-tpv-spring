@@ -13,7 +13,8 @@ public class OrderSearchDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String closingDate;
 
-    public OrderSearchDto(){
+    public OrderSearchDto() {
+        //empty for framework
     }
 
     public OrderSearchDto(String description, String providerId, String closingDate) {
