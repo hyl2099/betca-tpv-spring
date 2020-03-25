@@ -99,8 +99,7 @@ public class DatabaseSeederService {
     private void initialize() {
         if (!this.userRepository.findByMobile(this.mobile).isPresent()) {
             LogManager.getLogger(this.getClass()).warn("------- Create Admin -----------");
-            User user = new User(this.mobile, this.username, this.password);
-            user.setRoles(new Role[]{Role.ADMIN});
+            User user = User.builder().mobile(this.mobile).username(this.username).password(this.password).roles(Role.ADMIN).build();
             this.userRepository.save(user);
         }
         CashierClosure cashierClosure = this.cashierClosureRepository.findFirstByOrderByOpeningDateDesc();
@@ -152,12 +151,12 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("------- Initial Load from JAVA -----------");
         Role[] allRoles = {Role.ADMIN, Role.MANAGER, Role.OPERATOR};
         User[] users = {
-                new User("666666000", "all-roles", "p000", null, "C/TPV, 0, MIW", "u000@gmail.com", allRoles),
-                new User("666666001", "manager", "p001", "66666601C", "C/TPV, 1", "u001@gmail.com", Role.MANAGER),
-                new User("666666002", "u002", "p002", "66666602K", "C/TPV, 2", "u002@gmail.com", Role.OPERATOR),
-                new User("666666003", "u003", "p003", "66666603E", "C/TPV, 3", "u003@gmail.com", Role.OPERATOR),
-                new User("666666004", "u004", "p004", "66666604T", "C/TPV, 4", "u004@gmail.com", Role.CUSTOMER),
-                new User("666666005", "u005", "p005", "66666605R", "C/TPV, 5", "u005@gmail.com", Role.CUSTOMER),
+                User.builder().mobile("666666000").username("all-roles").password("p000").dni(null).address("C/TPV, 0, MIW").email("u000@gmail.com").roles(allRoles).build(),
+                User.builder().mobile("666666001").username("manager").password("p001").dni("66666601C").address("C/TPV, 1").email("u001@gmail.com").roles(Role.MANAGER).build(),
+                User.builder().mobile("666666002").username("u002").password("p002").dni("66666602K").address("C/TPV, 2").email("u002@gmail.com").roles(Role.OPERATOR).build(),
+                User.builder().mobile("666666003").username("u003").password("p003").dni("66666603E").address("C/TPV, 3").email("u003@gmail.com").roles(Role.OPERATOR).build(),
+                User.builder().mobile("666666004").username("u004").password("p004").dni("66666604T").address("C/TPV, 4").email("u004@gmail.com").roles(Role.CUSTOMER).build(),
+                User.builder().mobile("666666005").username("u005").password("p005").dni("66666605R").address("C/TPV, 5").email("u005@gmail.com").roles(Role.CUSTOMER).build(),
         };
         this.userRepository.saveAll(Arrays.asList(users));
         LogManager.getLogger(this.getClass()).warn("        ------- users");
