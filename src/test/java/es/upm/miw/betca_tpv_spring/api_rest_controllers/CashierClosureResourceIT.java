@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.math.BigDecimal;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.CashierClosureResource.CASHIER_CLOSURES;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.CashierClosureResource.CASHIER_CLOSURE_SEARCH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -182,4 +183,12 @@ class CashierClosureResourceIT {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void testReadAllCashierClosureSearch(){
+        this.restService.loginAdmin(webTestClient).get()
+                .uri(contextPath + CASHIER_CLOSURES + CASHIER_CLOSURE_SEARCH)
+                .exchange().expectStatus().isOk();
+    }
+
 }
