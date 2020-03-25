@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.OrderController;
-import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
 @RestController
@@ -37,15 +35,8 @@ public class OrderResource {
     public Flux<OrderDto> search(@RequestParam (required = false) String description,
                                  @RequestParam (required = false) String provider,
                                  @RequestParam (required = false) String closingDate){
-        OrderSearchDto orderSearchDto;
 
-        if(closingDate.equals("null")){
-            orderSearchDto = new OrderSearchDto(description, provider, null);
-        } else {
-            orderSearchDto = new OrderSearchDto(description, provider, LocalDateTime.now());
-        }
-
-        return this.orderController.searchOrder(orderSearchDto)
+        return this.orderController.searchOrder(new OrderSearchDto(description, provider, closingDate))
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

@@ -2,8 +2,6 @@ package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_spring.documents.Order;
-import es.upm.miw.betca_tpv_spring.documents.OrderLine;
-import es.upm.miw.betca_tpv_spring.documents.Provider;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

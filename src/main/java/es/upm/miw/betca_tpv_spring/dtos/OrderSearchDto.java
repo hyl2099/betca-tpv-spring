@@ -2,8 +2,6 @@ package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.time.LocalDateTime;
-
 public class OrderSearchDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -13,12 +11,12 @@ public class OrderSearchDto {
     private String providerId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private LocalDateTime closingDate;
+    private String closingDate;
 
     public OrderSearchDto(){
     }
 
-    public OrderSearchDto(String description, String providerId, LocalDateTime closingDate) {
+    public OrderSearchDto(String description, String providerId, String closingDate) {
         this.description = description;
         this.providerId = providerId;
         this.closingDate = closingDate;
@@ -40,11 +38,11 @@ public class OrderSearchDto {
         this.providerId = providerId;
     }
 
-    public LocalDateTime getClosingDate() {
+    public String getClosingDate() {
         return closingDate;
     }
 
-    public void setClosingDate(LocalDateTime closingDate) {
+    public void setClosingDate(String closingDate) {
         this.closingDate = closingDate;
     }
 

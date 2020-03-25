@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
-import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
@@ -47,7 +46,7 @@ public class OrderControllerIT {
     @Test
     void testSearchOrderByDescriptionOrProvider() {
         OrderSearchDto orderSearchDto =
-                new OrderSearchDto("null", this.providerRepository.findAll().get(1).getId(), null);
+                new OrderSearchDto("null", this.providerRepository.findAll().get(1).getId(), "null");
         StepVerifier
                 .create(this.orderController.searchOrder(orderSearchDto))
                 .expectNextCount(1)
