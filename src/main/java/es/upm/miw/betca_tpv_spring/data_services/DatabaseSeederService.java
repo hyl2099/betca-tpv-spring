@@ -160,6 +160,7 @@ public class DatabaseSeederService {
                 new User("666666003", "u003", "p003", "66666603E", "C/TPV, 3", "u003@gmail.com", Role.OPERATOR),
                 new User("666666004", "u004", "p004", "66666604T", "C/TPV, 4", "u004@gmail.com", Role.CUSTOMER),
                 new User("666666005", "u005", "p005", "66666605R", "C/TPV, 5", "u005@gmail.com", Role.CUSTOMER),
+                new User("666666006", "u006", "p006", "66666606W", null, "u006@gmail.com", Role.CUSTOMER),
         };
         this.userRepository.saveAll(Arrays.asList(users));
         LogManager.getLogger(this.getClass()).warn("        ------- users");
@@ -232,6 +233,8 @@ public class DatabaseSeederService {
                         articles[2].getDescription(), articles[2].getRetailPrice()),
                 new Shopping(3, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
                         articles[4].getDescription(), articles[4].getRetailPrice()),
+                new Shopping(2, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
+                        articles[4].getDescription(), articles[4].getRetailPrice()),
         };
         Ticket[] tickets = {
                 new Ticket(1, BigDecimal.TEN, new BigDecimal("25.0"), BigDecimal.ZERO,
@@ -240,15 +243,24 @@ public class DatabaseSeederService {
                         new Shopping[]{shoppingList[2]}, users[4], "note"),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
         tickets[2].setId("201901123");
+        tickets[3].setId("201901124");
+        tickets[4].setId("201901125");
         this.ticketRepository.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
-                new Invoice(1, users[4], tickets[1])
+                new Invoice(1, users[4], tickets[1]),
+                new Invoice(2, users[4], tickets[3])
         };
+        invoices[1].setTax(new BigDecimal("0.0368"));
+        invoices[1].setBaseTax(new BigDecimal("0.8832"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
         Budget[] budgets = {

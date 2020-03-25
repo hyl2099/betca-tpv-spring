@@ -147,4 +147,9 @@ public class PdfService {
             return pdf.build();
         });
     }
+
+    public Mono<Byte[]> generateInvoice(Mono<Invoice> invoiceMono) {
+        //TODO GameEngineers generate the pdf for invoice
+        return null;
+    }
 }
