@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 import es.upm.miw.betca_tpv_spring.business_services.PdfService;
 import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
@@ -11,6 +12,7 @@ import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -93,6 +95,10 @@ public class TicketController {
     @Transactional
     public Mono<byte[]> createTicketAndPdf(TicketCreationInputDto ticketCreationDto) {
         return pdfService.generateTicket(this.createTicket(ticketCreationDto));
+    }
+
+    public Flux<TicketOutputDto> readAll() {
+        return this.ticketReactRepository.findAllTickets();
     }
 
 }
