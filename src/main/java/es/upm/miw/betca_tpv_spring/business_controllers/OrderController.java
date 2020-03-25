@@ -9,10 +9,7 @@ import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
-import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
-import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
-import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
+import es.upm.miw.betca_tpv_spring.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
@@ -29,13 +26,16 @@ public class OrderController {
 
     private ArticleReactRepository articleReactRepository;
 
+    private ProviderReactRepository providerReactRepository;
+
     @Autowired
     public OrderController(OrderReactRepository orderReactRepository, ProviderRepository providerRepository, ArticleRepository articleRepository,
-                           ArticleReactRepository articleReactRepository) {
+                           ArticleReactRepository articleReactRepository, ProviderReactRepository providerReactRepository) {
         this.orderReactRepository = orderReactRepository;
         this.providerRepository = providerRepository;
         this.articleRepository = articleRepository;
         this.articleReactRepository = articleReactRepository;
+        this.providerReactRepository = providerReactRepository;
     }
 
     public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
@@ -65,11 +65,14 @@ public class OrderController {
     }
 
     public Mono<OrderDto> createOrder(OrderCreationDto orderCreationDto) {
-        Provider provider;
+        Mono<Void> provider;
+        Order order = new Order(orderCreationDto.getDescription(), null, null);
         if (orderCreationDto.getProviderId() == null) {
-            provider = null;
+            provider = Mono.empty();
         } else {
-            provider = this.providerRepository.findById(orderCreationDto.getProviderId()).get();
+            provider = this.providerReactRepository.findById(orderCreationDto.getProviderId())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Provider (" + orderCreationDto.getProviderId() + ")")))
+                    .doOnNext(order::setProvider).then();
         }
         OrderLine[] orderLines = new OrderLine[orderCreationDto.getOrderLines().length];
         String articleId;
@@ -77,8 +80,8 @@ public class OrderController {
             articleId = orderCreationDto.getOrderLines()[i].getArticleId();
             orderLines[i] = new OrderLine(this.articleRepository.findById(articleId).get(), orderCreationDto.getOrderLines()[i].getRequiredAmount());
         }
-
-        return this.orderReactRepository.save(new Order(orderCreationDto.getDescription(), provider, orderLines)).map(OrderDto::new);
+        order.setOrderLines(orderLines);
+        return Mono.when(provider).then(this.orderReactRepository.save(order)).map(OrderDto::new);
     }
 
     public Mono<Void> deleteOrder(String orderId) {

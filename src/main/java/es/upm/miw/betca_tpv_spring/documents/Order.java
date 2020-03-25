@@ -50,6 +50,10 @@ public class Order {
         return provider;
     }
 
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
     public LocalDateTime getOpeningDate() {
         return openingDate;
     }
