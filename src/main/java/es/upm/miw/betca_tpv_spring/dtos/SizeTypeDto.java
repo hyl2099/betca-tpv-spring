@@ -1,22 +1,23 @@
-package es.upm.miw.betca_tpv_spring.documents;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+package es.upm.miw.betca_tpv_spring.dtos;
 
-@Document
-public class SizeType {
-
-    @Id
+public class SizeTypeDto {
     private String id;
     private String name;
 
-    public SizeType(){
+    public SizeTypeDto(){
 
     }
 
-    public  SizeType(String id, String name)
+    public  SizeTypeDto(String id, String name)
     {
         this.id  = id;
         this.name = name;
+    }
+
+    public  SizeTypeDto(SizeTypeDto sizeTypeDto)
+    {
+        this.id  = sizeTypeDto.getId();
+        this.name = sizeTypeDto.getName();
     }
 
     public String getId() {
@@ -29,10 +30,9 @@ public class SizeType {
 
     @Override
     public String toString() {
-        return "SizeType{" +
+        return "SizeTypeDto{" +
                 "id='" + id + '\'' +
                 ", name='" + name +
                 '}';
     }
-
 }
