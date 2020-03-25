@@ -15,9 +15,6 @@ class InvoiceReactRepositoryIT {
     @Autowired
     private InvoiceReactRepository invoiceReactRepository;
 
-    @Autowired
-    private TicketRepository ticketRepository;
-
     @Test
     void testFindAllAndDatabaseSeeder() {
         StepVerifier
@@ -25,7 +22,25 @@ class InvoiceReactRepositoryIT {
                 .expectNextMatches(invoice -> {
                     assertEquals(1, invoice.simpleId());
                     assertEquals(LocalDate.now().getYear() + "1", invoice.getId());
-                    assertNotNull(invoice.getCreationDated());
+                    assertNotNull(invoice.getCreationDate());
+                    assertNotNull(invoice.getUser());
+                    assertNotNull(invoice.getTicket());
+                    assertFalse(invoice.toString().matches("@"));
+                    return true;
+                })
+                .expectNextCount(1)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testfindFirstByOrderByCreationDateDescIdDesc(){
+        StepVerifier
+                .create(this.invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc())
+                .expectNextMatches(invoice -> {
+                    assertEquals(2, invoice.simpleId());
+                    assertEquals(LocalDate.now().getYear() + "2", invoice.getId());
+                    assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
                     assertFalse(invoice.toString().matches("@"));

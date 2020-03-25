@@ -44,6 +44,7 @@ public class DatabaseSeederService {
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
+    private SizeTypeRepository sizeTypeRepository;
 
     @Autowired
     public DatabaseSeederService(
@@ -64,7 +65,8 @@ public class DatabaseSeederService {
             CustomerDiscountRepository customerDiscountRepository,
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
-            StockAlarmRepository stockAlarmRepository
+            StockAlarmRepository stockAlarmRepository,
+            SizeTypeRepository sizeTypeRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -84,6 +86,7 @@ public class DatabaseSeederService {
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
+        this.sizeTypeRepository = sizeTypeRepository;
     }
 
     @PostConstruct
@@ -157,6 +160,7 @@ public class DatabaseSeederService {
                 User.builder().mobile("666666003").username("u003").password("p003").dni("66666603E").address("C/TPV, 3").email("u003@gmail.com").roles(Role.OPERATOR).build(),
                 User.builder().mobile("666666004").username("u004").password("p004").dni("66666604T").address("C/TPV, 4").email("u004@gmail.com").roles(Role.CUSTOMER).build(),
                 User.builder().mobile("666666005").username("u005").password("p005").dni("66666605R").address("C/TPV, 5").email("u005@gmail.com").roles(Role.CUSTOMER).build(),
+                User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address(null).email("u006@gmail.com").roles(Role.CUSTOMER).build(),
         };
         this.userRepository.saveAll(Arrays.asList(users));
         LogManager.getLogger(this.getClass()).warn("        ------- users");
@@ -229,6 +233,8 @@ public class DatabaseSeederService {
                         articles[2].getDescription(), articles[2].getRetailPrice()),
                 new Shopping(3, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
                         articles[4].getDescription(), articles[4].getRetailPrice()),
+                new Shopping(2, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
+                        articles[4].getDescription(), articles[4].getRetailPrice()),
         };
         Ticket[] tickets = {
                 new Ticket(1, BigDecimal.TEN, new BigDecimal("25.0"), BigDecimal.ZERO,
@@ -237,15 +243,24 @@ public class DatabaseSeederService {
                         new Shopping[]{shoppingList[2]}, users[4], "note"),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
         tickets[2].setId("201901123");
+        tickets[3].setId("201901124");
+        tickets[4].setId("201901125");
         this.ticketRepository.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
-                new Invoice(1, users[4], tickets[1])
+                new Invoice(1, users[4], tickets[1]),
+                new Invoice(2, users[4], tickets[3])
         };
+        invoices[1].setTax(new BigDecimal("0.0368"));
+        invoices[1].setBaseTax(new BigDecimal("0.8832"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
         Budget[] budgets = {
@@ -320,6 +335,13 @@ public class DatabaseSeederService {
         };
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
+
+        SizeType[] sizesType = {
+                new SizeType("1", "International"),
+                new SizeType("2", "Number")
+        };
+        this.sizeTypeRepository.saveAll(Arrays.asList(sizesType));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
     }
 
 }
