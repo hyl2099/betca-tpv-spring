@@ -39,28 +39,29 @@ public class OrderController {
     }
 
     public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
+        Flux<OrderDto> orderDtoFlux;
         if (orderSearchDto.getClosingDate().equals("null")) {
             if (orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")) {
-                return this.orderReactRepository.findAll()
+                orderDtoFlux = this.orderReactRepository.findAll()
                         .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
-                        .filter(order -> order.getClosingDate() == null)
+                        .map(OrderDto::new);
+            } else {
+                orderDtoFlux = this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
+                        .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
                         .map(OrderDto::new);
             }
-            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
-                    .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
-                    .filter(order -> order.getClosingDate() == null)
-                    .map(OrderDto::new);
+            return orderDtoFlux.filter(order -> order.getClosingDate() == null);
         } else {
             if (orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")) {
-                return this.orderReactRepository.findAll()
+                orderDtoFlux = this.orderReactRepository.findAll()
                         .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
-                        .filter(order -> order.getClosingDate() != null)
+                        .map(OrderDto::new);
+            } else {
+                orderDtoFlux = this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
+                        .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
                         .map(OrderDto::new);
             }
-            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
-                    .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
-                    .filter(order -> order.getClosingDate() != null)
-                    .map(OrderDto::new);
+            return orderDtoFlux.filter(order -> order.getClosingDate() != null);
         }
     }
 
