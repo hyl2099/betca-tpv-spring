@@ -101,7 +101,7 @@ class CashierClosureControllerIT {
     void testReadAll() {
         StepVerifier
                 .create(this.cashierClosureController.readAll())
-                .expectNextCount(1)
+                .expectNextCount(0)
                 .expectComplete()
                 .verify();
     }
