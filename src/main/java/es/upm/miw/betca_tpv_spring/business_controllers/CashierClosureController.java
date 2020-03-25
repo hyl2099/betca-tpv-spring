@@ -1,14 +1,12 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CashierClosure;
-import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -76,4 +74,27 @@ public class CashierClosureController {
                 });
         return this.cashierClosureReactRepository.saveAll(cashierClosure).then();
     }
+
+    public Mono<Void> withdrawal(CashMovementInputDto cashMovementInputDto) {
+        Mono<CashierClosure> cashierClosureMono = this.lastCashierClosureStateAssure(true)
+                .handle((last, sink) -> {
+                    BigDecimal finalCash = last.getInitialCash().add(last.getSalesCash())
+                            .add(last.getDeposit()).subtract(last.getWithdrawal());
+                    if (cashMovementInputDto.getCashMovement().compareTo(finalCash) < 1) {
+                        last.withdrawal(cashMovementInputDto.getCashMovement(), cashMovementInputDto.getComment());
+                        sink.next(last);
+                    } else {
+                        String msg = "Not enough cash, you can only withdraw " + finalCash + "€";
+                        sink.error(new BadRequestException(msg));
+                    }
+                });
+        return this.cashierClosureReactRepository.saveAll(cashierClosureMono).then();
+    }
+
+    public Flux<CashierClosureSearchDto> readAll(){
+        return this.cashierClosureReactRepository.findAll()
+                .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
+                .map(CashierClosureSearchDto::new);
+    }
+
 }

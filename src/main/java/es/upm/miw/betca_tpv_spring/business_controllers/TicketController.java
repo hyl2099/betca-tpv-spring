@@ -2,8 +2,8 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_services.PdfService;
 import es.upm.miw.betca_tpv_spring.documents.*;
-import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
@@ -18,6 +18,8 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class TicketController {
@@ -52,17 +54,16 @@ public class TicketController {
     }
 
     private Mono<Void> updateArticlesStockAssured(TicketCreationInputDto ticketCreationDto) {
-        Flux<Article> articlesFlux = Flux.empty();
-        for (ShoppingDto shoppingDto : ticketCreationDto.getShoppingCart()) {
-            Mono<Article> articleReact = this.articleReactRepository.findById(shoppingDto.getCode())
-                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + shoppingDto.getCode() + ")")))
-                    .map(article -> {
-                        article.setStock(article.getStock() - shoppingDto.getAmount());
-                        return article;
-                    });
-            articlesFlux = Flux.merge(articleReactRepository.saveAll(articleReact));
-        }
-        return articlesFlux.then();
+        List<Mono<Article>> articlePublishers = ticketCreationDto.getShoppingCart().stream()
+                .map(shoppingDto -> this.articleReactRepository.findById(shoppingDto.getCode())
+                        .switchIfEmpty(Mono.error(new NotFoundException("Article (" + shoppingDto.getCode() + ")")))
+                        .map(article -> {
+                            article.setStock(article.getStock() - shoppingDto.getAmount());
+                            return article;
+                        })
+                        .flatMap(article -> articleReactRepository.save(article))
+                ).collect(Collectors.toList());
+        return Mono.when(articlePublishers);
     }
 
     public Mono<Ticket> createTicket(TicketCreationInputDto ticketCreationDto) {
@@ -94,6 +95,10 @@ public class TicketController {
     @Transactional
     public Mono<byte[]> createTicketAndPdf(TicketCreationInputDto ticketCreationDto) {
         return pdfService.generateTicket(this.createTicket(ticketCreationDto));
+    }
+
+    public Flux<TicketOutputDto> readAll() {
+        return this.ticketReactRepository.findAllTickets();
     }
 
 }

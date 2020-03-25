@@ -1,14 +1,12 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.CashierClosureController;
-import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
-import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -22,6 +20,8 @@ public class CashierClosureResource {
     public static final String LAST = "/last";
     public static final String STATE = "/state";
     public static final String DEPOSIT = "/deposit";
+    public static final String WITHDRAWAL = "/withdrawal";
+    public static final String CASHIER_CLOSURE_SEARCH = "/search";
 
     private CashierClosureController cashierClosureController;
 
@@ -57,6 +57,18 @@ public class CashierClosureResource {
     @PatchMapping(value = LAST + DEPOSIT)
     public Mono<Void> cashierDeposit(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
         return cashierClosureController.deposit(cashMovementInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PatchMapping(value = LAST + WITHDRAWAL)
+    public Mono<Void> cashierWithdrawal(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
+        return cashierClosureController.withdrawal(cashMovementInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = CASHIER_CLOSURE_SEARCH)
+    public Flux<CashierClosureSearchDto> readAll() {
+        return this.cashierClosureController.readAll()
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

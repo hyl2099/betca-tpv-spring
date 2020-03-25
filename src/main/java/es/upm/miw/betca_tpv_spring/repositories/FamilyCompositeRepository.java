@@ -8,6 +8,5 @@ import java.util.Optional;
 public interface FamilyCompositeRepository extends MongoRepository<FamilyComposite, String> {
     Optional<FamilyComposite> findByReference(String reference);
 
-    FamilyComposite findFirstByReference(String reference);
-
+    FamilyComposite findFirstByDescription(String description);
 }
