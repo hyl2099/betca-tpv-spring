@@ -125,22 +125,28 @@ public class OrderController {
     }
 
     public Mono<OrderDto> closeOrder(String orderId, OrderDto orderDto) {
+        List<OrderLine> orderLineList = new ArrayList<>();
+        Flux<Article> articlesFlux = Flux.empty();
+        for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineDto.getArticle() + ")")))
+                    .map(article -> {
+                        OrderLine orderLine = new OrderLine(article, orderLineDto.getRequiredAmount());
+                        orderLineDto.setFinalAmount(orderLineDto.getFinalAmount());
+                        orderLineList.add(orderLine);
+                        return article;
+                    });
+            articlesFlux = articlesFlux.mergeWith(articleReact);
+        }
         Mono<Order> order = this.orderReactRepository.findById(orderId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId)))
                 .map(orderToClose -> {
-                    OrderLine[] orderLines = new OrderLine[orderDto.getOrderLines().length];
-                    for (int i = 0; i < orderDto.getOrderLines().length; i++) {
-                        OrderLineDto orderLineDto = orderDto.getOrderLines()[i];
-                        Article article = this.articleRepository.findById(orderLineDto.getArticle()).get();
-                        orderLines[i] = new OrderLine(article, orderLineDto.getRequiredAmount());
-                        orderLines[i].setFinalAmount(orderLineDto.getFinalAmount());
-                    }
-                    orderToClose.setOrderLines(orderLines);
+                    orderToClose.setOrderLines(orderLineList.toArray(new OrderLine[orderLineList.size()]));
                     orderToClose.close();
                     return orderToClose;
                 });
-        Mono.when(order).then(updateArticlesStockAssured(orderDto));
-        return this.orderReactRepository.saveAll(order).next().map(OrderDto::new);
+        return Mono.when(articlesFlux).then(order).then(updateArticlesStockAssured(orderDto))
+                .then(this.orderReactRepository.saveAll(order).next()).map(OrderDto::new);
     }
 
     private Mono<Void> updateArticlesStockAssured(OrderDto orderDto) {
