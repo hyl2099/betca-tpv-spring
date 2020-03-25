@@ -98,23 +98,25 @@ public class OrderController {
     }
 
     public Mono<OrderDto> updateOrder(String orderId, OrderDto orderDto) {
+        List<OrderLine> orderLineList = new ArrayList<>();
+        Flux<Article> articlesFlux = Flux.empty();
+        for (OrderLineDto orderLineDto : orderDto.getOrderLines()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(orderLineDto.getArticle())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineDto.getArticle() + ")")))
+                    .map(article -> {
+                        orderLineList.add(new OrderLine(article, orderLineDto.getRequiredAmount()));
+                        return article;
+                    });
+            articlesFlux = articlesFlux.mergeWith(articleReact);
+        }
         Mono<Order> order = this.orderReactRepository.findById(orderId)
                 .switchIfEmpty(Mono.error(new NotFoundException("Order id: " + orderId)))
                 .map(orderData -> {
                     orderData.setDescription(orderDto.getDescription());
-                    OrderLine[] orderLines = new OrderLine[orderDto.getOrderLines().length];
-                    for (int i = 0; i < orderDto.getOrderLines().length; i++) {
-                        OrderLineDto orderLineDto = orderDto.getOrderLines()[i];
-                        Article article = this.articleRepository.findById(orderLineDto.getArticle()).get();
-                        orderLines[i] = new OrderLine(article, orderLineDto.getRequiredAmount());
-                    }
-                    orderData.setOrderLines(orderLines);
+                    orderData.setOrderLines(orderLineList.toArray(new OrderLine[orderLineList.size()]));
                     return orderData;
                 });
-        return Mono
-                .when(order)
-                .then(this.orderReactRepository.saveAll(order).next())
-                .map(OrderDto::new);
+        return Mono.when(articlesFlux).then(order).then(this.orderReactRepository.saveAll(order).next()).map(OrderDto::new);
     }
 
     public Mono<OrderDto> getOrder(String orderId) {
