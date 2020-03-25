@@ -4,16 +4,16 @@ import es.upm.miw.betca_tpv_spring.documents.Article;
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.documents.Provider;
-import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
-import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
-import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
-import es.upm.miw.betca_tpv_spring.dtos.OrderSearchDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class OrderController {
@@ -74,14 +74,19 @@ public class OrderController {
                     .switchIfEmpty(Mono.error(new NotFoundException("Provider (" + orderCreationDto.getProviderId() + ")")))
                     .doOnNext(order::setProvider).then();
         }
-        OrderLine[] orderLines = new OrderLine[orderCreationDto.getOrderLines().length];
-        String articleId;
-        for (int i = 0; i < orderCreationDto.getOrderLines().length; i++) {
-            articleId = orderCreationDto.getOrderLines()[i].getArticleId();
-            orderLines[i] = new OrderLine(this.articleRepository.findById(articleId).get(), orderCreationDto.getOrderLines()[i].getRequiredAmount());
+        List<OrderLine> orderLineList = new ArrayList<>();
+        Flux<Article> articlesFlux = Flux.empty();
+        for (OrderLineCreationDto orderLineCreationDto : orderCreationDto.getOrderLines()) {
+            Mono<Article> articleReact = this.articleReactRepository.findById(orderLineCreationDto.getArticleId())
+                    .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineCreationDto.getArticleId() + ")")))
+                    .map(article -> {
+                        orderLineList.add(new OrderLine(article, orderLineCreationDto.getRequiredAmount()));
+                        order.setOrderLines(orderLineList.toArray(new OrderLine[orderLineList.size()]));
+                        return article;
+                    });
+            articlesFlux = articlesFlux.mergeWith(articleReact);
         }
-        order.setOrderLines(orderLines);
-        return Mono.when(provider).then(this.orderReactRepository.save(order)).map(OrderDto::new);
+        return Mono.when(provider, articlesFlux).then(this.orderReactRepository.save(order)).map(OrderDto::new);
     }
 
     public Mono<Void> deleteOrder(String orderId) {
