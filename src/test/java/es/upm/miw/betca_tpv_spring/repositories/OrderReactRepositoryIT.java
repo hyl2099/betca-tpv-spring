@@ -40,24 +40,7 @@ class OrderReactRepositoryIT {
     @Test
     void testFindByDescriptionLikeOrProvider(){
         StepVerifier
-                .create(this.orderReactRepository.findByDescriptionLikeOrProvider("null", this.providerRepository.findAll().get(1)))
-                .expectNextMatches(order -> {
-                    assertEquals("order1", order.getDescription());
-                    assertNotNull(order.getId());
-                    assertNotNull(order.getOpeningDate());
-                    assertNull(order.getClosingDate());
-                    assertNotNull(order.getOrderLines());
-                    assertFalse(order.toString().matches("@"));
-                    return true;
-                })
-                .thenCancel()
-                .verify();
-    }
-
-    @Test
-    void testFindByDescriptionLikeOrProviderAndClosingDateIsNull(){
-        StepVerifier
-                .create(this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull("order1", null))
+                .create(this.orderReactRepository.findByDescriptionLikeOrProvider("null", this.providerRepository.findAll().get(1).getId()))
                 .expectNextMatches(order -> {
                     assertEquals("order1", order.getDescription());
                     assertNotNull(order.getId());

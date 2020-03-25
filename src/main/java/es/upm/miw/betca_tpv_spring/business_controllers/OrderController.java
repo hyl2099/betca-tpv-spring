@@ -42,21 +42,27 @@ public class OrderController {
     }
 
     public Flux<OrderDto> searchOrder(OrderSearchDto orderSearchDto) {
-        Provider provider;
-
-        if (orderSearchDto.getProviderId().equals("null")) {
-            provider = null;
-        } else {
-            provider = this.providerRepository.findById(orderSearchDto.getProviderId()).get();
-        }
-
-        if (orderSearchDto.getClosingDate() == null) {
-            return this.orderReactRepository.findByDescriptionLikeOrProviderAndClosingDateIsNull(orderSearchDto.getDescription(), provider)
+        if (orderSearchDto.getClosingDate().equals("null")) {
+            if(orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")){
+                return this.orderReactRepository.findAll()
+                        .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                        .filter(order -> order.getClosingDate() == null)
+                        .map(OrderDto::new);
+            }
+            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
                     .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                    .filter(order -> order.getClosingDate() == null)
                     .map(OrderDto::new);
         } else {
-            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), provider)
+            if(orderSearchDto.getDescription().equals("null") && orderSearchDto.getProviderId().equals("null")){
+                return this.orderReactRepository.findAll()
+                        .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                        .filter(order -> order.getClosingDate() != null)
+                        .map(OrderDto::new);
+            }
+            return this.orderReactRepository.findByDescriptionLikeOrProvider(orderSearchDto.getDescription(), orderSearchDto.getProviderId())
                     .switchIfEmpty(Flux.error(new NotFoundException("Nothing found")))
+                    .filter(order -> order.getClosingDate() != null)
                     .map(OrderDto::new);
         }
     }

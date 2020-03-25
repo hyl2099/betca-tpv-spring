@@ -108,7 +108,7 @@ public class OrderResourceIT {
                 .queryParam("closingDate", LocalDateTime.now().toString())
                 .build())
                 .exchange()
-                .expectStatus().isNotFound();
+                .expectStatus().isOk();
     }
 
     @Test

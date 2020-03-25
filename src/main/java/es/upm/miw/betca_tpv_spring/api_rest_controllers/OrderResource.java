@@ -37,15 +37,8 @@ public class OrderResource {
     public Flux<OrderDto> search(@RequestParam (required = false) String description,
                                  @RequestParam (required = false) String provider,
                                  @RequestParam (required = false) String closingDate){
-        OrderSearchDto orderSearchDto;
 
-        if(closingDate.equals("null")){
-            orderSearchDto = new OrderSearchDto(description, provider, null);
-        } else {
-            orderSearchDto = new OrderSearchDto(description, provider, LocalDateTime.now());
-        }
-
-        return this.orderController.searchOrder(orderSearchDto)
+        return this.orderController.searchOrder(new OrderSearchDto(description, provider, closingDate))
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
