@@ -14,4 +14,3 @@ public interface TicketReactRepository extends ReactiveSortingRepository<Ticket,
     @Query(value = "{}", fields = "{ 'reference' : 1}")
     Flux<TicketOutputDto> findAllTickets();
 }
-git
