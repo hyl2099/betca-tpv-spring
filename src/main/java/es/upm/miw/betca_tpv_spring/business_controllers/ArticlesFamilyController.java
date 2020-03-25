@@ -1,12 +1,10 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
-import es.upm.miw.betca_tpv_spring.documents.Article;
-import es.upm.miw.betca_tpv_spring.documents.ArticlesFamily;
-import es.upm.miw.betca_tpv_spring.documents.FamilyComposite;
-import es.upm.miw.betca_tpv_spring.documents.FamilyType;
+import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.FamilyCompositeRepository;
+import es.upm.miw.betca_tpv_spring.repositories.SizeTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -22,6 +20,9 @@ public class ArticlesFamilyController {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @Autowired
+    private SizeTypeRepository sizeTypeRepository;
 
     public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
         FamilyComposite familyComplete = familyCompositeRepository.findFirstByDescription(description);
@@ -48,6 +49,11 @@ public class ArticlesFamilyController {
         }
         return dtos;
 
+    }
+
+    public List<SizeType> readAllSizeTypes()
+    {
+        return sizeTypeRepository.findAll();
     }
 
 }
