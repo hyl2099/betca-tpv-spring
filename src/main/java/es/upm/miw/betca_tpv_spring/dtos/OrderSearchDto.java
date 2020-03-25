@@ -2,8 +2,6 @@ package es.upm.miw.betca_tpv_spring.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.time.LocalDateTime;
-
 public class OrderSearchDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

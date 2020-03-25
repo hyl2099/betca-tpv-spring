@@ -2,13 +2,11 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
-import es.upm.miw.betca_tpv_spring.documents.Provider;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
-import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +27,6 @@ import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORD
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_CLOSE;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @ApiTestConfig
 public class OrderResourceIT {
