@@ -15,9 +15,6 @@ class InvoiceReactRepositoryIT {
     @Autowired
     private InvoiceReactRepository invoiceReactRepository;
 
-    @Autowired
-    private TicketRepository ticketRepository;
-
     @Test
     void testFindAllAndDatabaseSeeder() {
         StepVerifier

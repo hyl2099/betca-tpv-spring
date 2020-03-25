@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,7 +47,6 @@ public class InvoiceController {
                 .doOnNext(ticket1 -> {
                     invoice.setTicket(ticket1);
                     invoice.setUser(ticket1.getUser());
-                    System.out.println("==== ticket >>>> " + ticket1);
                 })
                 .handle((ticket, synchronousSink) -> {
                     User user = ticket.getUser();
@@ -59,11 +57,9 @@ public class InvoiceController {
                     else
                         synchronousSink.next(ticket);
                 });
-
         Mono<Integer> nextId = this.nextIdStartingYearly()
                 .map(id -> {
                     invoice.setId(id);
-                    System.out.println("==== id >>>> " + id);
                     return id;
                 });
         Mono<Void> x = this.calculateBaseAndTax(invoice, ticketPublisher);
@@ -87,8 +83,9 @@ public class InvoiceController {
                     List<Mono<Article>> articlePublishers = ticketShoppingList
                             .map(shopping -> this.articleReactRepository.findById(shopping.getArticleId())
                                     .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
+                                    .filter(article -> article.getTax() != Tax.FREE)
                                     .doOnNext(article -> {
-                                        BigDecimal articleTaxRate = BigDecimal.ONE.divide(article.getTax().getRate(), RoundingMode.HALF_UP);
+                                        BigDecimal articleTaxRate = article.getTax().getRate().divide(new BigDecimal("100"));
                                         BigDecimal articleTax = shopping.getShoppingTotal().multiply(articleTaxRate);
                                         invoice.setTax(invoice.getTax().add(articleTax));
                                         BigDecimal articleBaseTax = shopping.getShoppingTotal().subtract(articleTax);
