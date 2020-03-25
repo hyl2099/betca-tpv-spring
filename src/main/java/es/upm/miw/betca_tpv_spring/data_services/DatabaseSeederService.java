@@ -44,7 +44,7 @@ public class DatabaseSeederService {
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
-
+    private SizeTypeRepository sizeTypeRepository;
     @Autowired
     public DatabaseSeederService(
             TicketRepository ticketRepository,
@@ -64,7 +64,8 @@ public class DatabaseSeederService {
             CustomerDiscountRepository customerDiscountRepository,
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
-            StockAlarmRepository stockAlarmRepository
+            StockAlarmRepository stockAlarmRepository,
+            SizeTypeRepository sizeTypeRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -84,6 +85,7 @@ public class DatabaseSeederService {
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
+        this.sizeTypeRepository = sizeTypeRepository;
     }
 
     @PostConstruct
@@ -333,6 +335,13 @@ public class DatabaseSeederService {
         };
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
+
+        SizeType[] sizesType = {
+                new SizeType("1", "International"),
+                new SizeType("2", "Number")
+        };
+        this.sizeTypeRepository.saveAll(Arrays.asList(sizesType));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
     }
 
 }
