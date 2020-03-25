@@ -97,4 +97,13 @@ class CashierClosureControllerIT {
                 .verify();
     }
 
+    @Test
+    void testReadAll() {
+        StepVerifier
+                .create(this.cashierClosureController.readAll())
+                .expectNextCount(1)
+                .expectComplete()
+                .verify();
+    }
+
 }
