@@ -28,6 +28,11 @@ public class SizeType {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj != null && getClass() == obj.getClass() && (id.equals(((SizeType) obj).id));
+    }
+
+    @Override
     public String toString() {
         return "SizeType{" +
                 "id='" + id + '\'' +
