@@ -59,8 +59,9 @@ public class TicketController {
                     .map(article -> {
                         article.setStock(article.getStock() - shoppingDto.getAmount());
                         return article;
-                    });
-            articlesFlux = articlesFlux.mergeWith(articleReactRepository.saveAll(articleReact));
+                    })
+                    .flatMap(article -> articleReactRepository.save(article));
+            articlesFlux = articlesFlux.mergeWith(articleReact);
         }
         return articlesFlux.then();
     }
