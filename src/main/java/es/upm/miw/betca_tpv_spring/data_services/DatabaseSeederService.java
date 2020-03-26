@@ -328,12 +328,11 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- customerDiscounts");
 
         AlarmArticle[] alarmArticles = {
-                new AlarmArticle("1", 1, 1),
-                new AlarmArticle("2", 2, 2)
+                new AlarmArticle("1", 500, 1500),
+                new AlarmArticle("8400000000017", 15, 20)
         };
 
         StockAlarm[] stockAlarms = {
-                new StockAlarm("111", "1111", "upm", 1, 1, alarmArticles),
                 new StockAlarm("222", "2222", "upm", 2, 2, alarmArticles)
         };
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
