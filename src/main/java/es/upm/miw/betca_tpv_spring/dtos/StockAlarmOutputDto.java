@@ -9,8 +9,7 @@ public class StockAlarmOutputDto extends StockAlarmInputDto {
 
     private String id;
 
-    public StockAlarmOutputDto( String description) {
-        super(description);
+    public StockAlarmOutputDto() {
     }
 
     public StockAlarmOutputDto(String id, String description, String provider, Integer warning, Integer critical, AlarmArticle[] alarmArticle) {
