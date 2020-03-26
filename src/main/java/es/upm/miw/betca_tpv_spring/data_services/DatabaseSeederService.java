@@ -45,6 +45,7 @@ public class DatabaseSeederService {
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
     private SizeTypeRepository sizeTypeRepository;
+    private SizeRepository sizeRepository;
 
     @Autowired
     public DatabaseSeederService(
@@ -66,7 +67,8 @@ public class DatabaseSeederService {
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
             StockAlarmRepository stockAlarmRepository,
-            SizeTypeRepository sizeTypeRepository
+            SizeTypeRepository sizeTypeRepository,
+            SizeRepository sizeRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -87,6 +89,7 @@ public class DatabaseSeederService {
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
         this.sizeTypeRepository = sizeTypeRepository;
+        this.sizeRepository = sizeRepository;
     }
 
     @PostConstruct
@@ -341,6 +344,37 @@ public class DatabaseSeederService {
         };
         this.sizeTypeRepository.saveAll(Arrays.asList(sizesType));
         LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
+
+        SizeType sizeInternational =  new SizeType("1", "International");
+        Size[] sizesInternational = {
+                new Size("1", "XXS",sizeInternational ),
+                new Size("2", "XS",sizeInternational ),
+                new Size("3", "S",sizeInternational ),
+                new Size("4", "M",sizeInternational ),
+                new Size("5", "L",sizeInternational ),
+                new Size("6", "XL",sizeInternational ),
+                new Size("7", "XXL",sizeInternational ),
+                new Size("8", "XXL",sizeInternational ),
+                new Size("9", "Special",sizeInternational ),
+        };
+
+        SizeType sizeNumber =  new SizeType("2", "Number");
+        Size[] sizesNumber = {
+                new Size("10", "10",sizeNumber ),
+                new Size("11", "20",sizeNumber ),
+                new Size("12", "30",sizeNumber ),
+                new Size("13", "40",sizeNumber ),
+                new Size("14", "50",sizeNumber ),
+                new Size("15", "60",sizeNumber ),
+                new Size("16", "70",sizeNumber ),
+                new Size("17", "80",sizeNumber ),
+                new Size("18", "90",sizeNumber ),
+        };
+        this.sizeRepository.saveAll(Arrays.asList(sizesInternational));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes international");
+        this.sizeRepository.saveAll(Arrays.asList(sizesNumber));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes number");
+
     }
 
 }
