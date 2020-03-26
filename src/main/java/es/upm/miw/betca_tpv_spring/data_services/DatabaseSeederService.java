@@ -44,6 +44,8 @@ public class DatabaseSeederService {
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
+    private SizeTypeRepository sizeTypeRepository;
+    private SizeRepository sizeRepository;
 
     @Autowired
     public DatabaseSeederService(
@@ -64,7 +66,9 @@ public class DatabaseSeederService {
             CustomerDiscountRepository customerDiscountRepository,
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
-            StockAlarmRepository stockAlarmRepository
+            StockAlarmRepository stockAlarmRepository,
+            SizeTypeRepository sizeTypeRepository,
+            SizeRepository sizeRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -84,6 +88,8 @@ public class DatabaseSeederService {
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
+        this.sizeTypeRepository = sizeTypeRepository;
+        this.sizeRepository = sizeRepository;
     }
 
     @PostConstruct
@@ -99,8 +105,7 @@ public class DatabaseSeederService {
     private void initialize() {
         if (!this.userRepository.findByMobile(this.mobile).isPresent()) {
             LogManager.getLogger(this.getClass()).warn("------- Create Admin -----------");
-            User user = new User(this.mobile, this.username, this.password);
-            user.setRoles(new Role[]{Role.ADMIN});
+            User user = User.builder().mobile(this.mobile).username(this.username).password(this.password).roles(Role.ADMIN).build();
             this.userRepository.save(user);
         }
         CashierClosure cashierClosure = this.cashierClosureRepository.findFirstByOrderByOpeningDateDesc();
@@ -152,12 +157,13 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("------- Initial Load from JAVA -----------");
         Role[] allRoles = {Role.ADMIN, Role.MANAGER, Role.OPERATOR};
         User[] users = {
-                new User("666666000", "all-roles", "p000", null, "C/TPV, 0, MIW", "u000@gmail.com", allRoles),
-                new User("666666001", "manager", "p001", "66666601C", "C/TPV, 1", "u001@gmail.com", Role.MANAGER),
-                new User("666666002", "u002", "p002", "66666602K", "C/TPV, 2", "u002@gmail.com", Role.OPERATOR),
-                new User("666666003", "u003", "p003", "66666603E", "C/TPV, 3", "u003@gmail.com", Role.OPERATOR),
-                new User("666666004", "u004", "p004", "66666604T", "C/TPV, 4", "u004@gmail.com", Role.CUSTOMER),
-                new User("666666005", "u005", "p005", "66666605R", "C/TPV, 5", "u005@gmail.com", Role.CUSTOMER),
+                User.builder().mobile("666666000").username("all-roles").password("p000").dni(null).address("C/TPV, 0, MIW").email("u000@gmail.com").roles(allRoles).build(),
+                User.builder().mobile("666666001").username("manager").password("p001").dni("66666601C").address("C/TPV, 1").email("u001@gmail.com").roles(Role.MANAGER).build(),
+                User.builder().mobile("666666002").username("u002").password("p002").dni("66666602K").address("C/TPV, 2").email("u002@gmail.com").roles(Role.OPERATOR).build(),
+                User.builder().mobile("666666003").username("u003").password("p003").dni("66666603E").address("C/TPV, 3").email("u003@gmail.com").roles(Role.OPERATOR).build(),
+                User.builder().mobile("666666004").username("u004").password("p004").dni("66666604T").address("C/TPV, 4").email("u004@gmail.com").roles(Role.CUSTOMER).build(),
+                User.builder().mobile("666666005").username("u005").password("p005").dni("66666605R").address("C/TPV, 5").email("u005@gmail.com").roles(Role.CUSTOMER).build(),
+                User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address(null).email("u006@gmail.com").roles(Role.CUSTOMER).build(),
         };
         this.userRepository.saveAll(Arrays.asList(users));
         LogManager.getLogger(this.getClass()).warn("        ------- users");
@@ -230,6 +236,8 @@ public class DatabaseSeederService {
                         articles[2].getDescription(), articles[2].getRetailPrice()),
                 new Shopping(3, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
                         articles[4].getDescription(), articles[4].getRetailPrice()),
+                new Shopping(2, BigDecimal.ZERO, ShoppingState.COMMITTED, articles[4].getCode(),
+                        articles[4].getDescription(), articles[4].getRetailPrice()),
         };
         Ticket[] tickets = {
                 new Ticket(1, BigDecimal.TEN, new BigDecimal("25.0"), BigDecimal.ZERO,
@@ -238,15 +246,24 @@ public class DatabaseSeederService {
                         new Shopping[]{shoppingList[2]}, users[4], "note"),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
         tickets[2].setId("201901123");
+        tickets[3].setId("201901124");
+        tickets[4].setId("201901125");
         this.ticketRepository.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
-                new Invoice(1, users[4], tickets[1])
+                new Invoice(1, users[4], tickets[1]),
+                new Invoice(2, users[4], tickets[3])
         };
+        invoices[1].setTax(new BigDecimal("0.0368"));
+        invoices[1].setBaseTax(new BigDecimal("0.8832"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
         Budget[] budgets = {
@@ -311,16 +328,53 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- customerDiscounts");
 
         AlarmArticle[] alarmArticles = {
-                new AlarmArticle("1", 1, 1),
-                new AlarmArticle("2", 2, 2)
+                new AlarmArticle("1", 500, 1500),
+                new AlarmArticle("8400000000017", 15, 20)
         };
 
         StockAlarm[] stockAlarms = {
-                new StockAlarm("111", "1111", "upm", 1, 1, alarmArticles),
                 new StockAlarm("222", "2222", "upm", 2, 2, alarmArticles)
         };
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
+
+        SizeType[] sizesType = {
+                new SizeType("1", "International"),
+                new SizeType("2", "Number")
+        };
+        this.sizeTypeRepository.saveAll(Arrays.asList(sizesType));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
+
+        SizeType sizeInternational =  new SizeType("1", "International");
+        Size[] sizesInternational = {
+                new Size("1", "XXS",sizeInternational ),
+                new Size("2", "XS",sizeInternational ),
+                new Size("3", "S",sizeInternational ),
+                new Size("4", "M",sizeInternational ),
+                new Size("5", "L",sizeInternational ),
+                new Size("6", "XL",sizeInternational ),
+                new Size("7", "XXL",sizeInternational ),
+                new Size("8", "XXL",sizeInternational ),
+                new Size("9", "Special",sizeInternational ),
+        };
+
+        SizeType sizeNumber =  new SizeType("2", "Number");
+        Size[] sizesNumber = {
+                new Size("10", "10",sizeNumber ),
+                new Size("11", "20",sizeNumber ),
+                new Size("12", "30",sizeNumber ),
+                new Size("13", "40",sizeNumber ),
+                new Size("14", "50",sizeNumber ),
+                new Size("15", "60",sizeNumber ),
+                new Size("16", "70",sizeNumber ),
+                new Size("17", "80",sizeNumber ),
+                new Size("18", "90",sizeNumber ),
+        };
+        this.sizeRepository.saveAll(Arrays.asList(sizesInternational));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes international");
+        this.sizeRepository.saveAll(Arrays.asList(sizesNumber));
+        LogManager.getLogger(this.getClass()).warn("        ------- sizes number");
+
     }
 
 }

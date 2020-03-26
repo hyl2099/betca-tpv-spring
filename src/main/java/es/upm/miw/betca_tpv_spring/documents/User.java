@@ -31,24 +31,8 @@ public class User {
         this.active = true;
     }
 
-    public User(String mobile, String username, String password, String dni, String address, String email) {
-        this();
-        this.mobile = mobile;
-        this.username = username;
-        this.dni = dni;
-        this.address = address;
-        this.email = email;
-        this.setPassword(password);
-        this.roles = new Role[]{Role.CUSTOMER};
-    }
-
-    public User(String mobile, String username, String password, String dni, String address, String email, Role... roles) {
-        this(mobile, username, password, dni, address, email);
-        this.roles = roles;
-    }
-
-    public User(String mobile, String username, String password) {
-        this(mobile, username, password, null, null, null);
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String getId() {
@@ -151,5 +135,64 @@ public class User {
                 ", address='" + address + '\'' +
                 ", roles=" + Arrays.toString(roles) +
                 '}';
+    }
+
+    public static class Builder {
+        private User user;
+
+        private Builder() {
+            this.user = new User();
+            this.user.setPassword(null);
+            this.user.roles = new Role[]{Role.CUSTOMER};
+        }
+
+        public Builder mobile(String mobile) {
+            this.user.mobile = mobile;
+            return this;
+        }
+
+        public Builder registrationDate(LocalDateTime registrationDate) {
+            this.user.registrationDate = registrationDate;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.user.username = username;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.user.setPassword(password);
+            return this;
+        }
+
+        public Builder active(Boolean active) {
+            this.user.active = active;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.user.email = email;
+            return this;
+        }
+
+        public Builder dni(String dni) {
+            this.user.dni = dni;
+            return this;
+        }
+
+        public Builder address(String address) {
+            this.user.address = address;
+            return this;
+        }
+
+        public Builder roles(Role... roles) {
+            this.user.roles = roles;
+            return this;
+        }
+
+        public User build() {
+            return this.user;
+        }
     }
 }

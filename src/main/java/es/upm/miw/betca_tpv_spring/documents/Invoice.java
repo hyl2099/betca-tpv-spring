@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -19,6 +20,11 @@ public class Invoice {
     private LocalDateTime creationDate;
     private BigDecimal baseTax;
     private BigDecimal tax;
+
+    public void setId(int idOfYear) {
+        this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
+    }
+
     @DBRef
     private Ticket ticket;
     @DBRef
@@ -33,7 +39,8 @@ public class Invoice {
         this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
         this.user = user;
         this.ticket = ticket;
-        //TODO process baseTax & tax with exceptions
+        this.tax = BigDecimal.ZERO;
+        this.baseTax = BigDecimal.ZERO;
     }
 
     public String getId() {
@@ -44,7 +51,7 @@ public class Invoice {
         return ticket;
     }
 
-    public LocalDateTime getCreationDated() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
@@ -62,6 +69,22 @@ public class Invoice {
 
     public User getUser() {
         return user;
+    }
+
+    public void setBaseTax(BigDecimal baseTax) {
+        this.baseTax = baseTax;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
