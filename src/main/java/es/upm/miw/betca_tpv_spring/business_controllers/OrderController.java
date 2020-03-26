@@ -133,7 +133,7 @@ public class OrderController {
                     .switchIfEmpty(Mono.error(new NotFoundException("Article (" + orderLineDto.getArticle() + ")")))
                     .map(article -> {
                         OrderLine orderLine = new OrderLine(article, orderLineDto.getRequiredAmount());
-                        orderLineDto.setFinalAmount(orderLineDto.getFinalAmount());
+                        orderLine.setFinalAmount(orderLineDto.getFinalAmount());
                         orderLineList.add(orderLine);
                         return article;
                     });
@@ -146,8 +146,11 @@ public class OrderController {
                     orderToClose.close();
                     return orderToClose;
                 });
-        return Mono.when(articlesFlux).then(order).then(updateArticlesStockAssured(orderDto))
-                .then(this.orderReactRepository.saveAll(order).next()).map(OrderDto::new);
+
+        return Mono.when(articlesFlux).then(order)
+                .then(this.updateArticlesStockAssured(orderDto))
+                .then(this.orderReactRepository.saveAll(order).next())
+                .map(OrderDto::new);
     }
 
     private Mono<Void> updateArticlesStockAssured(OrderDto orderDto) {
