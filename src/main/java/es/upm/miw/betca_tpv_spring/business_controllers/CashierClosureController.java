@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Controller
 public class CashierClosureController {
@@ -92,7 +93,47 @@ public class CashierClosureController {
     }
 
     public Flux<CashierClosureSearchDto> readAll(){
-        return this.cashierClosureReactRepository.findAll()
+        return this.cashierClosureReactRepository.findAllByClosureDateNotNull()
+                .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
+                .map(CashierClosureSearchDto::new);
+    }
+
+    public Flux<CashierClosureSearchDto> search(CashierClosureSearchDto cashierClosureSearchDto){
+        if (cashierClosureSearchDto.getFinalCash().intValue() >= 0 && cashierClosureSearchDto.getClosureDate()!= null) {
+            return this.readByClosureDateAndFinalCash(cashierClosureSearchDto);
+        } else if (cashierClosureSearchDto.getFinalCash().intValue() >= 0) {
+            return this.readByFinalCash(cashierClosureSearchDto);
+        } else {
+            return this.readByClosureDate(cashierClosureSearchDto);
+        }
+    }
+
+    private Flux<CashierClosureSearchDto> readByFinalCash(CashierClosureSearchDto cashierClosureSearchDto){
+        return this.cashierClosureReactRepository.findByFinalCashGreaterThanEqual(cashierClosureSearchDto.getFinalCash())
+                .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
+                .map(CashierClosureSearchDto::new);
+    }
+
+    private Flux<CashierClosureSearchDto> readByClosureDate(CashierClosureSearchDto cashierClosureSearchDto){
+        LocalDateTime fxIni = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
+                cashierClosureSearchDto.getClosureDate().getMonth(),
+                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 00,00, 00);
+        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
+                cashierClosureSearchDto.getClosureDate().getMonth(),
+                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 23,59,59);
+        return this.cashierClosureReactRepository.findByClosureDateBetween(fxIni, fxFin)
+                .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
+                .map(CashierClosureSearchDto::new);
+    }
+
+    private Flux<CashierClosureSearchDto> readByClosureDateAndFinalCash(CashierClosureSearchDto cashierClosureSearchDto){
+        LocalDateTime fxIni = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
+                cashierClosureSearchDto.getClosureDate().getMonth(),
+                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 00 ,00, 00);
+        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
+                cashierClosureSearchDto.getClosureDate().getMonth(),
+                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 23 ,59, 59);
+        return this.cashierClosureReactRepository.findByClosureDateBetweenAndFinalCashGreaterThanEqual(fxIni, fxFin, cashierClosureSearchDto.getFinalCash())
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
                 .map(CashierClosureSearchDto::new);
     }

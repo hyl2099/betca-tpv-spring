@@ -34,6 +34,10 @@ public class CashierClosureSearchDto {
         this.setClosureDate(cashierClosure.getClosureDate());
     }
 
+    public CashierClosureSearchDto() {
+
+    }
+
     public LocalDateTime getOpeningDate() {
         return openingDate;
     }
