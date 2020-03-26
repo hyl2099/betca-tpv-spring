@@ -22,7 +22,7 @@ public class InvoiceResource {
         this.invoiceController = invoiceController;
     }
 
-    public Mono<Byte[]> create(){
+    public Mono<byte[]> create(){
         return this.invoiceController.createAndPdf()
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }

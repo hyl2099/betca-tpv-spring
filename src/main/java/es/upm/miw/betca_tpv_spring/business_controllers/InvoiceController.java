@@ -109,7 +109,7 @@ public class InvoiceController {
     }
 
     @Transactional
-    public Mono<Byte[]> createAndPdf() {
+    public Mono<byte[]> createAndPdf() {
         return pdfService.generateInvoice(this.createInvoice());
     }
 }

@@ -259,6 +259,8 @@ public class DatabaseSeederService {
                 new Invoice(1, users[4], tickets[1]),
                 new Invoice(2, users[4], tickets[3])
         };
+        invoices[0].setId("201903231");
+        invoices[1].setId("201903232");
         invoices[1].setTax(new BigDecimal("0.0368"));
         invoices[1].setBaseTax(new BigDecimal("0.8832"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));

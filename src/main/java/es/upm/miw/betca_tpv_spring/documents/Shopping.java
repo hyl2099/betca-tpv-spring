@@ -77,9 +77,12 @@ public class Shopping {
         this.shoppingState = shoppingState;
     }
 
+    public BigDecimal getTotalUnitPrice() {
+        return retailPrice.multiply(BigDecimal.ONE.subtract(this.discount.divide(new BigDecimal("100"))));
+    }
+
     public BigDecimal getShoppingTotal() {
-        return retailPrice.multiply(new BigDecimal(amount))
-                .multiply(BigDecimal.ONE.subtract(this.discount.divide(new BigDecimal("100"))));
+        return getTotalUnitPrice().multiply(new BigDecimal(amount));
     }
 
     @Override
