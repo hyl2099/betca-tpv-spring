@@ -20,8 +20,8 @@ class InvoiceReactRepositoryIT {
         StepVerifier
                 .create(this.invoiceReactRepository.findAll())
                 .expectNextMatches(invoice -> {
-                    assertEquals(1, invoice.simpleId());
-                    assertEquals(LocalDate.now().getYear() + "1", invoice.getId());
+                    assertEquals(3231, invoice.simpleId());
+                    assertEquals("201903231", invoice.getId());
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
@@ -38,8 +38,8 @@ class InvoiceReactRepositoryIT {
         StepVerifier
                 .create(this.invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc())
                 .expectNextMatches(invoice -> {
-                    assertEquals(2, invoice.simpleId());
-                    assertEquals(LocalDate.now().getYear() + "2", invoice.getId());
+                    assertEquals(3232, invoice.simpleId());
+                    assertEquals("201903232", invoice.getId());
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());

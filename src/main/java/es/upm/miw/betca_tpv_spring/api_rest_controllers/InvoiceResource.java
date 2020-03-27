@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.business_controllers.InvoiceController;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -22,6 +23,7 @@ public class InvoiceResource {
         this.invoiceController = invoiceController;
     }
 
+    @PostMapping
     public Mono<byte[]> create(){
         return this.invoiceController.createAndPdf()
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
