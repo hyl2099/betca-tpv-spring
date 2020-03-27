@@ -18,6 +18,9 @@ public class StockAlarmResource {
 
     public static final String STOCK_ALARMS = "/stock-alarms";
     public static final String STOCK_ALARMS_ID = "/{stockAlarmId}";
+    public static final String STOCK_ALARMS_WARNING = "/warning";
+    public static final String STOCK_ALARMS_CRITICAL = "/critical";
+
     private StockAlarmController stockAlarmController;
 
     @Autowired
@@ -46,6 +49,20 @@ public class StockAlarmResource {
     @DeleteMapping(value = STOCK_ALARMS_ID)
     public Mono<Void> deleteStockAlarm(@PathVariable String stockAlarmId) {
         return this.stockAlarmController.deleteStockAlarm(stockAlarmId)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = STOCK_ALARMS_WARNING)
+    public Flux<StockAlarmOutputDto> searchWarning() {
+        String warning = "warning";
+        return this.stockAlarmController.searchWarning(warning)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = STOCK_ALARMS_CRITICAL)
+    public Flux<StockAlarmOutputDto> searchCritical() {
+        String critical = "critical";
+        return this.stockAlarmController.searchWarning(critical)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }

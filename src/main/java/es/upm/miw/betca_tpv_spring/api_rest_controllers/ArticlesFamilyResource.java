@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.ArticlesFamilyController;
+import es.upm.miw.betca_tpv_spring.documents.Size;
 import es.upm.miw.betca_tpv_spring.documents.SizeType;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class ArticlesFamilyResource {
     public static final String ARTICLES_FAMILY = "/articles-family";
     public static final String FAMILY_COMPOSITE = "/familydescription";
     public static final String SIZES_TYPE = "/sizes-type";
+    public static final String SIZES = "/sizes";
     @Autowired
     private ArticlesFamilyController articlesFamilyController;
 
@@ -31,5 +33,9 @@ public class ArticlesFamilyResource {
         return articlesFamilyController.readAllSizeTypes();
     }
 
+    @GetMapping(value = SIZES + "/{id}")
+    public List<Size> findSizeBySizeTypeId(@PathVariable String id) {
+        return articlesFamilyController.findSizeBySizeTypeId(id);
+    }
 
 }

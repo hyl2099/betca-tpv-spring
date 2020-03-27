@@ -34,8 +34,6 @@ public class OrderControllerIT {
     @BeforeEach
     void seed() {
         OrderLineDto[] orderLines = {
-                new OrderLineDto(this.articleRepository.findAll().get(0).getCode(), 10),
-                new OrderLineDto(this.articleRepository.findAll().get(1).getCode(), 8),
                 new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
                 new OrderLineDto(this.articleRepository.findAll().get(3).getCode(), 4),
         };
@@ -125,20 +123,16 @@ public class OrderControllerIT {
 
     @Test
     void testCloseOrder() {
-        this.orderDto.getOrderLines()[0].setFinalAmount(7);
-        this.orderDto.getOrderLines()[1].setFinalAmount(8);
-        this.orderDto.getOrderLines()[2].setFinalAmount(1);
-        this.orderDto.getOrderLines()[3].setFinalAmount(5);
+        this.orderDto.getOrderLines()[0].setFinalAmount(1);
+        this.orderDto.getOrderLines()[1].setFinalAmount(5);
 
         StepVerifier
                 .create(this.orderController
                         .closeOrder(this.orderRepository.findAll().get(1).getId(), this.orderDto))
                 .expectNextMatches(orderDtoData -> {
                     assertNotNull(orderDtoData.getClosingDate());
-                    assertEquals(7, orderDtoData.getOrderLines()[0].getFinalAmount().intValue());
-                    assertEquals(8, orderDtoData.getOrderLines()[1].getFinalAmount().intValue());
-                    assertEquals(1, orderDtoData.getOrderLines()[2].getFinalAmount().intValue());
-                    assertEquals(5, orderDtoData.getOrderLines()[3].getFinalAmount().intValue());
+                    assertEquals(1, orderDtoData.getOrderLines()[0].getFinalAmount().intValue());
+                    assertEquals(5, orderDtoData.getOrderLines()[1].getFinalAmount().intValue());
                     return true;
                 })
                 .expectComplete()

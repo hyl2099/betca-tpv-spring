@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
@@ -38,6 +39,12 @@ public class UserResource {
     @PostMapping(value = TOKEN)
     public Mono<TokenOutputDto> login(@AuthenticationPrincipal User activeUser) {
         return userController.login(activeUser.getUsername())
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PostMapping
+    public Mono<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+        return this.userController.createUser(userDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

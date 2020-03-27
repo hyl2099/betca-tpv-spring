@@ -1,12 +1,15 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
+import es.upm.miw.betca_tpv_spring.documents.User;
 import es.upm.miw.betca_tpv_spring.dtos.UserDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.UserResource.USERS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -102,4 +105,33 @@ class UserResourceIT {
                 .value(list -> assertTrue(list.size() > 1));
     }
 
+    @Test
+    void testCreateUserRepeated() {
+        this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + USERS)
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("666666000").username("all-roles").build())))
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void testCreateUserBadNumber() {
+        this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + USERS)
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("7").username("m001").build())))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testCreateUser() {
+        this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + USERS)
+                .body(BodyInserters.fromObject(
+                        new UserDto( User.builder().mobile("616117255").username("m001").dni("51714988V").address("C/M, 14").email("m001@gmail.com").build()))
+                ).exchange().expectStatus().isOk().expectBody(UserDto.class)
+                .value(Assertions::assertNotNull);
+    }
 }

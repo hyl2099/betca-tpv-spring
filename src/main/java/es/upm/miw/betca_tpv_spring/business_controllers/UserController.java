@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_spring.documents.User;
 import es.upm.miw.betca_tpv_spring.dtos.TokenOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
+import es.upm.miw.betca_tpv_spring.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_spring.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
@@ -67,6 +68,13 @@ public class UserController {
     public Mono<UserDto> readUser(String mobile, String claimMobile, List<String> claimRoles) {
         return this.readAndValidate(mobile, claimMobile, claimRoles)
                 .map(UserDto::new);
+    }
+
+    public Mono<UserDto> createUser(UserDto userDto) {
+        Mono<User> noExistByMobile = this.userReactRepository.findByMobile(userDto.getMobile())
+                .handle((document, sink) -> sink.error(new ConflictException("The mobil already exists")));
+        User user = User.builder().mobile(userDto.getMobile()).username(userDto.getUsername()).email(userDto.getEmail()).dni(userDto.getDni()).address(userDto.getAddress()).build();
+        return Mono.when(noExistByMobile).then(this.userReactRepository.save(user)).map(UserDto::new);
     }
 
     public Flux<UserMinimumDto> readAll() {

@@ -9,4 +9,5 @@ import java.util.List;
 public interface SizeTypeRepository extends MongoRepository<SizeType, String> {
 
     List<SizeType> findAll();
+    SizeType findById();
 }

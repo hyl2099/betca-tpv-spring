@@ -10,6 +10,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
 @RestController
@@ -22,6 +25,7 @@ public class CashierClosureResource {
     public static final String DEPOSIT = "/deposit";
     public static final String WITHDRAWAL = "/withdrawal";
     public static final String CASHIER_CLOSURE_SEARCH = "/search";
+    public static final String CASHIER_CLOSURE_SEARCH_BY_PARAMS = "/search-by-params";
 
     private CashierClosureController cashierClosureController;
 
@@ -69,6 +73,22 @@ public class CashierClosureResource {
     @GetMapping(value = CASHIER_CLOSURE_SEARCH)
     public Flux<CashierClosureSearchDto> readAll() {
         return this.cashierClosureController.readAll()
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = CASHIER_CLOSURE_SEARCH_BY_PARAMS)
+    public Flux<CashierClosureSearchDto> search(@RequestParam(required = false) BigDecimal finalCash,
+                                                @RequestParam (required = false) String closureDate){
+        LocalDateTime dateClosureDateFormat = null;
+        if (!closureDate.isEmpty()){
+            dateClosureDateFormat = LocalDateTime.parse(closureDate, DateTimeFormatter.ISO_DATE_TIME);
+            dateClosureDateFormat = dateClosureDateFormat.plusDays(1);
+        }
+        CashierClosureSearchDto dto = new CashierClosureSearchDto();
+        dto.setFinalCash(finalCash);
+        dto.setClosureDate(dateClosureDateFormat);
+
+        return this.cashierClosureController.search(dto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

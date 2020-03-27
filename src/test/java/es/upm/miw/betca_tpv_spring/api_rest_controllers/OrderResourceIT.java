@@ -66,7 +66,6 @@ public class OrderResourceIT {
                 .forEach(ordersList::add);
 
         this.orderRepository.saveAll(ordersList);
-        System.out.println(ordersList.toString());
     }
 
     @Test
@@ -211,13 +210,15 @@ public class OrderResourceIT {
 
     @Test
     void testCloseOrder(){
-        for (OrderLine orderLine: this.ordersList.get(0).getOrderLines()) {
-            orderLine.setFinalAmount(5);
+        OrderDto orderDtoClosed = new OrderDto(this.ordersList.get(0));
+        for (OrderLineDto orderLineDto: orderDtoClosed.getOrderLines()) {
+            orderLineDto.setFinalAmount(5);
         }
+
         OrderDto orderDto = this.restService.loginAdmin(webTestClient)
                 .put().uri(contextPath + ORDERS + ORDER_CLOSE + ORDER_ID, this.ordersList.get(0).getId())
                 .body(BodyInserters.fromObject(
-                        new OrderDto(this.ordersList.get(0))
+                        orderDtoClosed
                 ))
                 .exchange()
                 .expectStatus().isOk()
@@ -225,10 +226,10 @@ public class OrderResourceIT {
                 .returnResult().getResponseBody();
 
         assertNotNull(orderDto.getClosingDate());
-        assertEquals(10, orderDto.getOrderLines()[0].getFinalAmount().intValue());
-        assertEquals(8, orderDto.getOrderLines()[1].getFinalAmount().intValue());
-        assertEquals(6, orderDto.getOrderLines()[2].getFinalAmount().intValue());
-        assertEquals(4, orderDto.getOrderLines()[3].getFinalAmount().intValue());
+        assertEquals(5, orderDto.getOrderLines()[0].getFinalAmount().intValue());
+        assertEquals(5, orderDto.getOrderLines()[1].getFinalAmount().intValue());
+        assertEquals(5, orderDto.getOrderLines()[2].getFinalAmount().intValue());
+        assertEquals(5, orderDto.getOrderLines()[3].getFinalAmount().intValue());
     }
 
 }
