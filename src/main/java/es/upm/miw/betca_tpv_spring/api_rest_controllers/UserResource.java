@@ -62,4 +62,10 @@ public class UserResource {
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
+    @PutMapping(value = MOBILE_ID)
+    public Mono<UserDto> updateUser(@PathVariable String mobile, @Valid @RequestBody UserDto userDto) {
+        return this.userController.updateUser(mobile, userDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
 }
