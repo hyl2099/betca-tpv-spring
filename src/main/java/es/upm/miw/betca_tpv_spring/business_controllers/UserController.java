@@ -65,21 +65,44 @@ public class UserController {
                 && userRoles.stream().allMatch(role -> role.equals(Role.CUSTOMER.roleName()));
     }
 
-    public Mono<UserDto> readUser(String mobile, String claimMobile, List<String> claimRoles) {
-        return this.readAndValidate(mobile, claimMobile, claimRoles)
-                .map(UserDto::new);
+    private Mono<Void> noExistByMobile(String mobile) {
+        return this.userReactRepository.findByMobile(mobile)
+                .handle((document, sink) -> sink.error(new ConflictException("The mobile already exists")));
     }
 
     public Mono<UserDto> createUser(UserDto userDto) {
-        Mono<User> noExistByMobile = this.userReactRepository.findByMobile(userDto.getMobile())
-                .handle((document, sink) -> sink.error(new ConflictException("The mobil already exists")));
+        Mono<Void> noExistByMobile = this.noExistByMobile(userDto.getMobile());
         User user = User.builder().mobile(userDto.getMobile()).username(userDto.getUsername()).email(userDto.getEmail()).dni(userDto.getDni()).address(userDto.getAddress()).build();
         return Mono.when(noExistByMobile).then(this.userReactRepository.save(user)).map(UserDto::new);
+    }
+
+    public Mono<UserDto> readUser(String mobile, String claimMobile, List<String> claimRoles) {
+        return this.readAndValidate(mobile, claimMobile, claimRoles)
+                .map(UserDto::new);
     }
 
     public Flux<UserMinimumDto> readAll() {
         return this.userReactRepository.findAllUsers();
     }
 
-
+    public Mono<UserDto> updateUser(String mobile, UserDto userDto) {
+        Mono<User> user = this.userReactRepository.findByMobile(mobile)
+                .switchIfEmpty(Mono.error(new NotFoundException("User mobile:" + mobile)))
+                .map(user1 -> {
+                    user1.setMobile(userDto.getMobile());
+                    user1.setUsername(userDto.getUsername());
+                    user1.setEmail(userDto.getEmail());
+                    user1.setDni(userDto.getDni());
+                    user1.setAddress(userDto.getAddress());
+                    user1.setActive(userDto.isActive());
+                    return user1;
+                });
+        Mono<Void> noExistByMobile;
+        if (mobile.equals(userDto.getMobile())) {
+            noExistByMobile = Mono.empty();
+        } else {
+            noExistByMobile = this.noExistByMobile(userDto.getMobile());
+        }
+        return Mono.when(user, noExistByMobile).then(this.userReactRepository.saveAll(user).next()).map(UserDto::new);
+    }
 }

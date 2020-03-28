@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+import es.upm.miw.betca_tpv_spring.documents.Ticket;
 
 import java.math.BigDecimal;
 
@@ -36,5 +37,21 @@ class TicketReactRepositoryIT {
                 .verify();
     }
 
+    @Test
+    void testFindByReference() {
+        Ticket ticket = this.ticketReactRepository.findById("201901121").block();
+        assert ticket != null;
+        StepVerifier
+                .create(this.ticketReactRepository.findByReference(ticket.getReference()))
+                .expectNextMatches(m -> {
+                assertEquals(m.getId(), "201901121");
+                assertEquals(m.getReference(), ticket.getReference());
+                assertNotNull(m.getShoppingList());
+                assertEquals("8400000000017", m.getShoppingList()[0].getArticleId());
+                assertEquals("8400000000024", m.getShoppingList()[1].getArticleId());
+                return true;
+                })
+                .expectComplete().verify();
+        }
 }
 

@@ -21,7 +21,7 @@ public class OrderDto {
 
     private OrderLineDto[] orderLines;
 
-    public OrderDto(){
+    public OrderDto() {
         // Empty for framework
     }
 
@@ -53,7 +53,7 @@ public class OrderDto {
         OrderLineDto[] orderLineDtos = new OrderLineDto[order.getOrderLines().length];
         for (int i = 0; i < order.getOrderLines().length; i++) {
             orderLineDtos[i] = new OrderLineDto(order.getOrderLines()[i].getArticle().getCode(), order.getOrderLines()[i].getRequiredAmount());
-            if(order.getClosingDate() != null){
+            if (order.getClosingDate() != null) {
                 orderLineDtos[i].setFinalAmount(order.getOrderLines()[i].getFinalAmount());
             }
         }
