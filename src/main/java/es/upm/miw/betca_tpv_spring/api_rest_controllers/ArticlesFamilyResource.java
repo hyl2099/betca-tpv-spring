@@ -4,9 +4,12 @@ import es.upm.miw.betca_tpv_spring.business_controllers.ArticlesFamilyController
 import es.upm.miw.betca_tpv_spring.documents.Size;
 import es.upm.miw.betca_tpv_spring.documents.SizeType;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
+import es.upm.miw.betca_tpv_spring.dtos.ArticlesFamilyDto;
+import es.upm.miw.betca_tpv_spring.dtos.FamilyCompleteDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -36,6 +39,13 @@ public class ArticlesFamilyResource {
     @GetMapping(value = SIZES + "/{id}")
     public List<Size> findSizeBySizeTypeId(@PathVariable String id) {
         return articlesFamilyController.findSizeBySizeTypeId(id);
+    }
+
+
+    @PostMapping
+    public Mono<ArticlesFamilyDto> createArticleFamily(@Valid @RequestBody FamilyCompleteDto articleFamilyDto)
+    {
+        return articlesFamilyController.createArticleFamily(articleFamilyDto);
     }
 
 }
