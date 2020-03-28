@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class OrderLineDto {
 
-    private String article;
+    private String articleId;
 
     private Integer requiredAmount;
 
@@ -15,23 +15,17 @@ public class OrderLineDto {
         // empty for framework
     }
 
-    public OrderLineDto(String article, Integer requiredAmount) {
-        this.article = article;
+    public OrderLineDto(String articleId, Integer requiredAmount) {
+        this.articleId = articleId;
         this.requiredAmount = requiredAmount;
     }
 
-    public OrderLineDto(String article, Integer requiredAmount, Integer finalAmount) {
-        this.article = article;
-        this.requiredAmount = requiredAmount;
-        this.finalAmount = finalAmount;
+    public String getArticleId() {
+        return articleId;
     }
 
-    public String getArticle() {
-        return article;
-    }
-
-    public void setArticle(String article) {
-        this.article = article;
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
     }
 
     public Integer getRequiredAmount() {
@@ -53,7 +47,7 @@ public class OrderLineDto {
     @Override
     public String toString() {
         return "OrderLineDto{" +
-                "article=" + article +
+                "article=" + articleId +
                 ", requiredAmount=" + requiredAmount +
                 ", finalAmount=" + finalAmount +
                 '}';
