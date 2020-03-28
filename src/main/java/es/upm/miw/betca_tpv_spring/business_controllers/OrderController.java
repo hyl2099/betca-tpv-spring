@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.documents.Article;
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.*;
+import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class OrderController {
         Mono<Void> provider;
         Order order = new Order(orderCreationDto.getDescription(), null, null);
         if (orderCreationDto.getProviderId() == null) {
-            provider = Mono.empty();
+            provider = Mono.error(new BadRequestException("Provider can't be null"));
         } else {
             provider = this.providerReactRepository.findById(orderCreationDto.getProviderId())
                     .switchIfEmpty(Mono.error(new NotFoundException(PROVIDER_NOT_FOUND + orderCreationDto.getProviderId())))

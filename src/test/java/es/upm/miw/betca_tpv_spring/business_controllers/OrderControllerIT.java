@@ -1,10 +1,12 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
+import es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,18 @@ public class OrderControllerIT {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private DatabaseSeederService databaseSeederService;
+
+    void initialize() {
+        databaseSeederService.deleteAllAndInitializeAndSeedDataBase();
+    }
+
     private OrderDto orderDto;
 
     @BeforeEach
     void seed() {
+        initialize();
         OrderLineDto[] orderLines = {
                 new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
                 new OrderLineDto(this.articleRepository.findAll().get(3).getCode(), 4),
@@ -47,7 +57,7 @@ public class OrderControllerIT {
                 new OrderSearchDto("null", this.providerRepository.findAll().get(1).getId(), "null");
         StepVerifier
                 .create(this.orderController.searchOrder(orderSearchDto))
-                .expectNextCount(1)
+                .expectNextCount(0)
                 .thenCancel()
                 .verify();
     }
