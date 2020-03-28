@@ -127,7 +127,7 @@ public class OrderResourceIT {
                 .path(contextPath + ORDERS)
                 .queryParam("description", "order")
                 .queryParam("provider", this.providerRepository.findAll().get(1).getId())
-                .queryParam("closingDate", "null")
+                .queryParam("closingDate", null)
                 .build())
                 .exchange()
                 .expectStatus().isOk();
@@ -156,6 +156,24 @@ public class OrderResourceIT {
         assertEquals(4, orderDto.getOrderLines().length);
         assertEquals(this.providerRepository.findAll().get(1).getId(), orderDto.getProvider());
         assertEquals("orderPruebaas", orderDto.getDescription());
+    }
+
+    @Test
+    void testCreateOrderWithNullProvider() {
+        OrderLineCreationDto[] orderLines = {
+                new OrderLineCreationDto(this.articleRepository.findAll().get(0).getCode(), 10),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(1).getCode(), 8),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(2).getCode(), 6),
+                new OrderLineCreationDto(this.articleRepository.findAll().get(3).getCode(), 4),
+        };
+
+        this.restService.loginAdmin(webTestClient)
+                .post().uri(contextPath + ORDERS)
+                .body(BodyInserters.fromObject(
+                        new OrderCreationDto("orderPruebaas", null, orderLines)
+                ))
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
@@ -190,6 +208,24 @@ public class OrderResourceIT {
     }
 
     @Test
+    void testUpdateOrderWithWrongArticle() {
+        OrderLineDto[] orderLinesWithWrongArticleCode = {
+                new OrderLineDto(this.articleRepository.findAll().get(0).getCode(), 10),
+                new OrderLineDto("WrongCode", 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+        };
+        OrderDto orderDtoToUpdate = new OrderDto("orderCloseWrong", this.providerRepository.findAll().get(0).getId(), orderLinesWithWrongArticleCode);
+
+        this.restService.loginAdmin(webTestClient)
+                .put().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(1).getId())
+                .body(BodyInserters.fromObject(
+                        orderDtoToUpdate
+                ))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void testGetOrder() {
         OrderDto order = this.restService.loginAdmin(webTestClient)
                 .get().uri(contextPath + ORDERS + ORDER_ID, this.ordersList.get(1).getId())
@@ -209,9 +245,9 @@ public class OrderResourceIT {
     }
 
     @Test
-    void testCloseOrder(){
+    void testCloseOrder() {
         OrderDto orderDtoClosed = new OrderDto(this.ordersList.get(0));
-        for (OrderLineDto orderLineDto: orderDtoClosed.getOrderLines()) {
+        for (OrderLineDto orderLineDto : orderDtoClosed.getOrderLines()) {
             orderLineDto.setFinalAmount(5);
         }
 
@@ -232,4 +268,21 @@ public class OrderResourceIT {
         assertEquals(5, orderDto.getOrderLines()[3].getFinalAmount().intValue());
     }
 
+    @Test
+    void testCloseOrderArticleNotFound() {
+        OrderLineDto[] orderLinesWithWrongArticleCode = {
+                new OrderLineDto(this.articleRepository.findAll().get(0).getCode(), 10),
+                new OrderLineDto("WrongCode", 8),
+                new OrderLineDto(this.articleRepository.findAll().get(2).getCode(), 6),
+        };
+        OrderDto orderDtoClosed = new OrderDto("orderCloseWrong", this.providerRepository.findAll().get(0).getId(), orderLinesWithWrongArticleCode);
+
+        this.restService.loginAdmin(webTestClient)
+                .put().uri(contextPath + ORDERS + ORDER_CLOSE + ORDER_ID, this.ordersList.get(0).getId())
+                .body(BodyInserters.fromObject(
+                        orderDtoClosed
+                ))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
