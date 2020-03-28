@@ -31,14 +31,13 @@ public class OrderControllerIT {
     @Autowired
     private OrderRepository orderRepository;
 
-
     @Autowired
     private DatabaseSeederService databaseSeederService;
-
 
     void initialize() {
         databaseSeederService.deleteAllAndInitializeAndSeedDataBase();
     }
+
     private OrderDto orderDto;
 
     @BeforeEach
@@ -58,7 +57,7 @@ public class OrderControllerIT {
                 new OrderSearchDto("null", this.providerRepository.findAll().get(1).getId(), "null");
         StepVerifier
                 .create(this.orderController.searchOrder(orderSearchDto))
-                .expectNextCount(1)
+                .expectNextCount(0)
                 .thenCancel()
                 .verify();
     }

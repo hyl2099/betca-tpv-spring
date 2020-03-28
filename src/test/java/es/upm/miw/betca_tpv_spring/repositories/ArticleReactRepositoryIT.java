@@ -9,6 +9,7 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 
 import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.VARIOUS_NAME;
+import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.CUSTOMER_POINTS_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -33,15 +34,14 @@ class ArticleReactRepositoryIT {
                     return true;
                 })
                 .expectNextMatches(article -> {
-                    assertEquals("8400000000017", article.getCode());
-                    assertEquals("Zz Falda T2", article.getReference());
-                    assertEquals("Zarzuela - Falda T2", article.getDescription());
-                    assertEquals(0, new BigDecimal("20").compareTo(article.getRetailPrice()));
+                    assertEquals("0", article.getCode());
+                    assertEquals(CUSTOMER_POINTS_NAME, article.getReference());
+                    assertEquals(CUSTOMER_POINTS_NAME, article.getDescription());
+                    assertEquals(0, new BigDecimal("0").compareTo(article.getRetailPrice()));
                     assertNotNull(article.getRegistrationDate());
                     assertEquals(Tax.GENERAL, article.getTax());
                     assertFalse(article.isDiscontinued());
-                    assertEquals(new Integer(10), article.getStock());
-                    assertFalse(article.toString().matches("@"));
+                    assertEquals(new Integer(1), article.getStock());
                     return true;
                 })
                 .thenCancel()

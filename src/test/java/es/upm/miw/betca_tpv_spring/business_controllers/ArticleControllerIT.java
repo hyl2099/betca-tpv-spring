@@ -87,7 +87,7 @@ class ArticleControllerIT {
     void testReadAll() {
         StepVerifier
                 .create(this.articleController.readAll())
-                .expectNextCount(9)
+                .expectNextCount(10)
                 .expectComplete()
                 .verify();
     }
@@ -137,7 +137,7 @@ class ArticleControllerIT {
         ArticleSearchDto articleSearchDto = new ArticleSearchDto("null", this.providerRepository.findAll().get(1).getId());
         StepVerifier
                 .create(this.articleController.searchArticleByDescriptionOrProvider(articleSearchDto))
-                .expectNextCount(6)
+                .expectNextCount(1)
                 .expectComplete()
                 .verify();
     }
