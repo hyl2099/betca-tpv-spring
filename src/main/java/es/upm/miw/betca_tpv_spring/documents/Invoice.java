@@ -25,6 +25,10 @@ public class Invoice {
         this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @DBRef
     private Ticket ticket;
     @DBRef

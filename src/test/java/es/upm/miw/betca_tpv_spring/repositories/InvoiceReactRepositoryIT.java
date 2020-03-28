@@ -21,7 +21,7 @@ class InvoiceReactRepositoryIT {
                 .create(this.invoiceReactRepository.findAll())
                 .expectNextMatches(invoice -> {
                     assertEquals(1, invoice.simpleId());
-                    assertEquals(LocalDate.now().getYear() + "1", invoice.getId());
+                    assertEquals("20201", invoice.getId());
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
@@ -39,7 +39,7 @@ class InvoiceReactRepositoryIT {
                 .create(this.invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc())
                 .expectNextMatches(invoice -> {
                     assertEquals(2, invoice.simpleId());
-                    assertEquals(LocalDate.now().getYear() + "2", invoice.getId());
+                    assertEquals("20202", invoice.getId());
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
