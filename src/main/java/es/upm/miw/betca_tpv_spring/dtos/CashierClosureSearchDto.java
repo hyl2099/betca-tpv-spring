@@ -18,6 +18,7 @@ public class CashierClosureSearchDto {
     private BigDecimal finalCash;
     private String comment;
     private LocalDateTime closureDate;
+    private LocalDateTime closureDateF;
 
     public CashierClosureSearchDto(CashierClosure cashierClosure){
         this.setOpeningDate(cashierClosure.getOpeningDate());
@@ -32,6 +33,7 @@ public class CashierClosureSearchDto {
         this.setFinalCash(cashierClosure.getFinalCash());
         this.setComment(cashierClosure.getComment());
         this.setClosureDate(cashierClosure.getClosureDate());
+        this.setClosureDateF(null);
     }
 
     public CashierClosureSearchDto() {
@@ -134,6 +136,14 @@ public class CashierClosureSearchDto {
         this.closureDate = closureDate;
     }
 
+    public LocalDateTime getClosureDateF() {
+        return closureDateF;
+    }
+
+    public void setClosureDateF(LocalDateTime closureDateF) {
+        this.closureDateF = closureDateF;
+    }
+
     @Override
     public String toString() {
         return "CashierClosureSearchDto{" +
@@ -149,6 +159,7 @@ public class CashierClosureSearchDto {
                 ", finalCash=" + finalCash +
                 ", comment='" + comment + '\'' +
                 ", closureDate=" + closureDate +
+                ", closureDateF=" + closureDateF +
                 '}';
     }
 }

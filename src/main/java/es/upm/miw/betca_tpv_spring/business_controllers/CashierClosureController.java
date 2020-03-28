@@ -118,9 +118,9 @@ public class CashierClosureController {
         LocalDateTime fxIni = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
                 cashierClosureSearchDto.getClosureDate().getMonth(),
                 cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 00,00, 00);
-        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
-                cashierClosureSearchDto.getClosureDate().getMonth(),
-                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 23,59,59);
+        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDateF().getYear(),
+                cashierClosureSearchDto.getClosureDateF().getMonth(),
+                cashierClosureSearchDto.getClosureDateF().getDayOfMonth(), 23,59,59);
         return this.cashierClosureReactRepository.findByClosureDateBetween(fxIni, fxFin)
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
                 .map(CashierClosureSearchDto::new);
@@ -130,9 +130,9 @@ public class CashierClosureController {
         LocalDateTime fxIni = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
                 cashierClosureSearchDto.getClosureDate().getMonth(),
                 cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 00 ,00, 00);
-        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDate().getYear(),
-                cashierClosureSearchDto.getClosureDate().getMonth(),
-                cashierClosureSearchDto.getClosureDate().getDayOfMonth(), 23 ,59, 59);
+        LocalDateTime fxFin = LocalDateTime.of(cashierClosureSearchDto.getClosureDateF().getYear(),
+                cashierClosureSearchDto.getClosureDateF().getMonth(),
+                cashierClosureSearchDto.getClosureDateF().getDayOfMonth(), 23 ,59, 59);
         return this.cashierClosureReactRepository.findByClosureDateBetweenAndFinalCashGreaterThanEqual(fxIni, fxFin, cashierClosureSearchDto.getFinalCash())
                 .switchIfEmpty(Flux.error(new BadRequestException("Bad Request")))
                 .map(CashierClosureSearchDto::new);
