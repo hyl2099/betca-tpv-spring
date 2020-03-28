@@ -29,7 +29,7 @@ public class InvoiceResourceIT {
     private String contextPath;
 
     @Test
-    void testCreateReserve() {
+    void testCreate() {
         this.restService.loginAdmin(webTestClient)
                 .post().uri(contextPath + InvoiceResource.INVOICES)
                 .exchange()

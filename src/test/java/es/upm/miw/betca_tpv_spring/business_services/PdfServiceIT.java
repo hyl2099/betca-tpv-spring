@@ -44,7 +44,7 @@ class PdfServiceIT {
     @Test
     void testPdfGenerateInvoice() {
         StepVerifier
-                .create(this.pdfService.generateInvoice(this.invoiceReactRepository.findById("201903232")))
+                .create(this.pdfService.generateInvoice(this.invoiceReactRepository.findById("20202")))
                 .expectNextMatches(bytes -> {
                     assertNotNull(bytes);
                     assertTrue(bytes.length > 0);
