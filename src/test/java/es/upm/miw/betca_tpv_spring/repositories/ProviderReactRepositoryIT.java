@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.CUSTOMER_POINTS_NAME;
 import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.VARIOUS_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +21,10 @@ class ProviderReactRepositoryIT {
                 .create(this.providerReactRepository.findAll())
                 .expectNextMatches(provider -> {
                     assertEquals(VARIOUS_NAME, provider.getCompany());
+                    return true;
+                })
+                .expectNextMatches(provider -> {
+                    assertEquals(CUSTOMER_POINTS_NAME, provider.getCompany());
                     return true;
                 })
                 .expectNextMatches(provider -> {

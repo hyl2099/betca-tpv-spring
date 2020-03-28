@@ -20,6 +20,8 @@ public class DatabaseSeederService {
 
     public static final String VARIOUS_CODE = "1";
     public static final String VARIOUS_NAME = "Various";
+    public static final String CUSTOMER_POINTS_CODE = "0";
+    public static final String CUSTOMER_POINTS_NAME = "Customer points";
 
     @Value("${miw.admin.mobile}")
     private String mobile;
@@ -123,6 +125,13 @@ public class DatabaseSeederService {
             this.providerRepository.save(provider);
             this.articleRepository.save(Article.builder(VARIOUS_CODE).reference(VARIOUS_NAME).description(VARIOUS_NAME)
                     .retailPrice("100.00").stock(1000).provider(provider).build());
+        }
+        if (!this.articleRepository.existsById(CUSTOMER_POINTS_CODE)) {
+            LogManager.getLogger(this.getClass()).warn("------- Create Article Customer Points -----------");
+            Provider provider = Provider.builder(CUSTOMER_POINTS_NAME).build();
+            this.providerRepository.save(provider);
+            this.articleRepository.save(Article.builder(CUSTOMER_POINTS_CODE).reference(CUSTOMER_POINTS_NAME).description(CUSTOMER_POINTS_NAME)
+                    .retailPrice("0").stock(1).provider(provider).build());
         }
     }
 
@@ -348,24 +357,24 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
 
         List<Size> sizes = new ArrayList<>();
-        sizes.add(new Size("1", "XXS",sizesType[0] ));
-        sizes.add(new Size("2", "XS",sizesType[0] ));
-        sizes.add(new Size("3", "S",sizesType[0] ));
-        sizes.add(new Size("4", "M",sizesType[0] ));
-        sizes.add(new Size("5", "L",sizesType[0] ));
-        sizes.add(new Size("6", "XL",sizesType[0] ));
-        sizes.add(new Size("7", "XXL",sizesType[0] ));
-        sizes.add(new Size("8", "XXXL",sizesType[0] ));
-        sizes.add(new Size("9", "Special",sizesType[0] ));
-        sizes.add(new Size("10", "10",sizesType[1] ));
-        sizes.add(new Size("11", "20",sizesType[1] ));
-        sizes.add(new Size("12", "30",sizesType[1] ));
-        sizes.add(new Size("13", "40",sizesType[1] ));
-        sizes.add(new Size("14", "50",sizesType[1] ));
-        sizes.add(new Size("15", "60",sizesType[1] ));
-        sizes.add(new Size("16", "70",sizesType[1] ));
-        sizes.add(new Size("17", "80",sizesType[1] ));
-        sizes.add(new Size("18", "90",sizesType[1] ));
+        sizes.add(new Size("1", "XXS", sizesType[0]));
+        sizes.add(new Size("2", "XS", sizesType[0]));
+        sizes.add(new Size("3", "S", sizesType[0]));
+        sizes.add(new Size("4", "M", sizesType[0]));
+        sizes.add(new Size("5", "L", sizesType[0]));
+        sizes.add(new Size("6", "XL", sizesType[0]));
+        sizes.add(new Size("7", "XXL", sizesType[0]));
+        sizes.add(new Size("8", "XXXL", sizesType[0]));
+        sizes.add(new Size("9", "Special", sizesType[0]));
+        sizes.add(new Size("10", "10", sizesType[1]));
+        sizes.add(new Size("11", "20", sizesType[1]));
+        sizes.add(new Size("12", "30", sizesType[1]));
+        sizes.add(new Size("13", "40", sizesType[1]));
+        sizes.add(new Size("14", "50", sizesType[1]));
+        sizes.add(new Size("15", "60", sizesType[1]));
+        sizes.add(new Size("16", "70", sizesType[1]));
+        sizes.add(new Size("17", "80", sizesType[1]));
+        sizes.add(new Size("18", "90", sizesType[1]));
         this.sizeRepository.saveAll(sizes);
         LogManager.getLogger(this.getClass()).warn("        ------- sizes");
     }
