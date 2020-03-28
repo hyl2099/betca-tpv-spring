@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
+import es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService;
 import es.upm.miw.betca_tpv_spring.documents.Order;
 import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.OrderCreationDto;
@@ -9,6 +10,7 @@ import es.upm.miw.betca_tpv_spring.dtos.OrderLineDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,17 @@ public class OrderResourceIT {
 
     private LinkedList<Order> ordersList;
 
+    @Autowired
+    private DatabaseSeederService databaseSeederService;
+
+
+    void initialize() {
+        databaseSeederService.deleteAllAndInitializeAndSeedDataBase();
+    }
+
     @BeforeEach
     void seedDatabase() {
+        initialize();
         ordersList = new LinkedList<>();
         OrderLine[] orderLines = {
                 new OrderLine(this.articleRepository.findAll().get(0), 10),
