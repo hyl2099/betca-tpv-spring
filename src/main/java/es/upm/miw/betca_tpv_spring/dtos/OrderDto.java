@@ -25,11 +25,10 @@ public class OrderDto {
         // Empty for framework
     }
 
-    public OrderDto(String id, String description, String provider, LocalDateTime openingDate, OrderLineDto[] orderLines) {
-        this.id = id;
+    public OrderDto(String description, String provider, OrderLineDto[] orderLines) {
         this.description = description;
         this.provider = provider;
-        this.openingDate = openingDate;
+        this.openingDate = LocalDateTime.now();
         this.orderLines = orderLines;
     }
 
