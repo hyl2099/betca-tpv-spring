@@ -106,7 +106,7 @@ class UserResourceIT {
     }
 
     @Test
-    void testCreateUserRepeated() {
+    void testCreateUserAlreadyExists() {
         this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + USERS)
                 .body(BodyInserters.fromObject(
@@ -130,8 +130,48 @@ class UserResourceIT {
         this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + USERS)
                 .body(BodyInserters.fromObject(
-                        new UserDto( User.builder().mobile("616117255").username("m001").dni("51714988V").address("C/M, 14").email("m001@gmail.com").build()))
+                        new UserDto(User.builder().mobile("616117255").username("m001").dni("51714988V").address("C/M, 14").email("m001@gmail.com").build()))
                 ).exchange().expectStatus().isOk().expectBody(UserDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testUpdateUserNonExist() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + UserResource.MOBILE_ID, "999999999")
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("666666007").build())
+                )).exchange()
+                .expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testUpdateUserBadNumber() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + UserResource.MOBILE_ID, "666666002")
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("7").build())
+                )).exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testUpdateUserToMobileAlreadyExists() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + UserResource.MOBILE_ID, "666666002")
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("666666003").build())
+                )).exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void testUpdateUser() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + UserResource.MOBILE_ID, "666666006")
+                .body(BodyInserters.fromObject(
+                        new UserDto(User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address("C/TPV, 6").email("u006@gmail.com").build())
+                )).exchange().expectStatus().isOk().expectBody(UserDto.class)
                 .value(Assertions::assertNotNull);
     }
 }
