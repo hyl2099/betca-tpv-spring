@@ -78,15 +78,21 @@ public class CashierClosureResource {
 
     @GetMapping(value = CASHIER_CLOSURE_SEARCH_BY_PARAMS)
     public Flux<CashierClosureSearchDto> search(@RequestParam(required = false) BigDecimal finalCash,
-                                                @RequestParam (required = false) String closureDate){
+                                                @RequestParam (required = false) String closureDate,
+                                                @RequestParam(required = false) String closureDateF)
+    {
         LocalDateTime dateClosureDateFormat = null;
-        if (!closureDate.isEmpty()){
+        LocalDateTime dateClosureDateFFormat = null;
+        if (!closureDate.isEmpty() && !closureDateF.isEmpty()){
             dateClosureDateFormat = LocalDateTime.parse(closureDate, DateTimeFormatter.ISO_DATE_TIME);
             dateClosureDateFormat = dateClosureDateFormat.plusDays(1);
+            dateClosureDateFFormat = LocalDateTime.parse(closureDateF, DateTimeFormatter.ISO_DATE_TIME);
+            dateClosureDateFFormat = dateClosureDateFFormat.plusDays(1);
         }
         CashierClosureSearchDto dto = new CashierClosureSearchDto();
         dto.setFinalCash(finalCash);
         dto.setClosureDate(dateClosureDateFormat);
+        dto.setClosureDateF(dateClosureDateFFormat);
 
         return this.cashierClosureController.search(dto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
