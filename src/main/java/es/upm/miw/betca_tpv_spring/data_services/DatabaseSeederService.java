@@ -265,7 +265,7 @@ public class DatabaseSeederService {
                 new Invoice(2, users[4], tickets[3])
         };
         invoices[1].setTax(new BigDecimal("0.0368"));
-        invoices[1].setBaseTax(new BigDecimal("0.8832"));
+        invoices[1].setBaseTax(new BigDecimal("0.6624"));
         this.invoiceRepository.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
         Budget[] budgets = {

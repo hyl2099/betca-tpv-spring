@@ -12,8 +12,11 @@ import java.time.format.DateTimeFormatter;
 public class PdfService {
 
     private static final String[] TABLE_COLUMNS_HEADERS = {" ", "Desc.", "Ud.", "Dto.%", "€", "E."};
+    private static final String[] TABLE_COLUMNS_HEADERS_INVOICES = {" ", "Desc.", "Price", "Ud.", "€" };
+
     private static final float[] TABLE_COLUMNS_SIZES_TICKETS = {15, 90, 15, 25, 35, 15};
     private static final float[] TABLE_COLUMNS_SIZES_BUDGETS = {15, 90, 15, 25, 35, 15};
+    private static final float[] TABLE_COLUMNS_SIZES_INVOICES = {15, 90, 35, 15, 35};
 
     @Value("${miw.company.logo}")
     private String logo;
@@ -40,6 +43,14 @@ public class PdfService {
         pdf.image(this.logo).paragraphEmphasized(this.name).paragraphEmphasized("Tfn: " + this.phone)
                 .paragraph("NIF: " + this.nif + "   -   " + this.address)
                 .paragraph("Email: " + this.email + "  -  " + "Web: " + this.web);
+        pdf.line();
+    }
+
+    private void addCostumerHead(PdfBuilder pdf, User user) {
+        pdf.paragraphEmphasized("COSTUMER");
+        pdf.paragraphEmphasized(user.getUsername()).paragraphEmphasized("Tfn: " + user.getMobile())
+                .paragraph("NIF: " + user.getDni() + "   -   " + user.getAddress())
+                .paragraph("Email: " + user.getEmail() );
         pdf.line();
     }
 
@@ -102,6 +113,7 @@ public class PdfService {
                         shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€", state);
             }
             table.tableColspanRight(ticket.getTotal().setScale(2, RoundingMode.HALF_UP) + "€").build();
+
             pdf.paragraph(ticket.getNote());
             this.addBookingDetails(pdf, notCommitted, ticket);
             this.addFoot(pdf);
@@ -127,7 +139,7 @@ public class PdfService {
                 }
                 total = total + shopping.getShoppingTotal().doubleValue();
                 table.tableCell(String.valueOf(i + 1), shopping.getDescription(), "" + shopping.getAmount(), discount,
-                        shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€",state);
+                        shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€", state);
             }
             table.tableColspanRight(total + "€").build();
             return pdf.build();
@@ -148,8 +160,29 @@ public class PdfService {
         });
     }
 
-    public Mono<Byte[]> generateInvoice(Mono<Invoice> invoiceMono) {
-        //TODO GameEngineers generate the pdf for invoice
-        return null;
+    public Mono<byte[]> generateInvoice(Mono<Invoice> invoiceReact) {
+        return invoiceReact.map(invoice -> {
+            final String path = "/tpv-pdfs/invoices/invoice-" + invoice.getId();
+            PdfBuilder pdf = new PdfBuilder(path);
+            this.addHead(pdf);
+            this.addCostumerHead(pdf, invoice.getUser());
+            pdf.paragraphEmphasized("Invoice Date:" +
+                    invoice.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            PdfTableBuilder table = pdf.table(TABLE_COLUMNS_SIZES_INVOICES).tableColumnsHeader(TABLE_COLUMNS_HEADERS_INVOICES);
+            Ticket ticket = invoice.getTicket();
+            for (int i = 0; i < ticket.getShoppingList().length; i++) {
+                Shopping shopping = ticket.getShoppingList()[i];
+                table.tableCell(String.valueOf(i + 1), shopping.getDescription(),
+                        shopping.getTotalUnitPrice().setScale(2, RoundingMode.HALF_UP) + "€", "" + shopping.getAmount(),
+                        shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€");
+            }
+            table.tableColspanRight("TAX BASE");
+            table.tableColspanRight(invoice.getBaseTax().setScale(2, RoundingMode.HALF_UP) + "€");
+            table.tableColspanRight("TOTAL TAX");
+            table.tableColspanRight(invoice.getTax().setScale(2, RoundingMode.HALF_UP) + "€");
+            table.tableColspanRight("TOTAL");
+            table.tableColspanRight(ticket.getTotal().setScale(2, RoundingMode.HALF_UP) + "€").build();
+            return pdf.build();
+        });
     }
 }
