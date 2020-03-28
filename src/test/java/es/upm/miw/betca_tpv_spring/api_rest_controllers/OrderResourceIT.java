@@ -53,17 +53,8 @@ public class OrderResourceIT {
 
     private LinkedList<Order> ordersList;
 
-    @Autowired
-    private DatabaseSeederService databaseSeederService;
-
-
-    void initialize() {
-        databaseSeederService.deleteAllAndInitializeAndSeedDataBase();
-    }
-
     @BeforeEach
     void seedDatabase() {
-        initialize();
         ordersList = new LinkedList<>();
         OrderLine[] orderLines = {
                 new OrderLine(this.articleRepository.findAll().get(0), 10),
