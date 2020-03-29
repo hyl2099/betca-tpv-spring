@@ -35,14 +35,14 @@ public class StockAlarmResource {
     }
 
     @PostMapping
-    public Mono<StockAlarmOutputDto> createStockAlarm(@RequestBody StockAlarmInputDto stockAlarmInputDto){
+    public Mono<StockAlarmOutputDto> createStockAlarm(@RequestBody StockAlarmInputDto stockAlarmInputDto) {
         return this.stockAlarmController.createStockAlarm(stockAlarmInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
     @PutMapping(value = STOCK_ALARMS_ID)
-    public Mono<StockAlarmOutputDto> updateStockAlarm(@PathVariable String stockAlarmId, @RequestBody StockAlarmInputDto stockAlarmInputDto){
-        return this.stockAlarmController.updateStockAlarm(stockAlarmId,stockAlarmInputDto)
+    public Mono<StockAlarmOutputDto> updateStockAlarm(@PathVariable String stockAlarmId, @RequestBody StockAlarmInputDto stockAlarmInputDto) {
+        return this.stockAlarmController.updateStockAlarm(stockAlarmId, stockAlarmInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

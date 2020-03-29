@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface SizeRepository extends MongoRepository<Size, String> {
     List<Size> findAll();
+
     List<Size> findBySizeTypeIn(Optional<SizeType> sizeType);
+
     List<Size> findByIdBetween(String from, String to);
 }

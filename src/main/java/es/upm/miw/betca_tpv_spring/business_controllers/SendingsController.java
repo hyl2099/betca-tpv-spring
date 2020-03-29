@@ -34,7 +34,7 @@ public class SendingsController {
         return sendingsReactRepository.save(sendings);
     }
 
-    public Mono<SendingsDto> update(String id, SendingsDto sendingsDto){
+    public Mono<SendingsDto> update(String id, SendingsDto sendingsDto) {
         Mono<Sendings> sendings = this.sendingsReactRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Sending id (" + id + ")")))
                 .map(sendings1 -> {

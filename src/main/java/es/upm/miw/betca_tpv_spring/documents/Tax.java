@@ -7,12 +7,12 @@ public enum Tax {
 
     private final BigDecimal rate;
 
-    public BigDecimal getRate() {
-        return rate;
-    }
-
     Tax(String tax) {
         this.rate = new BigDecimal(tax);
+    }
+
+    public BigDecimal getRate() {
+        return rate;
     }
 
     @Override

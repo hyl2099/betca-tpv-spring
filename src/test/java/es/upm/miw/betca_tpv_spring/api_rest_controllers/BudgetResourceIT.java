@@ -39,8 +39,9 @@ class BudgetResourceIT {
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
     }
+
     @Test
-    void TestCreateBudgetWithoutShoppingCart(){
+    void TestCreateBudgetWithoutShoppingCart() {
         ShoppingDto shoppingDto = null;
         BudgetCreationInputDto budgetCreationInputDto = new BudgetCreationInputDto(Collections.singletonList(shoppingDto));
 

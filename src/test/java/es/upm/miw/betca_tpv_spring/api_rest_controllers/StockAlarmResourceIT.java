@@ -10,7 +10,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.StockAlarmResource.*;
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.StockAlarmResource.STOCK_ALARMS_CRITICAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -64,39 +63,39 @@ class StockAlarmResourceIT {
                 new AlarmArticle("2", 2, 2)
         };
         this.restService.loginAdmin(webTestClient)
-                .put().uri(contextPath+STOCK_ALARMS+STOCK_ALARMS_ID,222)
+                .put().uri(contextPath + STOCK_ALARMS + STOCK_ALARMS_ID, 222)
                 .body(BodyInserters.fromObject(
                         new StockAlarmInputDto(
-                                "123123","upm",99,99,alarmArticles1
+                                "123123", "upm", 99, 99, alarmArticles1
                         )
                 ))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StockAlarmOutputDto.class)
                 .value(stockAlarmOutputDto ->
-                        assertEquals("123123",stockAlarmOutputDto.getDescription()));
+                        assertEquals("123123", stockAlarmOutputDto.getDescription()));
     }
 
     @Test
-    void testStockAlarmDelete(){
+    void testStockAlarmDelete() {
         this.restService.loginAdmin(webTestClient)
-                .delete().uri(contextPath+STOCK_ALARMS+STOCK_ALARMS_ID,111)
+                .delete().uri(contextPath + STOCK_ALARMS + STOCK_ALARMS_ID, 111)
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
-    void testStockAlarmSearchWarning(){
+    void testStockAlarmSearchWarning() {
         this.restService.loginAdmin(webTestClient)
-                .get().uri(contextPath+STOCK_ALARMS+STOCK_ALARMS_WARNING)
+                .get().uri(contextPath + STOCK_ALARMS + STOCK_ALARMS_WARNING)
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
-    void testStockAlarmSearchCritical(){
+    void testStockAlarmSearchCritical() {
         this.restService.loginAdmin(webTestClient)
-                .get().uri(contextPath+STOCK_ALARMS+STOCK_ALARMS_CRITICAL)
+                .get().uri(contextPath + STOCK_ALARMS + STOCK_ALARMS_CRITICAL)
                 .exchange()
                 .expectStatus().isOk();
     }

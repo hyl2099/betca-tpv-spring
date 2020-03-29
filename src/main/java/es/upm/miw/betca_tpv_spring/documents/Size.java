@@ -13,13 +13,12 @@ public class Size {
     @DBRef
     private SizeType sizeType;
 
-    public Size(){
+    public Size() {
 
     }
 
-    public  Size(String id, String description, SizeType sizeType)
-    {
-        this.id  = id;
+    public Size(String id, String description, SizeType sizeType) {
+        this.id = id;
         this.description = description;
         this.sizeType = sizeType;
     }

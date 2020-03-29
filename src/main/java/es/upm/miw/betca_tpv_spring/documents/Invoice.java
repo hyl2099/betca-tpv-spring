@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,15 +19,6 @@ public class Invoice {
     private LocalDateTime creationDate;
     private BigDecimal baseTax;
     private BigDecimal tax;
-
-    public void setId(int idOfYear) {
-        this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     @DBRef
     private Ticket ticket;
     @DBRef
@@ -37,7 +27,6 @@ public class Invoice {
     public Invoice() {
         creationDate = LocalDateTime.now();
     }
-
     public Invoice(int idOfYear, User user, Ticket ticket) {
         this();
         this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
@@ -51,8 +40,20 @@ public class Invoice {
         return id;
     }
 
+    public void setId(int idOfYear) {
+        this.id = new SimpleDateFormat(DATE_FORMAT).format(new Date()) + idOfYear;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public Ticket getTicket() {
         return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
     public LocalDateTime getCreationDate() {
@@ -67,24 +68,20 @@ public class Invoice {
         return baseTax;
     }
 
-    public BigDecimal getTax() {
-        return tax;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
     public void setBaseTax(BigDecimal baseTax) {
         this.baseTax = baseTax;
+    }
+
+    public BigDecimal getTax() {
+        return tax;
     }
 
     public void setTax(BigDecimal tax) {
         this.tax = tax;
     }
 
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
+    public User getUser() {
+        return user;
     }
 
     public void setUser(User user) {

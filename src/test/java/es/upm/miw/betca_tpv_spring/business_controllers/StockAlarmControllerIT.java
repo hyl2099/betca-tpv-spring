@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestConfig
 class StockAlarmControllerIT {
@@ -20,24 +20,24 @@ class StockAlarmControllerIT {
 
     @BeforeEach
     void seed() {
-        AlarmArticle[] alarmArticle ={
-                new AlarmArticle("1",500,1500),
-                new AlarmArticle("8400000000017",15,20)
+        AlarmArticle[] alarmArticle = {
+                new AlarmArticle("1", 500, 1500),
+                new AlarmArticle("8400000000017", 15, 20)
         };
 
         this.stockAlarmOutputDto = new StockAlarmOutputDto(
-                new StockAlarm("222","2222","upm",2,2, alarmArticle)
+                new StockAlarm("222", "2222", "upm", 2, 2, alarmArticle)
         );
     }
 
     @Test
-    void testStockAlarmSearchWarning(){
+    void testStockAlarmSearchWarning() {
         String warning = "warning";
         StepVerifier
                 .create(this.stockAlarmController.searchWarning(warning))
-                .expectNextMatches(stockAlarmOutputDto ->{
-                    assertEquals("222",stockAlarmOutputDto.getId());
-                    assertEquals(1,stockAlarmOutputDto.getAlarmArticle().length);
+                .expectNextMatches(stockAlarmOutputDto -> {
+                    assertEquals("222", stockAlarmOutputDto.getId());
+                    assertEquals(1, stockAlarmOutputDto.getAlarmArticle().length);
                     return true;
                 })
                 .expectComplete()
@@ -45,13 +45,13 @@ class StockAlarmControllerIT {
     }
 
     @Test
-    void testStockAlarmSearchCritical(){
+    void testStockAlarmSearchCritical() {
         String critical = "critical";
         StepVerifier
                 .create(this.stockAlarmController.searchWarning(critical))
-                .expectNextMatches(stockAlarmOutputDto ->{
-                    assertEquals("222",stockAlarmOutputDto.getId());
-                    assertEquals(2,stockAlarmOutputDto.getAlarmArticle().length);
+                .expectNextMatches(stockAlarmOutputDto -> {
+                    assertEquals("222", stockAlarmOutputDto.getId());
+                    assertEquals(2, stockAlarmOutputDto.getAlarmArticle().length);
                     return true;
                 })
                 .expectComplete()
