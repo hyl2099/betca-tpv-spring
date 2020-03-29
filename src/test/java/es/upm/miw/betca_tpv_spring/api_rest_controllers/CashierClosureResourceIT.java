@@ -1,9 +1,11 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
-import es.upm.miw.betca_tpv_spring.dtos.*;
+import es.upm.miw.betca_tpv_spring.dtos.CashMovementInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.CashierLastOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.CashierStateOutputDto;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +187,7 @@ class CashierClosureResourceIT {
     }
 
     @Test
-    void testReadAllCashierClosureSearch(){
+    void testReadAllCashierClosureSearch() {
         this.restService.loginAdmin(webTestClient).get()
                 .uri(contextPath + CASHIER_CLOSURES + CASHIER_CLOSURE_SEARCH)
                 .exchange().expectStatus().isOk();

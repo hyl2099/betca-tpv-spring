@@ -12,8 +12,8 @@ public class BudgetCreationInputDto {
         // Empty for framework
     }
 
-    public BudgetCreationInputDto(List<ShoppingDto> shoppingCart){
-        this.shoppingCart =shoppingCart;
+    public BudgetCreationInputDto(List<ShoppingDto> shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 
     public List<ShoppingDto> getShoppingCart() {

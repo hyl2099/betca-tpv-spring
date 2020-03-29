@@ -16,7 +16,7 @@ public class TicketTrackingController {
         this.ticketReactRepository = ticketReactRepository;
     }
 
-    Mono<TicketOutputDto> searchByReference(String reference) {
+    public Mono<TicketOutputDto> searchByReference(String reference) {
         return this.ticketReactRepository.findByReference(reference)
                 .switchIfEmpty(Mono.empty()).map(TicketOutputDto::new);
     }

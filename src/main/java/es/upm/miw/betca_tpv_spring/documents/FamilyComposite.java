@@ -14,7 +14,7 @@ public class FamilyComposite extends ArticlesFamily {
     @DBRef(lazy = true)
     private List<ArticlesFamily> articlesFamilyList = getArticlesFamilyList();
 
-    public FamilyComposite(){
+    public FamilyComposite() {
     }
 
     public FamilyComposite(FamilyType familyType, String reference, String description) {

@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -34,7 +32,7 @@ class InvoiceReactRepositoryIT {
     }
 
     @Test
-    void testfindFirstByOrderByCreationDateDescIdDesc(){
+    void testfindFirstByOrderByCreationDateDescIdDesc() {
         StepVerifier
                 .create(this.invoiceReactRepository.findFirstByOrderByCreationDateDescIdDesc())
                 .expectNextMatches(invoice -> {

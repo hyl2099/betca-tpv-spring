@@ -40,13 +40,13 @@ public class InvoiceController {
         this.articleReactRepository = articleReactRepository;
     }
 
-    public Mono<Invoice> createInvoice() {
+    private Mono<Invoice> createInvoice() {
         Invoice invoice = new Invoice(0, null, null);
         Mono<Ticket> ticketPublisher = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
                 .switchIfEmpty(Mono.error(new NotFoundException("Last Ticket not found")))
-                .doOnNext(ticket1 -> {
-                    invoice.setTicket(ticket1);
-                    invoice.setUser(ticket1.getUser());
+                .doOnNext(ticket -> {
+                    invoice.setTicket(ticket);
+                    invoice.setUser(ticket.getUser());
                 })
                 .handle((ticket, synchronousSink) -> {
                     User user = ticket.getUser();
@@ -62,8 +62,8 @@ public class InvoiceController {
                     invoice.setId(id);
                     return id;
                 });
-        Mono<Void> x = this.calculateBaseAndTax(invoice, ticketPublisher);
-        return Mono.when(x, nextId)
+        Mono<Invoice> calculateBaseAndTaxPublisher = this.calculateBaseAndTax(invoice, ticketPublisher);
+        return Mono.when(calculateBaseAndTaxPublisher, nextId)
                 .then(invoiceReactRepository.save(invoice));
     }
 
@@ -74,25 +74,8 @@ public class InvoiceController {
                 && (user.getDni() != null && !user.getDni().trim().equals(""));
     }
 
-    private Mono<Void> calculateBaseAndTax(Invoice invoice, Mono<Ticket> ticketPublisher) {
-        return ticketPublisher
-                .switchIfEmpty(Mono.error(new NotFoundException("Ticket")))
-                .flatMap(ticket -> {
-                    Stream<Shopping> ticketShoppingList = Arrays.stream(invoice.getTicket().getShoppingList())
-                            .filter(shopping -> shopping.getAmount() >= 1);
-                    List<Mono<Article>> articlePublishers = ticketShoppingList
-                            .map(shopping -> this.articleReactRepository.findById(shopping.getArticleId())
-                                    .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
-                                    .filter(article -> article.getTax() != Tax.FREE)
-                                    .doOnNext(article -> {
-                                        BigDecimal articleTaxRate = article.getTax().getRate().divide(new BigDecimal("100"));
-                                        BigDecimal articleTax = shopping.getShoppingTotal().multiply(articleTaxRate);
-                                        invoice.setTax(invoice.getTax().add(articleTax));
-                                        BigDecimal articleBaseTax = shopping.getShoppingTotal().subtract(articleTax);
-                                        invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
-                                    })).collect(Collectors.toList());
-                    return Mono.when(articlePublishers);
-                });
+    private Mono<Invoice> calculateBaseAndTax(Invoice invoice, Mono<Ticket> ticketPublisher) {
+        return ticketPublisher.flatMap(ticket -> calculateBaseAndTax(invoice));
     }
 
 
@@ -111,5 +94,33 @@ public class InvoiceController {
     @Transactional
     public Mono<byte[]> createAndPdf() {
         return pdfService.generateInvoice(this.createInvoice());
+    }
+
+    @Transactional
+    public Mono<byte[]> updateAndPdf(String id) {
+        return pdfService.generateInvoice(this.updateInvoice(id));
+    }
+
+    private Mono<Invoice> updateInvoice(String id) {
+        return invoiceReactRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Invoice(" + id + ")")))
+                .flatMap(this::calculateBaseAndTax)
+                .flatMap(invoice -> invoiceReactRepository.save(invoice));
+    }
+
+    private Mono<Invoice> calculateBaseAndTax(Invoice invoice){
+        Stream<Shopping> ticketShoppingList = Arrays.stream(invoice.getTicket().getShoppingList());
+        List<Mono<Article>> articlePublishers = ticketShoppingList
+                .map(shopping -> this.articleReactRepository.findById(shopping.getArticleId())
+                        .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
+                        .filter(article -> article.getTax() != Tax.FREE)
+                        .doOnNext(article -> {
+                            BigDecimal articleTaxRate = article.getTax().getRate().divide(new BigDecimal("100"));
+                            BigDecimal articleTax = shopping.getShoppingTotal().multiply(articleTaxRate);
+                            invoice.setTax(invoice.getTax().add(articleTax));
+                            BigDecimal articleBaseTax = shopping.getShoppingTotal().subtract(articleTax);
+                            invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
+                        })).collect(Collectors.toList());
+        return Mono.when(articlePublishers).then(Mono.just(invoice));
     }
 }

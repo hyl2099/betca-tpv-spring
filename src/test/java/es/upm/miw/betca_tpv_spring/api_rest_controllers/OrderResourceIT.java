@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDERS;
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_ID;
-import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_CLOSE;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.*;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
 

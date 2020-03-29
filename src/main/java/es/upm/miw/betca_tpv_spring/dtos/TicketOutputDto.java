@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
 import es.upm.miw.betca_tpv_spring.documents.Ticket;
+
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
@@ -14,7 +15,7 @@ public class TicketOutputDto {
 
     private ShoppingDto[] shoppingList;
 
-    public TicketOutputDto(){
+    public TicketOutputDto() {
         //Empty for framework
     }
 
@@ -43,7 +44,9 @@ public class TicketOutputDto {
         return reference;
     }
 
-    public ShoppingDto[] getShoppingList() { return shoppingList; }
+    public ShoppingDto[] getShoppingList() {
+        return shoppingList;
+    }
 
     @Override
     public String toString() {

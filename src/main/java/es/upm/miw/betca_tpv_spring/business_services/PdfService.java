@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class PdfService {
 
     private static final String[] TABLE_COLUMNS_HEADERS = {" ", "Desc.", "Ud.", "Dto.%", "€", "E."};
-    private static final String[] TABLE_COLUMNS_HEADERS_INVOICES = {" ", "Desc.", "Price", "Ud.", "€" };
+    private static final String[] TABLE_COLUMNS_HEADERS_INVOICES = {" ", "Desc.", "Price", "Ud.", "€"};
 
     private static final float[] TABLE_COLUMNS_SIZES_TICKETS = {15, 90, 15, 25, 35, 15};
     private static final float[] TABLE_COLUMNS_SIZES_BUDGETS = {15, 90, 15, 25, 35, 15};
@@ -50,7 +50,7 @@ public class PdfService {
         pdf.paragraphEmphasized("COSTUMER");
         pdf.paragraphEmphasized(user.getUsername()).paragraphEmphasized("Tfn: " + user.getMobile())
                 .paragraph("NIF: " + user.getDni() + "   -   " + user.getAddress())
-                .paragraph("Email: " + user.getEmail() );
+                .paragraph("Email: " + user.getEmail());
         pdf.line();
     }
 
