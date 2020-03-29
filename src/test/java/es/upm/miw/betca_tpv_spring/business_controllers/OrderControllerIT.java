@@ -1,6 +1,8 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
+import es.upm.miw.betca_tpv_spring.documents.Order;
+import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.OrderRepository;
@@ -41,6 +43,11 @@ public class OrderControllerIT {
         };
 
         this.orderDto = new OrderDto("order0", this.providerRepository.findAll().get(0).getId(), LocalDateTime.now(), orderLines);
+        this.orderRepository.save(new Order("orderA", this.providerRepository.findAll().get(0),
+                new OrderLine[]{
+                        new OrderLine(this.articleRepository.findAll().get(0), 5),
+                        new OrderLine(this.articleRepository.findAll().get(1), 7),
+                }));
     }
 
     @Test
@@ -99,15 +106,16 @@ public class OrderControllerIT {
 
     @Test
     void testGetOrder() {
-        String id = this.orderRepository.findAll().get(1).getId();
+        String id = this.orderRepository.findAll().get(0).getId();
         StepVerifier
                 .create(this.orderController.getOrder(id))
                 .expectNextMatches(orderDto1 -> {
                     assertEquals(id, orderDto1.getId());
-                    assertEquals(this.orderRepository.findById(id).get().getDescription(), orderDto1.getDescription());
-                    assertEquals(this.orderRepository.findById(id).get().getOrderLines().length, orderDto1.getOrderLines().length);
+                    assertEquals("order1", orderDto1.getDescription());
+                    assertEquals(4, orderDto1.getOrderLines().length);
                     assertEquals(this.orderRepository.findById(id).get().getOpeningDate(), orderDto1.getOpeningDate());
-                    assertEquals(this.orderRepository.findById(id).get().getClosingDate(), orderDto1.getClosingDate());
+                    assertNotNull(orderDto1.getOpeningDate());
+                    assertNull(orderDto1.getClosingDate());
                     return true;
                 })
                 .expectComplete()
@@ -116,32 +124,12 @@ public class OrderControllerIT {
 
     @Test
     void testDeleteOrder() {
+        assertEquals(2, this.orderRepository.count());
         String id = this.orderRepository.findAll().get(1).getId();
         StepVerifier
                 .create(this.orderController.deleteOrder(id))
                 .expectComplete()
                 .verify();
-    }
-
-    @Test
-    void testCloseOrder() {
-        this.orderDto.getOrderLines()[0].setFinalAmount(1);
-        this.orderDto.getOrderLines()[1].setFinalAmount(3);
-        this.orderDto.getOrderLines()[2].setFinalAmount(5);
-        this.orderDto.getOrderLines()[3].setFinalAmount(7);
-
-        StepVerifier
-                .create(this.orderController
-                        .closeOrder(this.orderRepository.findAll().get(1).getId(), this.orderDto))
-                .expectNextMatches(orderDtoData -> {
-                    assertNotNull(orderDtoData.getClosingDate());
-                    assertEquals(1, orderDtoData.getOrderLines()[0].getFinalAmount().intValue());
-                    assertEquals(3, orderDtoData.getOrderLines()[1].getFinalAmount().intValue());
-                    assertEquals(5, orderDtoData.getOrderLines()[2].getFinalAmount().intValue());
-                    assertEquals(7, orderDtoData.getOrderLines()[3].getFinalAmount().intValue());
-                    return true;
-                })
-                .expectComplete()
-                .verify();
+        assertEquals(1, this.orderRepository.count());
     }
 }
