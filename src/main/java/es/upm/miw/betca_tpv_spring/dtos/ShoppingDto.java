@@ -24,6 +24,8 @@ public class ShoppingDto {
 
     private Boolean committed;
 
+    private ShoppingState shoppingState;
+
     public ShoppingDto() {
         // Empty for framework
     }
@@ -47,6 +49,7 @@ public class ShoppingDto {
         this.discount = shopping.getDiscount();
         this.total = shopping.getShoppingTotal();
         this.committed = shopping.getShoppingState().equals(ShoppingState.COMMITTED);
+        this.shoppingState = shopping.getShoppingState();
     }
 
     public String getCode() {
@@ -105,10 +108,11 @@ public class ShoppingDto {
         this.committed = committed;
     }
 
+    public ShoppingState getShoppingState() { return shoppingState; }
+
     @Override
     public String toString() {
         return "ShoppingDto [code=" + code + ", description=" + description + ", retailPrice=" + retailPrice + ", amount=" + amount
-                + ", discount=" + discount + ", total=" + total + ", committed=" + committed + "]";
+                + ", discount=" + discount + ", total=" + total + ", committed=" + committed + ", shoppingState=" + shoppingState + "]";
     }
-
 }
