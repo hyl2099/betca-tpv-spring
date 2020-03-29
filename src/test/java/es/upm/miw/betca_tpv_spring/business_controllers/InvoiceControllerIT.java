@@ -14,7 +14,8 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
 public class InvoiceControllerIT {
@@ -53,7 +54,7 @@ public class InvoiceControllerIT {
     @Test
     void testCreateInvoiceErrorUserNotCompleted() {
         Optional<Ticket> ticketOptional = ticketRepository.findById("201901125");
-        ticketOptional.ifPresent(ticket ->  ticketRepository.delete(ticket));
+        ticketOptional.ifPresent(ticket -> ticketRepository.delete(ticket));
         StepVerifier
                 .create(this.invoiceController.createInvoice())
                 .expectErrorMatches(error -> {

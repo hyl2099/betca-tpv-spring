@@ -19,12 +19,12 @@ public class InvoiceResource {
     private InvoiceController invoiceController;
 
     @Autowired
-    public InvoiceResource(InvoiceController invoiceController){
+    public InvoiceResource(InvoiceController invoiceController) {
         this.invoiceController = invoiceController;
     }
 
     @PostMapping
-    public Mono<byte[]> create(){
+    public Mono<byte[]> create() {
         return this.invoiceController.createAndPdf()
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }

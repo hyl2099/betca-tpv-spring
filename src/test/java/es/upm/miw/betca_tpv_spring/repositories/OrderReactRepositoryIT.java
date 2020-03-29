@@ -38,7 +38,7 @@ class OrderReactRepositoryIT {
     }
 
     @Test
-    void testFindByDescriptionLikeOrProvider(){
+    void testFindByDescriptionLikeOrProvider() {
         StepVerifier
                 .create(this.orderReactRepository.findByDescriptionLikeOrProvider("order1", this.providerRepository.findAll().get(1).getId()))
                 .expectNextMatches(order -> {

@@ -7,10 +7,10 @@ public class SendingsDto {
     private String id;
     private Boolean estado;
 
-    public SendingsDto(){
+    public SendingsDto() {
     }
 
-    public SendingsDto(String id, Boolean estado){
+    public SendingsDto(String id, Boolean estado) {
         this.id = id;
         this.estado = estado;
     }

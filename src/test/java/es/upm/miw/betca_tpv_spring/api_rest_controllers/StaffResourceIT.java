@@ -98,7 +98,6 @@ public class StaffResourceIT {
     }
 
 
-
     @Test
     void testReadByMobileYearMonthDay() {
         this.restService.loginAdmin(this.webTestClient)

@@ -8,8 +8,8 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 
-import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.VARIOUS_NAME;
 import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.CUSTOMER_POINTS_NAME;
+import static es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService.VARIOUS_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig

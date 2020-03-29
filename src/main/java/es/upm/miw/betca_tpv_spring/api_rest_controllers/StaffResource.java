@@ -40,13 +40,13 @@ public class StaffResource {
         } else if (!mobile.equals("") && year.equals("") && !month.equals("") && day.equals("")) {
             return this.staffController.findByMobileAndMonth(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-        }else if (!mobile.equals("") && !year.equals("") && month.equals("") && day.equals("")) {
+        } else if (!mobile.equals("") && !year.equals("") && month.equals("") && day.equals("")) {
             return this.staffController.findByMobileAndYear(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-        }else if (mobile.equals("") && !year.equals("") && !month.equals("") && day.equals("")) {
+        } else if (mobile.equals("") && !year.equals("") && !month.equals("") && day.equals("")) {
             return this.staffController.findByYearAndMonth(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
-        }else if (!mobile.equals("") && !year.equals("") && !month.equals("") && day.equals("")){
+        } else if (!mobile.equals("") && !year.equals("") && !month.equals("") && day.equals("")) {
             return this.staffController.findByMobileAndYearAndMonth(staff)
                     .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
         } else {

@@ -6,7 +6,9 @@ import es.upm.miw.betca_tpv_spring.documents.OrderLine;
 import es.upm.miw.betca_tpv_spring.dtos.*;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_spring.repositories.*;
+import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
+import es.upm.miw.betca_tpv_spring.repositories.OrderReactRepository;
+import es.upm.miw.betca_tpv_spring.repositories.ProviderReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
@@ -18,19 +20,13 @@ import java.util.List;
 @Controller
 public class OrderController {
 
-    private OrderReactRepository orderReactRepository;
-
-    private ArticleReactRepository articleReactRepository;
-
-    private ProviderReactRepository providerReactRepository;
-
     private static final String NOTHING_FOUND = "Nothing found";
-
     private static final String ORDER_ID_NOT_FOUND = "Order id: ";
-
     private static final String ARTICLE_NOT_FOUND = "Article: ";
-
     private static final String PROVIDER_NOT_FOUND = "Provider: ";
+    private OrderReactRepository orderReactRepository;
+    private ArticleReactRepository articleReactRepository;
+    private ProviderReactRepository providerReactRepository;
 
     @Autowired
     public OrderController(OrderReactRepository orderReactRepository, ArticleReactRepository articleReactRepository,

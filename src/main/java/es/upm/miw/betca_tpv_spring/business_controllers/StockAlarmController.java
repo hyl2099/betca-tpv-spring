@@ -14,7 +14,8 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class StockAlarmController {
@@ -48,7 +49,7 @@ public class StockAlarmController {
 
     public Mono<StockAlarmOutputDto> updateStockAlarm(String stockAlarmId, StockAlarmInputDto stockAlarmInputDto) {
         Mono<StockAlarm> stockAlarm = this.stockAlarmReactRepository.findById(stockAlarmId)
-                .switchIfEmpty(Mono.error(new NotFoundException("StockAlarm Id"+ stockAlarmId)))
+                .switchIfEmpty(Mono.error(new NotFoundException("StockAlarm Id" + stockAlarmId)))
                 .map(stockAlarm1 -> {
                     stockAlarm1.setDescription(stockAlarmInputDto.getDescription());
                     stockAlarm1.setProvider(stockAlarmInputDto.getProvider());
@@ -75,17 +76,17 @@ public class StockAlarmController {
         List<StockAlarmOutputDto> stockAlarmPoJoList = new ArrayList<>();
         stockAlarmFluxResults.toStream().forEach(stockAlarm -> {
             AlarmArticle[] alarmArticles = stockAlarm.getAlarmArticle();
-            List<AlarmArticle>  alarmArticleList = new ArrayList<>();
+            List<AlarmArticle> alarmArticleList = new ArrayList<>();
             StockAlarmOutputDto stockAlarmPoJo = new StockAlarmOutputDto();
             for (AlarmArticle alarmArticle : alarmArticles) {
                 Mono<Article> article = this.articleReactRepository.findById(alarmArticle.getArticleId());
                 Flux<Article> concat = Flux.concat(article);
                 concat.toStream().forEach(articlePojo -> {
-                    if (warningOrCritical.equals("warning")){
+                    if (warningOrCritical.equals("warning")) {
                         if (articlePojo.getStock() < alarmArticle.getWarning()) {
                             alarmArticleList.add(alarmArticle);
                         }
-                    }else if (warningOrCritical.equals("critical")){
+                    } else if (warningOrCritical.equals("critical")) {
                         if (articlePojo.getStock() < alarmArticle.getCritical()) {
                             alarmArticleList.add(alarmArticle);
                         }

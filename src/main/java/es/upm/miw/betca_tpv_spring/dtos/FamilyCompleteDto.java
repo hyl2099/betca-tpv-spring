@@ -12,8 +12,7 @@ public class FamilyCompleteDto {
     private String refence;
     private int increment;
 
-    public FamilyCompleteDto(FamilyCompleteDto articlesFamilyComplete)
-    {
+    public FamilyCompleteDto(FamilyCompleteDto articlesFamilyComplete) {
         this.id = articlesFamilyComplete.getId();
         this.description = articlesFamilyComplete.getDescription();
         this.sizeType = articlesFamilyComplete.getSizeType();
@@ -24,13 +23,11 @@ public class FamilyCompleteDto {
         this.refence = articlesFamilyComplete.getRefence();
     }
 
-    public FamilyCompleteDto()
-    {
+    public FamilyCompleteDto() {
 
     }
 
-    public FamilyCompleteDto(String description, String sizeType , String reference, String fromSize, String toSize)
-    {
+    public FamilyCompleteDto(String description, String sizeType, String reference, String fromSize, String toSize) {
         this.description = description;
         this.sizeType = sizeType;
         this.refence = reference;
@@ -42,60 +39,60 @@ public class FamilyCompleteDto {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getDescription() {
         return description;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public String getSizeType() {
-        return sizeType;
-    }
-
-    public int getIncrement() {
-        return increment;
-    }
-
-    public String getFromSize() {
-        return fromSize;
-    }
-
-    public String getToSize() {
-        return toSize;
-    }
-
-    public String getRefence() {
-        return refence;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setFromSize(String fromSize) {
-        this.fromSize = fromSize;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setIncrement(int increment) {
-        this.increment = increment;
+    public String getProvider() {
+        return provider;
     }
 
     public void setProvider(String provider) {
         this.provider = provider;
     }
 
+    public String getSizeType() {
+        return sizeType;
+    }
+
     public void setSizeType(String sizeType) {
         this.sizeType = sizeType;
     }
 
+    public int getIncrement() {
+        return increment;
+    }
+
+    public void setIncrement(int increment) {
+        this.increment = increment;
+    }
+
+    public String getFromSize() {
+        return fromSize;
+    }
+
+    public void setFromSize(String fromSize) {
+        this.fromSize = fromSize;
+    }
+
+    public String getToSize() {
+        return toSize;
+    }
+
     public void setToSize(String toSize) {
         this.toSize = toSize;
+    }
+
+    public String getRefence() {
+        return refence;
     }
 
     public void setRefence(String refence) {

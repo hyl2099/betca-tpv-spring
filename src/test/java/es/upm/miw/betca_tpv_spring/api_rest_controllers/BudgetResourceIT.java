@@ -67,7 +67,7 @@ class BudgetResourceIT {
     }
 
     @Test
-    void TestCreateBudgetWithoutShoppingCart(){
+    void TestCreateBudgetWithoutShoppingCart() {
         ShoppingDto shoppingDto = null;
         BudgetCreationInputDto budgetCreationInputDto = new BudgetCreationInputDto(Collections.singletonList(shoppingDto));
 

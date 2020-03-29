@@ -14,6 +14,6 @@ public class ArticleRepositoryIT {
     @Test
     void testGetLastArticle() {
         String codigo = this.articleRepository.findFirstByOrderByCodeDesc().getCode();
-        assertEquals("8400000000086",codigo);
+        assertEquals("8400000000086", codigo);
     }
 }
