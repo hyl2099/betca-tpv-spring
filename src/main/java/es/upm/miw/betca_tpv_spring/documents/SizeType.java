@@ -1,4 +1,5 @@
 package es.upm.miw.betca_tpv_spring.documents;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,13 +10,12 @@ public class SizeType {
     private String id;
     private String name;
 
-    public SizeType(){
+    public SizeType() {
 
     }
 
-    public  SizeType(String id, String name)
-    {
-        this.id  = id;
+    public SizeType(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 

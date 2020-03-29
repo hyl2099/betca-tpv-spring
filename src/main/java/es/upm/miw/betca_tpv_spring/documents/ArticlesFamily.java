@@ -41,7 +41,7 @@ public abstract class ArticlesFamily {
 
     public abstract List<ArticlesFamily> getArticlesFamilyList();
 
-     public abstract List<String> getArticleIdList();
+    public abstract List<String> getArticleIdList();
 
     public abstract void add(ArticlesFamily articlesFamily);
 

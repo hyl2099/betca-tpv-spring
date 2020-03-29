@@ -37,6 +37,7 @@ public class FamilyArticle extends ArticlesFamily {
     public void remove(ArticlesFamily familyComponent) {
         // Do nothing
     }
+
     @Override
     public List<String> getArticleIdList() {
         return Arrays.asList(this.article.getCode());

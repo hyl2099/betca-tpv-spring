@@ -20,7 +20,7 @@ public class CashierClosureSearchDto {
     private LocalDateTime closureDate;
     private LocalDateTime closureDateF;
 
-    public CashierClosureSearchDto(CashierClosure cashierClosure){
+    public CashierClosureSearchDto(CashierClosure cashierClosure) {
         this.setOpeningDate(cashierClosure.getOpeningDate());
         this.setInitialCash(cashierClosure.getInitialCash());
         this.setSalesCard(cashierClosure.getSalesCard());

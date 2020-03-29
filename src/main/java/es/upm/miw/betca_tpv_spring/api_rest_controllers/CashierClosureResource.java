@@ -59,13 +59,13 @@ public class CashierClosureResource {
     }
 
     @PatchMapping(value = LAST + DEPOSIT)
-    public Mono<Void> cashierDeposit(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
+    public Mono<Void> cashierDeposit(@Valid @RequestBody CashMovementInputDto cashMovementInputDto) {
         return cashierClosureController.deposit(cashMovementInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
     @PatchMapping(value = LAST + WITHDRAWAL)
-    public Mono<Void> cashierWithdrawal(@Valid @RequestBody CashMovementInputDto cashMovementInputDto){
+    public Mono<Void> cashierWithdrawal(@Valid @RequestBody CashMovementInputDto cashMovementInputDto) {
         return cashierClosureController.withdrawal(cashMovementInputDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
@@ -78,12 +78,11 @@ public class CashierClosureResource {
 
     @GetMapping(value = CASHIER_CLOSURE_SEARCH_BY_PARAMS)
     public Flux<CashierClosureSearchDto> search(@RequestParam(required = false) BigDecimal finalCash,
-                                                @RequestParam (required = false) String closureDate,
-                                                @RequestParam(required = false) String closureDateF)
-    {
+                                                @RequestParam(required = false) String closureDate,
+                                                @RequestParam(required = false) String closureDateF) {
         LocalDateTime dateClosureDateFormat = null;
         LocalDateTime dateClosureDateFFormat = null;
-        if (!closureDate.isEmpty() && !closureDateF.isEmpty()){
+        if (!closureDate.isEmpty() && !closureDateF.isEmpty()) {
             dateClosureDateFormat = LocalDateTime.parse(closureDate, DateTimeFormatter.ISO_DATE_TIME);
             dateClosureDateFormat = dateClosureDateFormat.plusDays(1);
             dateClosureDateFFormat = LocalDateTime.parse(closureDateF, DateTimeFormatter.ISO_DATE_TIME);

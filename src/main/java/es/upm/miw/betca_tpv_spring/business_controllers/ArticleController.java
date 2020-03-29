@@ -64,8 +64,8 @@ public class ArticleController {
     public Mono<ArticleDto> createArticle(ArticleDto articleDto) {
         String code = articleDto.getCode();
         if (code == null) {
-            code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0,12)) + 1);
-            if (code.length()==13 && Long.parseLong(code.substring(7,12)) > 99999L) {
+            code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0, 12)) + 1);
+            if (code.length() == 13 && Long.parseLong(code.substring(7, 12)) > 99999L) {
                 return Mono.error(new BadRequestException("Index out of range"));
             }
         }
@@ -73,7 +73,7 @@ public class ArticleController {
         int stock = (articleDto.getStock() == null) ? 10 : articleDto.getStock();
         Article article = Article.builder(code).description(articleDto.getDescription())
                 .retailPrice(articleDto.getRetailPrice()).reference(articleDto.getReference()).stock(stock).build();
-        if(articleDto.getTax() != null)
+        if (articleDto.getTax() != null)
             article.setTax(articleDto.getTax());
         Mono<Void> provider;
         if (articleDto.getProvider() == null) {

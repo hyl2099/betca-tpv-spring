@@ -27,7 +27,7 @@ public class ArticlesFamilyResource {
     private ArticlesFamilyController articlesFamilyController;
 
     @GetMapping(value = FAMILY_COMPOSITE)
-    public List<ArticleFamilyCompleteDto> readInFamilyComposite(@Valid @RequestParam String description){
+    public List<ArticleFamilyCompleteDto> readInFamilyComposite(@Valid @RequestParam String description) {
         return articlesFamilyController.readFamilyCompositeArticlesList(description);
     }
 
@@ -43,8 +43,7 @@ public class ArticlesFamilyResource {
 
 
     @PostMapping
-    public Mono<ArticlesFamilyDto> createArticleFamily(@Valid @RequestBody FamilyCompleteDto articleFamilyDto)
-    {
+    public Mono<ArticlesFamilyDto> createArticleFamily(@Valid @RequestBody FamilyCompleteDto articleFamilyDto) {
         return articlesFamilyController.createArticleFamily(articleFamilyDto);
     }
 

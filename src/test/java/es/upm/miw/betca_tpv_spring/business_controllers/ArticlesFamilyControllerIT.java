@@ -17,12 +17,12 @@ class ArticlesFamilyControllerIT {
     private ArticlesFamilyController articlesFamilyController;
 
     @Test
-    void testReadFamilyCompositeArticlesList(){
+    void testReadFamilyCompositeArticlesList() {
         assertNotNull(articlesFamilyController.readFamilyCompositeArticlesList("root"));
         assertEquals("varios", articlesFamilyController.readFamilyCompositeArticlesList("root").get(1).getDescription());
-        assertEquals(familyType.values()[1], articlesFamilyController.readFamilyCompositeArticlesList("root").get(0).getFamilyType());
+        assertEquals(FamilyType.values()[1], articlesFamilyController.readFamilyCompositeArticlesList("root").get(0).getFamilyType());
         assertEquals("descrip-a6", articlesFamilyController.readFamilyCompositeArticlesList("varios").get(1).getDescription());
-        assertEquals(familyType.values()[0], articlesFamilyController.readFamilyCompositeArticlesList("varios").get(0).getFamilyType());
+        assertEquals(FamilyType.values()[0], articlesFamilyController.readFamilyCompositeArticlesList("varios").get(0).getFamilyType());
     }
 
 }
