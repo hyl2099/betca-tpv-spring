@@ -29,7 +29,7 @@ public class InvoiceResource {
     }
 
     @PatchMapping(value = INVOICE_ID + PRINT)
-    public Mono<byte[]> print(@PathVariable String id){
+    public Mono<byte[]> generate(@PathVariable String id){
         return this.invoiceController.updateAndPdf(id)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
