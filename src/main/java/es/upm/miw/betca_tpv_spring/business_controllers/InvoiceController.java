@@ -40,13 +40,13 @@ public class InvoiceController {
         this.articleReactRepository = articleReactRepository;
     }
 
-    public Mono<Invoice> createInvoice() {
+    private Mono<Invoice> createInvoice() {
         Invoice invoice = new Invoice(0, null, null);
         Mono<Ticket> ticketPublisher = ticketReactRepository.findFirstByOrderByCreationDateDescIdDesc()
                 .switchIfEmpty(Mono.error(new NotFoundException("Last Ticket not found")))
-                .doOnNext(ticket1 -> {
-                    invoice.setTicket(ticket1);
-                    invoice.setUser(ticket1.getUser());
+                .doOnNext(ticket -> {
+                    invoice.setTicket(ticket);
+                    invoice.setUser(ticket.getUser());
                 })
                 .handle((ticket, synchronousSink) -> {
                     User user = ticket.getUser();
@@ -75,9 +75,7 @@ public class InvoiceController {
     }
 
     private Mono<Invoice> calculateBaseAndTax(Invoice invoice, Mono<Ticket> ticketPublisher) {
-        return ticketPublisher
-                .switchIfEmpty(Mono.error(new NotFoundException("Ticket")))
-                .flatMap(ticket -> calculateBaseAndTax(invoice));
+        return ticketPublisher.flatMap(ticket -> calculateBaseAndTax(invoice));
     }
 
 
@@ -98,18 +96,16 @@ public class InvoiceController {
         return pdfService.generateInvoice(this.createInvoice());
     }
 
+    @Transactional
     public Mono<byte[]> updateAndPdf(String id) {
         return pdfService.generateInvoice(this.updateInvoice(id));
     }
 
-    public Mono<Invoice> updateInvoice(String id) {
+    private Mono<Invoice> updateInvoice(String id) {
         return invoiceReactRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Invoice(" + id + ")")))
                 .flatMap(this::calculateBaseAndTax)
-                .doOnNext(invoice -> {
-                    invoiceReactRepository.save(invoice);
-                    System.out.println("save invoice --> " + invoice);
-                });
+                .flatMap(invoice -> invoiceReactRepository.save(invoice));
     }
 
     private Mono<Invoice> calculateBaseAndTax(Invoice invoice){
@@ -124,7 +120,6 @@ public class InvoiceController {
                             invoice.setTax(invoice.getTax().add(articleTax));
                             BigDecimal articleBaseTax = shopping.getShoppingTotal().subtract(articleTax);
                             invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
-                            System.out.println("calculate Base and Tax --> " + invoice);
                         })).collect(Collectors.toList());
         return Mono.when(articlePublishers).then(Mono.just(invoice));
     }
