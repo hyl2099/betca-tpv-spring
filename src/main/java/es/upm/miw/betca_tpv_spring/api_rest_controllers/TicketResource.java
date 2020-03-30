@@ -18,6 +18,7 @@ import javax.validation.Valid;
 public class TicketResource {
 
     public static final String TICKETS = "/tickets";
+    public static final String TICKET_ID = "/{id}";
 
     private TicketController ticketController;
 
@@ -36,5 +37,10 @@ public class TicketResource {
     public Flux<TicketOutputDto> readAll() {
         return this.ticketController.readAll()
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = TICKET_ID)
+    public byte[] getPdf(@PathVariable String id) {
+        return this.ticketController.getPdf(id);
     }
 }
