@@ -4,27 +4,22 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-
 @Document
 public class CustomerPoints {
 
     @Id
     private String id;
-    private Integer points;
-    private LocalDateTime registrationDate;
+    private int points;
     @DBRef(lazy = true)
     private User user;
 
     public CustomerPoints() {
-        this.registrationDate = LocalDateTime.now();
+
     }
 
-    public CustomerPoints(String id, Integer points, LocalDateTime registrationDate, User user) {
-        this();
+    public CustomerPoints(String id, int points, User user) {
         this.id = id;
         this.points = points;
-        this.registrationDate = registrationDate;
         this.user = user;
     }
 
@@ -32,20 +27,20 @@ public class CustomerPoints {
         return id;
     }
 
-    public Integer getPoints() {
+    public int getPoints() {
         return points;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setPoints(Integer points) {
+    public void setPoints(int points) {
         this.points = points;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -63,7 +58,6 @@ public class CustomerPoints {
         return "CustomerPoints{" +
                 "id='" + id + '\'' +
                 ", points=" + points +
-                ", registrationDate=" + registrationDate +
                 ", user=" + user +
                 '}';
     }
