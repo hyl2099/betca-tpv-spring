@@ -45,6 +45,7 @@ public class DatabaseSeederService {
     private OrderRepository orderRepository;
     private TagRepository tagRepository;
     private CustomerDiscountRepository customerDiscountRepository;
+    private CustomerPointsRepository customerPointsRepository;
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
@@ -68,6 +69,7 @@ public class DatabaseSeederService {
             TagRepository tagRepository,
             ArticlesFamilyRepository articlesFamilyRepository,
             CustomerDiscountRepository customerDiscountRepository,
+            CustomerPointsRepository customerPointsRepository,
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
             StockAlarmRepository stockAlarmRepository,
@@ -89,6 +91,7 @@ public class DatabaseSeederService {
         this.orderRepository = orderRepository;
         this.tagRepository = tagRepository;
         this.customerDiscountRepository = customerDiscountRepository;
+        this.customerPointsRepository = customerPointsRepository;
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
@@ -155,6 +158,7 @@ public class DatabaseSeederService {
         this.sendingsRepository.deleteAll();
         this.staffRepository.deleteAll();
         this.stockAlarmRepository.deleteAll();
+        this.customerPointsRepository.deleteAll();
         // -------------------------------------------------------------------------
         this.initialize();
     }
@@ -337,6 +341,14 @@ public class DatabaseSeederService {
         };
         this.customerDiscountRepository.saveAll(Arrays.asList(customerDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customerDiscounts");
+        CustomerPoints[] customerPoints = {
+                new CustomerPoints("cp1", 10, users[0]),
+                new CustomerPoints("cp2", 20, users[1]),
+                new CustomerPoints("cp3", 30, users[2]),
+                new CustomerPoints("cp4", 40, users[3])
+        };
+        this.customerPointsRepository.saveAll(Arrays.asList(customerPoints));
+        LogManager.getLogger(this.getClass()).warn("        ------- customerPoints");
 
         AlarmArticle[] alarmArticles = {
                 new AlarmArticle("1", 500, 1500),

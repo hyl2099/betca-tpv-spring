@@ -2,8 +2,6 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CustomerPoints;
 import es.upm.miw.betca_tpv_spring.documents.User;
-import es.upm.miw.betca_tpv_spring.dtos.CustomerPointsDto;
-import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.CustomerPointsReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +21,28 @@ public class CustomerPointsController {
         this.userReactRepository = userReactRepository;
     }
 
+    public Mono<Integer> sendCustomerPointsByUserMobile(String mobile) {
+        Mono<User> user = this.findUserByMobile(mobile);
+        return user.then(this.customerPointsReactRepository.findByUser(user)).map(
+                doc -> doc.getPoints()
+        );
+    }
+
     public Mono<Void> consumeAllCustomerPointsByUserMobile(String mobile) {
 
-        Mono<User> user = this.userReactRepository.findByMobile(mobile);
+        Mono<User> user = this.findUserByMobile(mobile);
 
         Mono<CustomerPoints> customerPointsMono = this.customerPointsReactRepository.findByUser(user)
+                .switchIfEmpty(Mono.empty())
                 .map(doc -> {
                     doc.setPoints(0);
-                    System.out.println("HOLAA2" + doc.toString());
                     return doc;
                 });
 
         return user.then(this.customerPointsReactRepository.saveAll(customerPointsMono).then());
+    }
+
+    public Mono<User> findUserByMobile(String mobile) {
+        return this.userReactRepository.findByMobile(mobile);
     }
 }
