@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_spring.repositories;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
 import es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService;
-import es.upm.miw.betca_tpv_spring.documents.CustomerDiscount;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -40,24 +39,4 @@ public class CustomerDiscountReactRepositoryIT {
                 .thenCancel()
                 .verify();
     }
-
-    /*@Test
-    void testFindByUserMobile() {
-        CustomerDiscount customerDiscount = this.customerDiscountReactRepository.findById("d").block();
-        //assert customerDiscount != null;
-        StepVerifier
-                .create(this.customerDiscountReactRepository.findByUserMobile(customerDiscount.getUser().getMobile()))
-                .expectNextMatches(m -> {
-                    assertEquals(m.getId(), "d");
-                    assertEquals("discount1", customerDiscount.getDescription());
-                    assertNotNull(customerDiscount.getRegistrationDate());
-                    assertEquals(m.getDiscount(), customerDiscount.getDiscount());
-                    assertEquals(BigDecimal.TEN, customerDiscount.getMinimumPurchase());
-                    assertNotNull(customerDiscount.getUser());
-                    assertFalse(customerDiscount.toString().matches("@"));
-                    return true;
-                })
-                .thenCancel()
-                .verify();
-    }*/
 }
