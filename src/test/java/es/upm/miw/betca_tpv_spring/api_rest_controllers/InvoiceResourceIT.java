@@ -27,4 +27,14 @@ public class InvoiceResourceIT {
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
     }
+
+    @Test
+    void testGenerate() {
+        this.restService.loginAdmin(webTestClient)
+                .patch().uri(contextPath + InvoiceResource.INVOICES + "/20201" + InvoiceResource.PRINT)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
 }

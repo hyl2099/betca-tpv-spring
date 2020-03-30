@@ -261,17 +261,20 @@ public class DatabaseSeederService {
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
                 new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
+                new Ticket(6, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
         tickets[2].setId("201901123");
         tickets[3].setId("201901124");
         tickets[4].setId("201901125");
+        tickets[5].setId("201901126");
         this.ticketRepository.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
                 new Invoice(1, users[4], tickets[1]),
-                new Invoice(2, users[4], tickets[3])
+                new Invoice(2, users[4], tickets[4])
         };
         invoices[1].setTax(new BigDecimal("0.0368"));
         invoices[1].setBaseTax(new BigDecimal("0.6624"));
@@ -326,10 +329,7 @@ public class DatabaseSeederService {
         };
         Order[] orders = {
                 new Order("order1", providers[0], orderLines),
-                new Order("order2", providers[1], orderLines),
-                new Order("order3", providers[1], orderLines)
         };
-        orders[1].close();
         this.orderRepository.saveAll(Arrays.asList(orders));
         LogManager.getLogger(this.getClass()).warn("        ------- orders");
         CustomerDiscount[] customerDiscounts = {

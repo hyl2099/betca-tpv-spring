@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
+import es.upm.miw.betca_tpv_spring.documents.ShoppingState;
 import es.upm.miw.betca_tpv_spring.documents.Ticket;
 import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,9 @@ class TicketTrackingControllerIT {
                     assertEquals(t.getReference(), ticket.getReference());
                     assertNotNull(t.getShoppingList());
                     assertEquals(t.getShoppingList()[0].getCode(), "8400000000031");
+                    assertEquals(t.getShoppingList()[0].getShoppingState(), ShoppingState.COMMITTED);
                     assertEquals(t.getShoppingList()[1].getCode(), "8400000000055");
+                    assertEquals(t.getShoppingList()[1].getShoppingState(), ShoppingState.COMMITTED);
                     return true;
                 }).expectComplete().verify();
     }
