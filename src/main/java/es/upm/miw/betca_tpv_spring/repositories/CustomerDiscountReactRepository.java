@@ -7,4 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerDiscountReactRepository extends ReactiveSortingRepository<CustomerDiscount, String> {
     Mono<CustomerDiscount> findByUser(Mono<User> user);
+
+    Mono<CustomerDiscount> findByUserMobile(String mobile);
 }
