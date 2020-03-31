@@ -5,16 +5,21 @@ import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_spring.exceptions.PdfException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -99,6 +104,18 @@ public class TicketController {
 
     public Flux<TicketOutputDto> readAll() {
         return this.ticketReactRepository.findAllTickets();
+    }
+
+
+    public byte[] getPdf(String id) {
+        try {
+            String path = "/tpv-pdfs/tickets/ticket-" + id;
+            String USER_HOME = "user.home";
+            String PDF_FILE_EXT = ".pdf";
+            return Files.readAllBytes(new File(System.getProperty(USER_HOME) + path + PDF_FILE_EXT).toPath());
+        } catch (IOException ioe) {
+            throw new PdfException("Can’t read PDF");
+        }
     }
 
 }
