@@ -345,7 +345,8 @@ public class DatabaseSeederService {
                 new CustomerPoints("cp1", 10, users[0]),
                 new CustomerPoints("cp2", 20, users[1]),
                 new CustomerPoints("cp3", 30, users[2]),
-                new CustomerPoints("cp4", 40, users[3])
+                new CustomerPoints("cp4", 40, users[3]),
+                new CustomerPoints("cp5", 50, users[4])
         };
         this.customerPointsRepository.saveAll(Arrays.asList(customerPoints));
         LogManager.getLogger(this.getClass()).warn("        ------- customerPoints");

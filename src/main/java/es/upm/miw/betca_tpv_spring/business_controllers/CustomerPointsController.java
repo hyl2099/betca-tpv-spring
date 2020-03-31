@@ -23,19 +23,19 @@ public class CustomerPointsController {
 
     public Mono<Integer> sendCustomerPointsByUserMobile(String mobile) {
         Mono<User> user = this.findUserByMobile(mobile);
-        return user.then(this.customerPointsReactRepository.findByUser(user)).map(
+        return this.customerPointsReactRepository.findByUser(user).map(
                 doc -> doc.getPoints()
         );
     }
 
-    public Mono<Void> consumeAllCustomerPointsByUserMobile(String mobile) {
+    public Mono<Void> setCustomerPointsByUserMobile(String mobile, Integer points) {
 
         Mono<User> user = this.findUserByMobile(mobile);
 
         Mono<CustomerPoints> customerPointsMono = this.customerPointsReactRepository.findByUser(user)
                 .switchIfEmpty(Mono.empty())
                 .map(doc -> {
-                    doc.setPoints(0);
+                    doc.setPoints(points);
                     return doc;
                 });
 

@@ -18,7 +18,7 @@ public class CustomerPointsControllerIT {
     @Test
     void testConsumeAllCustomerPointsByUserMobile() {
         StepVerifier
-                .create(this.customerPointsController.consumeAllCustomerPointsByUserMobile("666666002"))
+                .create(this.customerPointsController.setCustomerPointsByUserMobile("666666002", 10))
                 .expectNextCount(0)
                 .expectComplete()
                 .verify();

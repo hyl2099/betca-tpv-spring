@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.CustomerPointsResource.CUSTOMER_POINTS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,5 +42,13 @@ public class CustomerPointsResourceIT {
                 .expectBody(Integer.class)
                 .value(Assertions::assertNull)
                 .value(points -> assertEquals(null, points));
+    }
+
+    @Test
+    void updateCustomerPointsByUserMobileTest() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + CUSTOMER_POINTS + CustomerPointsResource.MOBILE_ID, "666666004")
+                .body(BodyInserters.fromObject(new Integer(1000)))
+                .exchange().expectStatus().isOk();
     }
 }
