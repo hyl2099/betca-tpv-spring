@@ -2,46 +2,28 @@ package es.upm.miw.betca_tpv_spring.dtos;
 
 
 public class FamilyCompleteDto {
-
-    private String id;
     private String description;
     private String provider;
     private String sizeType;
     private String fromSize;
     private String toSize;
-    private String refence;
+    private String reference;
     private int increment;
 
     public FamilyCompleteDto(FamilyCompleteDto articlesFamilyComplete) {
-        this.id = articlesFamilyComplete.getId();
         this.description = articlesFamilyComplete.getDescription();
         this.sizeType = articlesFamilyComplete.getSizeType();
         this.provider = articlesFamilyComplete.getProvider();
         this.fromSize = articlesFamilyComplete.getFromSize();
         this.toSize = articlesFamilyComplete.getToSize();
         this.increment = articlesFamilyComplete.getIncrement();
-        this.refence = articlesFamilyComplete.getRefence();
+        this.reference = articlesFamilyComplete.getRefence();
     }
 
     public FamilyCompleteDto() {
 
     }
 
-    public FamilyCompleteDto(String description, String sizeType, String reference, String fromSize, String toSize) {
-        this.description = description;
-        this.sizeType = sizeType;
-        this.refence = reference;
-        this.fromSize = fromSize;
-        this.toSize = toSize;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getDescription() {
         return description;
@@ -92,10 +74,10 @@ public class FamilyCompleteDto {
     }
 
     public String getRefence() {
-        return refence;
+        return reference;
     }
 
-    public void setRefence(String refence) {
-        this.refence = refence;
+    public void setRefence(String reference) {
+        this.reference = reference;
     }
 }
