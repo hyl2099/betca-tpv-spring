@@ -94,8 +94,8 @@ public class ArticlesFamilyController {
             else
                 description = String.valueOf(index);
 
-            Article article = Article.builder(code).description(articlesFamilyDto.getDescription() + " T" + description)
-            .reference(articlesFamilyDto.getRefence()).provider(provider.get()).build();
+            Article article = Article.builder(code).description(articlesFamilyDto.getRefence()+ "-" + articlesFamilyDto.getDescription() + " T" + description)
+            .reference(articlesFamilyDto.getRefence()+ " T" + description).provider(provider.get()).build();
             this.articleRepository.save(article);
             familyArticleList.add(new FamilyArticle(article));
         };

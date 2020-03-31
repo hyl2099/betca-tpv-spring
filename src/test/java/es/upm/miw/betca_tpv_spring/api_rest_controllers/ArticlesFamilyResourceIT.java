@@ -59,7 +59,7 @@ public class ArticlesFamilyResourceIT {
                 .queryParam("description", "root").build()
         ).exchange().expectStatus().isOk();
     }
-/*
+
     @Test
     void testCreateArticleFamilySize() {
         ProviderCreationDto providerCreationDto =
@@ -95,8 +95,6 @@ public class ArticlesFamilyResourceIT {
 
 
     }
-    */
-
 
     @Test
     void testSize() {
