@@ -26,6 +26,7 @@ public class TicketTrackingResource {
         this.ticketTrackingController = ticketTrackingController;
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping(value = REFERENCE)
     public Mono<TicketOutputDto> searchByReference(@PathVariable String reference) {
         return this.ticketTrackingController.searchByReference(reference)

@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
+import es.upm.miw.betca_tpv_spring.business_services.Barcode;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleRepository;
 import es.upm.miw.betca_tpv_spring.repositories.ProviderRepository;
@@ -92,11 +93,12 @@ class ArticleResourceIT {
 
     @Test
     void testCreateArticle() {
+        String code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0, 12)) + 1);
         this.restService.loginAdmin(webTestClient)
                 .post().uri(contextPath + ARTICLES)
                 .body(
                         BodyInserters.fromObject(
-                                new ArticleDto("8400000000093", "nueva", "nuevo", new BigDecimal("20"), 10)
+                                new ArticleDto(code, "nueva", "nuevo", new BigDecimal("20"), 10)
                         )
                 ).exchange().expectStatus().isOk().expectBody(ArticleDto.class)
                 .value(Assertions::assertNotNull);

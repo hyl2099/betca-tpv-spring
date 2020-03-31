@@ -1,5 +1,4 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
-
 import es.upm.miw.betca_tpv_spring.business_services.Barcode;
 import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleFamilyCompleteDto;
@@ -11,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 
 @Controller
@@ -26,16 +25,21 @@ public class ArticlesFamilyController {
     private ArticleRepository articleRepository;
 
     @Autowired
-    private SizeTypeRepository sizeTypeRepository;
-
-    @Autowired
-    private SizeRepository sizeRepository;
-
-    @Autowired
     private ArticlesFamilyReactRepository articlesFamilyReactRepository;
 
     @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
+    private ArticlesFamilyRepository articlesFamilyRepository;
+
+    private List<String> getSizes() throws IOException {
+        String propFileName = "config.properties";
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+        Properties prop = new Properties();
+        prop.load(inputStream);
+        return Arrays.asList(prop.getProperty("sizes").split(","));
+    }
 
     public List<ArticleFamilyCompleteDto> readFamilyCompositeArticlesList(String description) {
         FamilyComposite familyComplete = familyCompositeRepository.findFirstByDescription(description);
@@ -64,32 +68,44 @@ public class ArticlesFamilyController {
 
     }
 
-    public List<SizeType> readAllSizeTypes() {
-        return sizeTypeRepository.findAll();
+    public List<String>  readSizes() throws IOException {
+        return getSizes();
     }
 
-    public List<Size> findSizeBySizeTypeId(String id) {
-        return this.sizeRepository.findBySizeTypeIn(this.sizeTypeRepository.findById(id));
-    }
 
-    public Mono<ArticlesFamilyDto> createArticleFamily(FamilyCompleteDto articlesFamilyDto) {
-        List<Size> sizes = this.sizeRepository.findByIdBetween((articlesFamilyDto.getFromSize()), articlesFamilyDto.getToSize());
+    public Mono<ArticlesFamilyDto> createArticleFamily(FamilyCompleteDto articlesFamilyDto) throws IOException {
+
+        List<String> sizes = getSizes();
+        int lowerLimit = Integer.parseInt(articlesFamilyDto.getFromSize());
+        int upperLimit = Integer.parseInt(articlesFamilyDto.getToSize());
         List<ArticlesFamily> familyArticleList = new ArrayList<>();
         Optional<Provider> provider = this.providerRepository.findById(articlesFamilyDto.getProvider());
-        for (int index = 0; index < sizes.size() - 1; index = index++ + articlesFamilyDto.getIncrement()) {
+
+
+        for (int index = lowerLimit; index <= upperLimit; index = index+1 + articlesFamilyDto.getIncrement()) {
             String code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0, 12)) + 1);
             if (code.length() == 13 && Long.parseLong(code.substring(7, 12)) > 99999L) {
                 return Mono.error(new BadRequestException("Index out of range"));
             }
-            Article article = Article.builder(code).description(articlesFamilyDto.getDescription() + " T" + sizes.get(index).getDescription())
-                    .reference(articlesFamilyDto.getRefence()).provider(provider.get()).build();
+
+            String description;
+            if(articlesFamilyDto.getSizeType().equals("1"))
+                description = sizes.get(index);
+            else
+                description = String.valueOf(index);
+
+            Article article = Article.builder(code).description(articlesFamilyDto.getRefence()+ "-" + articlesFamilyDto.getDescription() + " T" + description)
+            .reference(articlesFamilyDto.getRefence()+ " T" + description).provider(provider.get()).build();
             this.articleRepository.save(article);
             familyArticleList.add(new FamilyArticle(article));
-        }
+        };
+        this.articlesFamilyRepository.saveAll(familyArticleList);
         ArticlesFamily familyCompositeSizesList = new FamilyComposite(FamilyType.SIZES, articlesFamilyDto.getRefence(), articlesFamilyDto.getDescription());
-        for (ArticlesFamily articlesFamily : familyArticleList) {
+
+       for (ArticlesFamily articlesFamily : familyArticleList) {
             familyCompositeSizesList.add(articlesFamily);
         }
+
         return this.articlesFamilyReactRepository.save(familyCompositeSizesList).map(ArticlesFamilyDto::new);
     }
 
