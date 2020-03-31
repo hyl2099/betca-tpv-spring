@@ -48,8 +48,6 @@ public class DatabaseSeederService {
     private SendingsRepository sendingsRepository;
     private StaffRepository staffRepository;
     private StockAlarmRepository stockAlarmRepository;
-    private SizeTypeRepository sizeTypeRepository;
-    private SizeRepository sizeRepository;
 
     @Autowired
     public DatabaseSeederService(
@@ -70,9 +68,7 @@ public class DatabaseSeederService {
             CustomerDiscountRepository customerDiscountRepository,
             SendingsRepository sendingsRepository,
             StaffRepository staffRepository,
-            StockAlarmRepository stockAlarmRepository,
-            SizeTypeRepository sizeTypeRepository,
-            SizeRepository sizeRepository
+            StockAlarmRepository stockAlarmRepository
     ) {
         this.ticketRepository = ticketRepository;
         this.invoiceRepository = invoiceRepository;
@@ -92,8 +88,6 @@ public class DatabaseSeederService {
         this.sendingsRepository = sendingsRepository;
         this.staffRepository = staffRepository;
         this.stockAlarmRepository = stockAlarmRepository;
-        this.sizeTypeRepository = sizeTypeRepository;
-        this.sizeRepository = sizeRepository;
     }
 
     @PostConstruct
@@ -349,34 +343,6 @@ public class DatabaseSeederService {
         this.stockAlarmRepository.saveAll(Arrays.asList(stockAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
 
-        SizeType[] sizesType = {
-                new SizeType("1", "International"),
-                new SizeType("2", "Number")
-        };
-        this.sizeTypeRepository.saveAll(Arrays.asList(sizesType));
-        LogManager.getLogger(this.getClass()).warn("        ------- sizes type");
-
-        List<Size> sizes = new ArrayList<>();
-        sizes.add(new Size("1", "XXS", sizesType[0]));
-        sizes.add(new Size("2", "XS", sizesType[0]));
-        sizes.add(new Size("3", "S", sizesType[0]));
-        sizes.add(new Size("4", "M", sizesType[0]));
-        sizes.add(new Size("5", "L", sizesType[0]));
-        sizes.add(new Size("6", "XL", sizesType[0]));
-        sizes.add(new Size("7", "XXL", sizesType[0]));
-        sizes.add(new Size("8", "XXXL", sizesType[0]));
-        sizes.add(new Size("9", "Special", sizesType[0]));
-        sizes.add(new Size("10", "10", sizesType[1]));
-        sizes.add(new Size("11", "20", sizesType[1]));
-        sizes.add(new Size("12", "30", sizesType[1]));
-        sizes.add(new Size("13", "40", sizesType[1]));
-        sizes.add(new Size("14", "50", sizesType[1]));
-        sizes.add(new Size("15", "60", sizesType[1]));
-        sizes.add(new Size("16", "70", sizesType[1]));
-        sizes.add(new Size("17", "80", sizesType[1]));
-        sizes.add(new Size("18", "90", sizesType[1]));
-        this.sizeRepository.saveAll(sizes);
-        LogManager.getLogger(this.getClass()).warn("        ------- sizes");
     }
 
 }

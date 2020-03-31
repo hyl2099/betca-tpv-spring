@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.List;
+
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticlesFamilyResource.ARTICLES_FAMILY;
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticlesFamilyResource.FAMILY_COMPOSITE;
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ProviderResource.PROVIDERS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.ArticlesFamilyResource.SIZES;
+import static org.junit.Assert.*;
 
 @ApiTestConfig
 public class ArticlesFamilyResourceIT {
@@ -75,9 +77,10 @@ public class ArticlesFamilyResourceIT {
         familyCompleteDto.setDescription("Test Product");
         familyCompleteDto.setSizeType("1");
         familyCompleteDto.setRefence("Test Reference");
-        familyCompleteDto.setFromSize("S");
-        familyCompleteDto.setToSize("XL");
+        familyCompleteDto.setFromSize("2");
+        familyCompleteDto.setToSize("3");
         familyCompleteDto.setProvider(id);
+
         ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + ARTICLES_FAMILY)
                 .body(BodyInserters.fromObject(familyCompleteDto))
@@ -89,5 +92,19 @@ public class ArticlesFamilyResourceIT {
         assertEquals("Test Reference", articleFamily.getReference());
         assertEquals(null, articleFamily.getCode());
         assertEquals(FamilyType.values()[2], articleFamily.getFamilyType());
+
+
+    }
+
+    @Test
+    void testSize() {
+        List<String> sizes = this.restService.loginAdmin(this.webTestClient)
+                .get().uri(contextPath + ARTICLES_FAMILY +SIZES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(List.class)
+                .returnResult().getResponseBody();
+        assertNotNull(sizes);
+        assertTrue(sizes.size()>0);
     }
 }
