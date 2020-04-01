@@ -72,17 +72,6 @@ public class UserController {
                 .handle((document, sink) -> sink.error(new ConflictException("The mobile already exists")));
     }
 
-    private Mono<Void> notValidPassword(String mobile, String password) {
-        return this.userReactRepository.findByMobile(mobile)
-                .handle((user1, sink) -> {
-                    if (!user1.checkPassword(password)) {
-                        sink.error(new UnauthorizedException("Invalid Password"));
-                    } else {
-                        sink.complete();
-                    }
-                });
-    }
-
     public Mono<UserDto> createUser(UserDto userDto) {
         Mono<Void> noExistByMobile = this.noExistByMobile(userDto.getMobile());
         User user = User.builder().mobile(userDto.getMobile()).username(userDto.getUsername()).email(userDto.getEmail()).dni(userDto.getDni()).address(userDto.getAddress()).build();
