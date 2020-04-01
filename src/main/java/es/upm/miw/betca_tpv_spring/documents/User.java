@@ -69,6 +69,11 @@ public class User {
         }
     }
 
+    public Boolean checkPassword(String password) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder.matches(password, this.getPassword());
+    }
+
     public Boolean isActive() {
         return active;
     }
