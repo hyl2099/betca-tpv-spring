@@ -16,11 +16,20 @@ public class CustomerPointsControllerIT {
     private CustomerPointsController customerPointsController;
 
     @Test
-    void testConsumeAllCustomerPointsByUserMobile() {
+    void testUpdateCustomerPointsByUserMobile() {
         StepVerifier
-                .create(this.customerPointsController.setCustomerPointsByUserMobile("666666002", 10))
+                .create(this.customerPointsController.setCustomerPointsByUserMobile("666666002", 100))
                 .expectNextCount(0)
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testUpdateCustomerPointsByUserMobileNotFound() {
+        StepVerifier
+                .create(this.customerPointsController.setCustomerPointsByUserMobile("666664002", 10))
+                .expectNextCount(0)
+                .expectError()
                 .verify();
     }
 
@@ -34,6 +43,35 @@ public class CustomerPointsControllerIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void sendCustomerPointsByUserMobileNotFoundTest() {
+        StepVerifier
+                .create(this.customerPointsController.sendCustomerPointsByUserMobile("666666e003"))
+                .expectError()
+                .verify();
+    }
+
+    @Test
+    void createCustomerPointsByUserMobileTest() {
+        StepVerifier
+                .create(this.customerPointsController.createCustomerPointsByExistingUserMobile("666666006"))
+                .expectNextMatches(cp -> {
+                    assertNotNull(cp);
+                    assertEquals("666666006", cp);
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void createCustomerPointsByUserMobileNotFoundTest() {
+        StepVerifier
+                .create(this.customerPointsController.createCustomerPointsByExistingUserMobile("6666667001"))
+                .expectError()
                 .verify();
     }
 }
