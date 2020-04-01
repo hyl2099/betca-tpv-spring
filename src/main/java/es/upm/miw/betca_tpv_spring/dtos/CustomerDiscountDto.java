@@ -20,17 +20,20 @@ public class CustomerDiscountDto {
 
     private User user;
 
+    private String mobile;
+
     public CustomerDiscountDto() {
         // Empty for framework
     }
 
     public CustomerDiscountDto(String description, LocalDateTime registrationDate, BigDecimal discount,
-                               BigDecimal minimumPurchase, User user) {
+                               BigDecimal minimumPurchase, User user, String mobile) {
         this.description = description;
         this.registrationDate = LocalDateTime.now();
         this.discount = discount;
         this.minimumPurchase = minimumPurchase;
         this.user = user;
+        this.mobile = mobile;
     }
 
     public CustomerDiscountDto(CustomerDiscount customerDiscount) {
@@ -39,6 +42,7 @@ public class CustomerDiscountDto {
         this.discount = customerDiscount.getDiscount();
         this.minimumPurchase = customerDiscount.getMinimumPurchase();
         this.user = customerDiscount.getUser();
+        this.mobile = getMobile();
     }
 
     public String getDescription() {
@@ -72,11 +76,22 @@ public class CustomerDiscountDto {
     public User getUser() {
         return user;
     }
+    
+    public void setUser(User user) { this.user = user; }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
 
     @Override
     public String toString() {
         return "CustomerDiscountDto [description=" + description + ", registrationDate=" + registrationDate +
-                ", discount=" + discount + ", minimumPurchase=" + minimumPurchase + ", user=" + user + "]";
+                ", discount=" + discount + ", minimumPurchase=" + minimumPurchase + ", user=" + user + 
+                ", mobile=" + mobile + "]";
     }
 }
 
