@@ -4,11 +4,13 @@ import es.upm.miw.betca_tpv_spring.business_services.JwtService;
 import es.upm.miw.betca_tpv_spring.documents.Role;
 import es.upm.miw.betca_tpv_spring.documents.User;
 import es.upm.miw.betca_tpv_spring.dtos.TokenOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.UserCredentialDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
 import es.upm.miw.betca_tpv_spring.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_spring.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_spring.exceptions.UnauthorizedException;
 import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,6 +72,17 @@ public class UserController {
                 .handle((document, sink) -> sink.error(new ConflictException("The mobile already exists")));
     }
 
+    private Mono<Void> notValidPassword(String mobile, String password) {
+        return this.userReactRepository.findByMobile(mobile)
+                .handle((user1, sink) -> {
+                    if (!user1.checkPassword(password)) {
+                        sink.error(new UnauthorizedException("Invalid Password"));
+                    } else {
+                        sink.complete();
+                    }
+                });
+    }
+
     public Mono<UserDto> createUser(UserDto userDto) {
         Mono<Void> noExistByMobile = this.noExistByMobile(userDto.getMobile());
         User user = User.builder().mobile(userDto.getMobile()).username(userDto.getUsername()).email(userDto.getEmail()).dni(userDto.getDni()).address(userDto.getAddress()).build();
@@ -105,4 +118,15 @@ public class UserController {
         }
         return Mono.when(user, noExistByMobile).then(this.userReactRepository.saveAll(user).next()).map(UserDto::new);
     }
+
+    public Mono<UserDto> changePassword(String mobile, UserCredentialDto userCredentialDto) {
+        Mono<User> user = this.userReactRepository.findByMobile(mobile)
+                .switchIfEmpty(Mono.error(new NotFoundException("User mobile:" + mobile)))
+                .map(user1 -> {
+                    user1.setPassword(userCredentialDto.getNewPassword());
+                    return user1;
+                });
+        return Mono.when(user).then(this.userReactRepository.saveAll(user).next()).map(UserDto::new);
+    }
+
 }

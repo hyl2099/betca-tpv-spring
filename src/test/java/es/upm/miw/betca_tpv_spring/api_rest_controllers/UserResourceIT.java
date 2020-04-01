@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.User;
+import es.upm.miw.betca_tpv_spring.dtos.UserCredentialDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
 import org.junit.jupiter.api.Assertions;
@@ -173,5 +174,33 @@ class UserResourceIT {
                         new UserDto(User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address("C/TPV, 6").email("u006@gmail.com").build())
                 )).exchange().expectStatus().isOk().expectBody(UserDto.class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void updatePassword() {
+        this.restService.loginAdmin(this.webTestClient)
+                .patch().uri(contextPath + USERS + "/password" + UserResource.MOBILE_ID, "6")
+                .body(BodyInserters.fromObject(
+                        new UserCredentialDto("6", "5")
+                )).exchange().expectStatus().isOk().expectBody(UserDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void updatePasswordMobileBadRequest() {
+        this.restService.loginAdmin(this.webTestClient)
+                .patch().uri(contextPath + USERS + "/password" + UserResource.MOBILE_ID, "")
+                .body(BodyInserters.fromObject(
+                        new UserCredentialDto("6", "5")
+                )).exchange().expectStatus().isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void updatePasswordMobileNotFound() {
+        this.restService.loginAdmin(this.webTestClient)
+                .patch().uri(contextPath + USERS + "/password" + UserResource.MOBILE_ID, "asda")
+                .body(BodyInserters.fromObject(
+                        new UserCredentialDto("6", "5")
+                )).exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
