@@ -1,8 +1,9 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CustomerDiscount;
+import es.upm.miw.betca_tpv_spring.documents.User;
 import es.upm.miw.betca_tpv_spring.dtos.CustomerDiscountDto;
-import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
+import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.CustomerDiscountReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.CustomerDiscountRepository;
@@ -10,43 +11,40 @@ import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
 public class CustomerDiscountController {
 
     private static final String USER_NOT_FOUND = "User not found";
-    private CustomerDiscountRepository customerDiscountRepository;
     private CustomerDiscountReactRepository customerDiscountReactRepository;
-    private UserRepository userRepository;
     private UserReactRepository userReactRepository;
 
     @Autowired
     CustomerDiscountController(CustomerDiscountReactRepository customerDiscountReactRepository, UserReactRepository userReactRepository,
                                CustomerDiscountRepository customerDiscountRepository, UserRepository userRepository) {
         this.customerDiscountReactRepository = customerDiscountReactRepository;
-        this.customerDiscountRepository = customerDiscountRepository;
         this.userReactRepository = userReactRepository;
-        this.userRepository = userRepository;
+    }
+
+    public Mono<User> findUserByMobile(String mobile) {
+        return this.userReactRepository.findByMobile(mobile);
     }
 
     public Mono<CustomerDiscountDto> findByUserMobile(String mobile) {
-        return this.customerDiscountReactRepository.findByUser(userReactRepository.findByMobile(mobile))
-                .switchIfEmpty(Mono.empty())
-                .map(CustomerDiscountDto::new);
+        Mono<User> user = this.findUserByMobile(mobile);
+        return this.customerDiscountReactRepository.findByUser(user)
+                .switchIfEmpty(Mono.error(new NotFoundException(USER_NOT_FOUND)))
+                        .map(CustomerDiscountDto::new);
     }
 
     public Mono<CustomerDiscountDto> createCustomerDiscount(CustomerDiscountDto customerDiscountDto) {
         CustomerDiscount customerDiscount = new CustomerDiscount();
-        if (customerDiscountDto.getUser().getMobile() == null) {
-            userReactRepository = Mono.error(new BadRequestException("User can't be null"));
-        } else {
-            userReactRepository = this.userReactRepository(customerDiscountDto.getUserByMobile())
-                    .switchIfEmpty(Mono.error(new NotFoundException(USER_NOT_FOUND + customerDiscountDto.getUserByMobile())))
-                    .doOnNext(customerDiscount::getUser).then;
-        }
-        return Mono
-                .when(customerDiscount)
+        return this.findUserByMobile(customerDiscountDto.getMobile()).doOnNext(user -> {
+            customerDiscount.setDiscount(customerDiscountDto.getDiscount());
+            customerDiscount.setUser(user);
+        })
                 .then(this.customerDiscountReactRepository.save(customerDiscount)).map(CustomerDiscountDto::new);
 
     }
@@ -58,7 +56,6 @@ public class CustomerDiscountController {
                     customerDiscount1.setDescription(customerDiscountDto.getDescription());
                     customerDiscount1.setDiscount(customerDiscountDto.getDiscount());
                     customerDiscount1.setMinimumPurchase(customerDiscountDto.getMinimumPurchase());
-                    customerDiscount1.getUser();
                     return customerDiscount1;
                 });
         return Mono
@@ -74,5 +71,8 @@ public class CustomerDiscountController {
                 .then(this.customerDiscountReactRepository.deleteById(customerDiscountId));
     }
 
+    public Flux<CustomerDiscountDto> readAll() {
+        return this.customerDiscountReactRepository.findAllCustomerDiscounts();
+    }
 
 }
