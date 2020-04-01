@@ -35,4 +35,10 @@ public class CustomerPointsResource {
         return this.customerPointsController.setCustomerPointsByUserMobile(mobile, points)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
+
+    @PostMapping
+    public Mono<String> createCustomerPointsByMobile(@Valid @RequestBody String mobile) {
+        return this.customerPointsController.createCustomerPointsByUserMobile(mobile)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
 }

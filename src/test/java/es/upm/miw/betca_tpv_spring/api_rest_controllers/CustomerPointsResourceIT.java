@@ -38,10 +38,7 @@ public class CustomerPointsResourceIT {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(contextPath + CUSTOMER_POINTS + CustomerPointsResource.MOBILE_ID, this.restService.getAdminMobile())
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(Integer.class)
-                .value(Assertions::assertNull)
-                .value(points -> assertEquals(null, points));
+                .expectStatus().isNotFound();
     }
 
     @Test
