@@ -45,17 +45,17 @@ public class CustomerPointsController {
         return user.then(this.customerPointsReactRepository.saveAll(customerPointsMono).then());
     }
 
-    public Mono<User> findUserByMobile(String mobile) {
-        return this.userReactRepository.findByMobile(mobile)
-                .switchIfEmpty(Mono.error(new NotFoundException("User mobile:" + mobile)));
-    }
-
-    public Mono<String> createCustomerPointsByUserMobile(String mobile) {
+    public Mono<String> createCustomerPointsByExistingUserMobile(String mobile) {
         CustomerPoints customerPoints = new CustomerPoints();
         Mono<User> user = this.findUserByMobile(mobile).doOnNext(userDoc -> {
             customerPoints.setPoints(0);
             customerPoints.setUser(userDoc);
         });
-        return Mono.when(user).then(this.customerPointsReactRepository.save(customerPoints)).map(customerPoints1 -> customerPoints1.getUser().getMobile());
+        return Mono.when(user).then(this.customerPointsReactRepository.save(customerPoints)).map(newCustomerPoints -> newCustomerPoints.getUser().getMobile());
+    }
+
+    public Mono<User> findUserByMobile(String mobile) {
+        return this.userReactRepository.findByMobile(mobile)
+                .switchIfEmpty(Mono.error(new NotFoundException("User mobile:" + mobile)));
     }
 }

@@ -48,4 +48,31 @@ public class CustomerPointsResourceIT {
                 .body(BodyInserters.fromObject(new Integer(1000)))
                 .exchange().expectStatus().isOk();
     }
+
+    @Test
+    void updateCustomerPointsByUserMobileNotFoundTest() {
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + CUSTOMER_POINTS + CustomerPointsResource.MOBILE_ID, "696666004")
+                .body(BodyInserters.fromObject(new Integer(1000)))
+                .exchange().expectStatus().isNotFound();
+    }
+
+    @Test
+    void createCustomerPointsByExistingUserMobileTest() {
+        this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + CUSTOMER_POINTS)
+                .body(BodyInserters.fromObject(
+                        "666666005"
+                )).exchange().expectStatus().isOk().expectBody(String.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void createCustomerPointsByUserMobileNotFoundTest() {
+        this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + CUSTOMER_POINTS)
+                .body(BodyInserters.fromObject(
+                        "66666600a5"
+                )).exchange().expectStatus().isNotFound();
+    }
 }
