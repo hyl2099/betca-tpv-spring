@@ -2,9 +2,9 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
 import es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService;
-import es.upm.miw.betca_tpv_spring.documents.Shopping;
-import es.upm.miw.betca_tpv_spring.documents.ShoppingState;
-import es.upm.miw.betca_tpv_spring.documents.Ticket;
+import es.upm.miw.betca_tpv_spring.documents.*;
+import es.upm.miw.betca_tpv_spring.dtos.InvoiceNegativeCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import es.upm.miw.betca_tpv_spring.repositories.InvoiceReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.TicketRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -163,10 +165,85 @@ public class InvoiceControllerIT {
     void testUpdateInvoiceNotFound() {
         StepVerifier
                 .create(this.invoiceController.updateAndPdf("12234"))
-                .expectErrorMatches(throwable ->{
+                .expectErrorMatches(throwable -> {
                     assertEquals("Not Found Exception (404). Invoice(12234)", throwable.getMessage());
                     return true;
                 })
                 .verify();
     }
+
+
+    @Test
+    void testCreateNegativeInvoice() {
+        List<ShoppingDto> shoppings = new ArrayList<>();
+        shoppings.add(new ShoppingDto("8400000000055", "descrip-a5", new BigDecimal("0.23"),
+                        -2, new BigDecimal("50"), new BigDecimal("0.23"), true));
+        InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto = new InvoiceNegativeCreationInputDto("201901125", shoppings);
+        StepVerifier
+                .create(this.invoiceController.createNegativeAndPdf(invoiceNegativeCreationInputDto))
+                .expectNextMatches(invoice -> {
+                    assertNotNull(invoice);
+                    assertTrue(invoice.length > 0);
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+
+        StepVerifier
+                .create(this.invoiceReactRepository.findById("20203"))
+                .expectNextMatches(invoice -> {
+                    assertNotNull(invoice.getCreationDate());
+                    assertNotNull(invoice.getTicket());
+                    assertNotNull(invoice.getUser());
+                    assertEquals(new BigDecimal("-0.220800"), invoice.getBaseTax());
+                    assertEquals(new BigDecimal("-0.009200"), invoice.getTax());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testCreateNegativeInvoiceErrorAmountPositive() {
+        List<ShoppingDto> shoppings = new ArrayList<>();
+        shoppings.add(new ShoppingDto("8400000000055", "descrip-a5", new BigDecimal("0.23"),
+                2, new BigDecimal("50"), new BigDecimal("0.23"), true));
+        InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto = new InvoiceNegativeCreationInputDto("201901125", shoppings);
+        StepVerifier
+                .create(this.invoiceController.createNegativeAndPdf(invoiceNegativeCreationInputDto))
+                .expectErrorMatches(throwable -> {
+                    assertEquals("Bad Request Exception (400). Shopping Amount not allowed (2)", throwable.getMessage());
+                    return true;
+                })
+                .verify();
+    }
+
+
+    @Test
+    void testCreateNegativeInvoiceErrorPositiveInvoiceNotFound() {
+        List<ShoppingDto> shoppings = new ArrayList<>();
+        InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto = new InvoiceNegativeCreationInputDto("201901123", shoppings);
+        StepVerifier
+                .create(this.invoiceController.createNegativeAndPdf(invoiceNegativeCreationInputDto))
+                .expectErrorMatches(throwable -> {
+                    assertEquals("Not Found Exception (404). Positive Invoice not found", throwable.getMessage());
+                    return true;
+                })
+                .verify();
+    }
+
+
+    @Test
+    void testCreateNegativeInvoiceErrorTicketNotFound() {
+        List<ShoppingDto> shoppings = new ArrayList<>();
+        InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto = new InvoiceNegativeCreationInputDto("999", shoppings);
+        StepVerifier
+                .create(this.invoiceController.createNegativeAndPdf(invoiceNegativeCreationInputDto))
+                .expectErrorMatches(throwable -> {
+                    assertEquals("Not Found Exception (404). Ticket(999)", throwable.getMessage());
+                    return true;
+                })
+                .verify();
+    }
+
 }
