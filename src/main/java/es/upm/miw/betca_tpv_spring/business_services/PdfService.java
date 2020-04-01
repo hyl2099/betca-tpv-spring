@@ -1,12 +1,16 @@
 package es.upm.miw.betca_tpv_spring.business_services;
 
 import es.upm.miw.betca_tpv_spring.documents.*;
+import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import javax.swing.*;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 
 @Service
 public class PdfService {
@@ -161,28 +165,37 @@ public class PdfService {
     }
 
     public Mono<byte[]> generateInvoice(Mono<Invoice> invoiceReact) {
-        return invoiceReact.map(invoice -> {
-            final String path = "/tpv-pdfs/invoices/invoice-" + invoice.getId();
-            PdfBuilder pdf = new PdfBuilder(path);
-            this.addHead(pdf);
-            this.addCostumerHead(pdf, invoice.getUser());
-            pdf.paragraphEmphasized("Invoice Date:" +
-                    invoice.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            PdfTableBuilder table = pdf.table(TABLE_COLUMNS_SIZES_INVOICES).tableColumnsHeader(TABLE_COLUMNS_HEADERS_INVOICES);
-            Ticket ticket = invoice.getTicket();
-            for (int i = 0; i < ticket.getShoppingList().length; i++) {
-                Shopping shopping = ticket.getShoppingList()[i];
-                table.tableCell(String.valueOf(i + 1), shopping.getDescription(),
-                        shopping.getTotalUnitPrice().setScale(2, RoundingMode.HALF_UP) + "€", "" + shopping.getAmount(),
-                        shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€");
-            }
-            table.tableColspanRight("TAX BASE");
-            table.tableColspanRight(invoice.getBaseTax().setScale(2, RoundingMode.HALF_UP) + "€");
-            table.tableColspanRight("TOTAL TAX");
-            table.tableColspanRight(invoice.getTax().setScale(2, RoundingMode.HALF_UP) + "€");
-            table.tableColspanRight("TOTAL");
-            table.tableColspanRight(ticket.getTotal().setScale(2, RoundingMode.HALF_UP) + "€").build();
-            return pdf.build();
-        });
+        return invoiceReact.map(invoice -> buildInvoicePdf(invoice, invoice.getTicket().getShoppingList()));
+    }
+
+    public Mono<byte[]> generateNegativeInvoice(Mono<Invoice> invoiceReact, Shopping[] returnedShoppings){
+        return invoiceReact.map(invoice -> buildInvoicePdf(invoice, returnedShoppings));
+    }
+
+    public byte[] buildInvoicePdf(Invoice invoice, Shopping[] shoppings){
+        final String path = "/tpv-pdfs/invoices/invoice-" + invoice.getId();
+        PdfBuilder pdf = new PdfBuilder(path);
+        this.addHead(pdf);
+        this.addCostumerHead(pdf, invoice.getUser());
+        pdf.paragraphEmphasized("Invoice Date:" +
+                invoice.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        PdfTableBuilder table = pdf.table(TABLE_COLUMNS_SIZES_INVOICES).tableColumnsHeader(TABLE_COLUMNS_HEADERS_INVOICES);
+        BigDecimal total = Stream.of(shoppings)
+                .map(Shopping::getShoppingTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        for (int i = 0; i < shoppings.length; i++) {
+            Shopping shopping = shoppings[i];
+            table.tableCell(String.valueOf(i + 1), shopping.getDescription(),
+                    shopping.getTotalUnitPrice().setScale(2, RoundingMode.HALF_UP) + "€", "" + shopping.getAmount(),
+                    shopping.getShoppingTotal().setScale(2, RoundingMode.HALF_UP) + "€");
+        }
+        table.tableColspanRight("TAX BASE");
+        table.tableColspanRight(invoice.getBaseTax().setScale(2, RoundingMode.HALF_UP) + "€");
+        table.tableColspanRight("TOTAL TAX");
+        table.tableColspanRight(invoice.getTax().setScale(2, RoundingMode.HALF_UP) + "€");
+        table.tableColspanRight("TOTAL");
+        table.tableColspanRight(total.setScale(2, RoundingMode.HALF_UP) + "€").build();
+        return pdf.build();
     }
 }
