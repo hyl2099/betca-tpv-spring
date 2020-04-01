@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.CustomerPoints;
 import es.upm.miw.betca_tpv_spring.documents.User;
+import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.CustomerPointsReactRepository;
 import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,11 @@ public class CustomerPointsController {
 
     public Mono<Integer> sendCustomerPointsByUserMobile(String mobile) {
         Mono<User> user = this.findUserByMobile(mobile);
-        return this.customerPointsReactRepository.findByUser(user).map(
-                doc -> doc.getPoints()
-        );
+        return this.customerPointsReactRepository.findByUser(user)
+                .switchIfEmpty(Mono.error(new NotFoundException("Customer points by user mobile:" + mobile)))
+                .map(
+                        doc -> doc.getPoints()
+                );
     }
 
     public Mono<Void> setCustomerPointsByUserMobile(String mobile, Integer points) {
@@ -33,7 +36,7 @@ public class CustomerPointsController {
         Mono<User> user = this.findUserByMobile(mobile);
 
         Mono<CustomerPoints> customerPointsMono = this.customerPointsReactRepository.findByUser(user)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new NotFoundException("Customer points by user mobile:" + mobile)))
                 .map(doc -> {
                     doc.setPoints(points);
                     return doc;
@@ -43,6 +46,16 @@ public class CustomerPointsController {
     }
 
     public Mono<User> findUserByMobile(String mobile) {
-        return this.userReactRepository.findByMobile(mobile);
+        return this.userReactRepository.findByMobile(mobile)
+                .switchIfEmpty(Mono.error(new NotFoundException("User mobile:" + mobile)));
+    }
+
+    public Mono<String> createCustomerPointsByUserMobile(String mobile) {
+        CustomerPoints customerPoints = new CustomerPoints();
+        Mono<User> user = this.findUserByMobile(mobile).doOnNext(userDoc -> {
+            customerPoints.setPoints(0);
+            customerPoints.setUser(userDoc);
+        });
+        return Mono.when(user).then(this.customerPointsReactRepository.save(customerPoints)).map(customerPoints1 -> customerPoints1.getUser().getMobile());
     }
 }
