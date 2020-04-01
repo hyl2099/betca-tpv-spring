@@ -179,7 +179,7 @@ public class DatabaseSeederService {
                 User.builder().mobile("666666004").username("u004").password("p004").dni("66666604T").address("C/TPV, 4").email("u004@gmail.com").roles(Role.CUSTOMER).build(),
                 User.builder().mobile("666666005").username("u005").password("p005").dni("66666605R").address("C/TPV, 5").email("u005@gmail.com").roles(Role.CUSTOMER).build(),
                 User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address(null).email("u006@gmail.com").roles(Role.CUSTOMER).build(),
-                User.builder().mobile("666666007").username("u007").password("p007").dni("66666607W").address("C/TPV, 6").email("u006@gmail.com")
+                User.builder().mobile("666666007").username("u007").password("p007").dni("66666607W").address("C/TPV, 7").email("u007@gmail.com")
                         .roles(Role.OPERATOR).messagesList(messagesList).build(),
         };
         this.userRepository.saveAll(Arrays.asList(users));
