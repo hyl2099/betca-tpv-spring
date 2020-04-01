@@ -37,8 +37,8 @@ public class CustomerPointsResource {
     }
 
     @PostMapping
-    public Mono<String> createCustomerPointsByMobile(@Valid @RequestBody String mobile) {
-        return this.customerPointsController.createCustomerPointsByUserMobile(mobile)
+    public Mono<String> createCustomerPointsByExistingUserMobile(@Valid @RequestBody String mobile) {
+        return this.customerPointsController.createCustomerPointsByExistingUserMobile(mobile)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
