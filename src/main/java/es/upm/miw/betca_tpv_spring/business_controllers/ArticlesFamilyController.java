@@ -94,13 +94,13 @@ public class ArticlesFamilyController {
             else
                 description = String.valueOf(index);
 
-            Article article = Article.builder(code).description(articlesFamilyDto.getRefence()+ "-" + articlesFamilyDto.getDescription() + " T" + description)
-            .reference(articlesFamilyDto.getRefence()+ " T" + description).provider(provider.get()).build();
+            Article article = Article.builder(code).description(articlesFamilyDto.getReference()+ "-" + articlesFamilyDto.getDescription() + " T" + description)
+            .reference(articlesFamilyDto.getReference()+ " T" + description).provider(provider.get()).build();
             this.articleRepository.save(article);
             familyArticleList.add(new FamilyArticle(article));
-        };
+        }
         this.articlesFamilyRepository.saveAll(familyArticleList);
-        ArticlesFamily familyCompositeSizesList = new FamilyComposite(FamilyType.SIZES, articlesFamilyDto.getRefence(), articlesFamilyDto.getDescription());
+        ArticlesFamily familyCompositeSizesList = new FamilyComposite(FamilyType.SIZES, articlesFamilyDto.getReference(), articlesFamilyDto.getDescription());
 
        for (ArticlesFamily articlesFamily : familyArticleList) {
             familyCompositeSizesList.add(articlesFamily);

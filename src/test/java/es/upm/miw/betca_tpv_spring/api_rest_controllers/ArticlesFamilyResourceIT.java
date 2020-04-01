@@ -76,7 +76,7 @@ public class ArticlesFamilyResourceIT {
         FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
         familyCompleteDto.setDescription("Test Product");
         familyCompleteDto.setSizeType("1");
-        familyCompleteDto.setRefence("Test Reference");
+        familyCompleteDto.setReference("Test Reference");
         familyCompleteDto.setFromSize("2");
         familyCompleteDto.setToSize("3");
         familyCompleteDto.setProvider(id);

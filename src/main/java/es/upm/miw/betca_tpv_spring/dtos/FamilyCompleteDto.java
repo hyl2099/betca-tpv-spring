@@ -17,7 +17,7 @@ public class FamilyCompleteDto {
         this.fromSize = articlesFamilyComplete.getFromSize();
         this.toSize = articlesFamilyComplete.getToSize();
         this.increment = articlesFamilyComplete.getIncrement();
-        this.reference = articlesFamilyComplete.getRefence();
+        this.reference = articlesFamilyComplete.getReference();
     }
 
     public FamilyCompleteDto() {
@@ -73,11 +73,11 @@ public class FamilyCompleteDto {
         this.toSize = toSize;
     }
 
-    public String getRefence() {
+    public String getReference() {
         return reference;
     }
 
-    public void setRefence(String reference) {
+    public void setReference(String reference) {
         this.reference = reference;
     }
 }

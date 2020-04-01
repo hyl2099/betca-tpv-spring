@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.List;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
