@@ -67,6 +67,8 @@ public class CustomerDiscount {
         return user;
     }
 
+    public void setUser(User user) { this.user = user; }
+
     @Override
     public int hashCode() {
         return this.id.hashCode();
