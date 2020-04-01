@@ -61,7 +61,7 @@ public class ArticlesFamilyResourceIT {
     }
 
     @Test
-    void testCreateArticleFamilySize() {
+    void testCreateArticleFamilySizeInternational() {
         ProviderCreationDto providerCreationDto =
                 new ProviderCreationDto("pro4", "12345678J", "C/TPV-pro, 4", "9166666603", "p4@gmail.com", "p4", true);
         ProviderDto provider = this.restService.loginAdmin(this.webTestClient)
@@ -74,11 +74,11 @@ public class ArticlesFamilyResourceIT {
         assertNotNull(provider);
         String id = provider.getId();
         FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
-        familyCompleteDto.setDescription("Test Product");
+        familyCompleteDto.setDescription("Camisetas");
         familyCompleteDto.setSizeType("1");
-        familyCompleteDto.setReference("Test Reference");
-        familyCompleteDto.setFromSize("2");
-        familyCompleteDto.setToSize("3");
+        familyCompleteDto.setReference("Springfield");
+        familyCompleteDto.setFromSize("0");
+        familyCompleteDto.setToSize("5");
         familyCompleteDto.setProvider(id);
 
         ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
@@ -89,11 +89,64 @@ public class ArticlesFamilyResourceIT {
                 .expectBody(ArticlesFamilyDto.class)
                 .returnResult().getResponseBody();
         assertNotNull(articleFamily);
-        assertEquals("Test Reference", articleFamily.getReference());
+        assertEquals("Springfield", articleFamily.getReference());
         assertEquals(null, articleFamily.getCode());
         assertEquals(FamilyType.values()[2], articleFamily.getFamilyType());
+    }
 
+    @Test
+    void testCreateArticleFamilySizeNumber() {
+        ProviderCreationDto providerCreationDto =
+                new ProviderCreationDto("pro5", "52345678J", "C/TPV-pro, 5", "9166666603", "p5@gmail.com", "p5", true);
+        ProviderDto provider = this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + PROVIDERS)
+                .body(BodyInserters.fromObject(providerCreationDto))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ProviderDto.class)
+                .returnResult().getResponseBody();
+        assertNotNull(provider);
+        String id = provider.getId();
+        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
+        familyCompleteDto.setDescription("Jeans");
+        familyCompleteDto.setSizeType("2");
+        familyCompleteDto.setReference("Zaara");
+        familyCompleteDto.setFromSize("0");
+        familyCompleteDto.setToSize("40");
+        familyCompleteDto.setIncrement(2);
+        familyCompleteDto.setProvider(id);
 
+        ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + ARTICLES_FAMILY)
+                .body(BodyInserters.fromObject(familyCompleteDto))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ArticlesFamilyDto.class)
+                .returnResult().getResponseBody();
+        assertNotNull(articleFamily);
+        assertEquals("Zaara", articleFamily.getReference());
+        assertEquals(null, articleFamily.getCode());
+        assertEquals(FamilyType.values()[2], articleFamily.getFamilyType());
+    }
+
+    @Test
+    void testCreateArticleFamilyServerError() {
+        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
+        familyCompleteDto.setDescription("Jeans");
+        familyCompleteDto.setSizeType("2");
+        familyCompleteDto.setReference("Zaara");
+        familyCompleteDto.setFromSize("0");
+        familyCompleteDto.setToSize("40");
+        familyCompleteDto.setIncrement(2);
+        ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + ARTICLES_FAMILY)
+                .body(BodyInserters.fromObject(familyCompleteDto))
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(ArticlesFamilyDto.class)
+                .returnResult().getResponseBody();
+        assertNull(articleFamily.getReference());
+        assertNull(articleFamily.getFamilyType());
     }
 
     @Test
