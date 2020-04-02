@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.TicketController;
+import es.upm.miw.betca_tpv_spring.documents.Ticket;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketSearchDto;
@@ -43,9 +44,14 @@ public class TicketResource {
                 .doOnEach(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
-    @GetMapping(value = TICKET_ID)
+    @GetMapping(value = TICKET_ID + "/pdf")
     public byte[] getPdf(@PathVariable String id) {
         return this.ticketController.getPdf(id);
+    }
+
+    @GetMapping(value = TICKET_ID )
+    public Mono<Ticket> getTicket(@PathVariable String id) {
+        return this.ticketController.getTicket(id);
     }
 
     @GetMapping(value = SEARCH)
