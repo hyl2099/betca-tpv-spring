@@ -21,8 +21,12 @@ class StockResourceIT {
     @Test
     void testReadAllStock() {
         this.restService.loginAdmin(webTestClient)
-                .get().uri(contextPath + STOCK)
-                .exchange()
-                .expectStatus().isOk();
+                .get().uri(uriBuilder -> uriBuilder
+                .path(contextPath + STOCK)
+                .queryParam("minimumStock", null)
+                .queryParam("initDate", null)
+                .queryParam("endDate", null)
+                .build())
+                .exchange().expectStatus().isOk();
     }
 }

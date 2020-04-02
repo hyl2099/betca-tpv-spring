@@ -16,7 +16,7 @@ class StockControllerIT {
     @Test
     void testReadAll() {
         StepVerifier
-                .create(this.stockController.readAll())
+                .create(this.stockController.readAll(null, null, null))
                 .expectNextCount(10)
                 .expectComplete()
                 .verify();
@@ -25,8 +25,25 @@ class StockControllerIT {
     @Test
     void testArticleInfo() {
         StepVerifier
-                .create(this.stockController.getArticleInfo())
+                .create(this.stockController.getArticleInfo(null))
                 .expectNextCount(10)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testArticleInfoWithMinimumStock() {
+        StepVerifier
+                .create(this.stockController.getArticleInfo(10))
+                .expectNextCount(9)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testArticleInfoWithMinimumStockNoResult() {
+        StepVerifier
+                .create(this.stockController.getArticleInfo(-10))
                 .expectComplete()
                 .verify();
     }
@@ -39,7 +56,7 @@ class StockControllerIT {
         unitsMap.put("8400000000055", 12);
         unitsMap.put("8400000000024", 3);
         StepVerifier
-                .create(this.stockController.getSoldUnits())
+                .create(this.stockController.getSoldUnits(null, null))
                 .expectNextMatches(articleStockDto -> articleStockDto.getSoldUnits().equals(unitsMap.get(articleStockDto.getCode())))
                 .expectNextMatches(articleStockDto -> articleStockDto.getSoldUnits().equals(unitsMap.get(articleStockDto.getCode())))
                 .expectNextMatches(articleStockDto -> articleStockDto.getSoldUnits().equals(unitsMap.get(articleStockDto.getCode())))
