@@ -46,4 +46,10 @@ public class SendingsController {
                 then(this.sendingsReactRepository.saveAll(sendings).next().map(SendingsDto::new));
     }
 
+    public Mono<Void> deleteSendings(String id) {
+        Mono<Sendings> sendings = this.sendingsReactRepository.findById(id);
+        return Mono
+                .when(sendings)
+                .then(this.sendingsReactRepository.deleteById(id));
+    }
 }
