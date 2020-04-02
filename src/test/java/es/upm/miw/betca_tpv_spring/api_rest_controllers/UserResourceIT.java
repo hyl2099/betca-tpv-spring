@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.User;
+import es.upm.miw.betca_tpv_spring.dtos.MessagesDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserCredentialDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserDto;
 import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.time.LocalDateTime;
+
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.UserResource.MESSAGES;
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.UserResource.USERS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -173,6 +177,27 @@ class UserResourceIT {
                 .body(BodyInserters.fromObject(
                         new UserDto(User.builder().mobile("666666006").username("u006").password("p006").dni("66666606W").address("C/TPV, 6").email("u006@gmail.com").build())
                 )).exchange().expectStatus().isOk().expectBody(UserDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testSendMessageToUser() {
+        LocalDateTime ldt = LocalDateTime.now();
+        MessagesDto messagesDto = new MessagesDto("666666006", "666666007", "FROM 6 to 7", ldt, null);
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + MESSAGES)
+                .body(BodyInserters.fromObject(messagesDto)).exchange().expectStatus().isOk()
+                .expectBody(MessagesDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testSendMessageToUserWihNoOtherMessages() {
+        LocalDateTime ldt = LocalDateTime.now();
+        MessagesDto messagesDto = new MessagesDto("666666002", "666666003", "FROM 2 to 3", ldt, null);
+        this.restService.loginAdmin(this.webTestClient)
+                .put().uri(contextPath + USERS + MESSAGES)
+                .body(BodyInserters.fromObject(messagesDto)).exchange().expectStatus().isOk().expectBody(MessagesDto.class)
                 .value(Assertions::assertNotNull);
     }
 
