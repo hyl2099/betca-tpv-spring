@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
 import es.upm.miw.betca_tpv_spring.data_services.DatabaseSeederService;
+import es.upm.miw.betca_tpv_spring.documents.Quarter;
 import es.upm.miw.betca_tpv_spring.documents.Shopping;
 import es.upm.miw.betca_tpv_spring.documents.ShoppingState;
 import es.upm.miw.betca_tpv_spring.documents.Ticket;
@@ -169,4 +170,13 @@ public class InvoiceControllerIT {
                 })
                 .verify();
     }
+
+    @Test
+    void testReadQuarterlyVat() {
+        StepVerifier
+                .create(this.invoiceController.readQuarterlyVat(Quarter.Q2))
+                .expectComplete()
+                .verify();
+    }
+
 }

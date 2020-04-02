@@ -158,7 +158,7 @@ public class InvoiceController {
     }
 
     public Mono<QuarterVATDto> readQuarterlyVat(Quarter quarter) {
-
+        System.out.println("======START----->>>>>");
         QuarterVATDto quarterVATDto = new QuarterVATDto(quarter);
         quarterVATDto.getTaxes().add(new TaxDto(Tax.GENERAL, generalTax));
         quarterVATDto.getTaxes().add(new TaxDto(Tax.REDUCED, reducedTax));
@@ -166,12 +166,18 @@ public class InvoiceController {
 
         Flux<Shopping[]> shoppingFlux = this.invoiceReactRepository.findAll()
                 .filter(invoice -> quarter.getQuarterFromDate(invoice.getCreationDate()).equals(quarter))
-                .map(invoice -> invoice.getTicket().getShoppingList());
+                .map(invoice -> {
+                    return invoice.getTicket().getShoppingList();
+                });
 
         Flux<ShoppingLine> shoppingLineFlux = shoppingFlux
                 .flatMap(shoppings -> this.convertShoppingArrayToShoppingLineFlux(shoppings));
 
-        shoppingLineFlux.doOnNext(shoppingLine -> System.out.println("======----->>>>>"+shoppingLine));
+        shoppingLineFlux = shoppingLineFlux
+                .doOnNext(shoppingLine -> {
+                    //TODO Aqui se monta el DTO con los totales acumulados
+                    System.out.println("====== ---- >>>>>: " + shoppingLine);
+                });
 /*
 
         Flux<Shopping[]> x = shoppingFlux.doOnEach(shoppings -> {
@@ -207,6 +213,6 @@ public class InvoiceController {
                                 });
                     });
         });*/
-        return Mono.just(quarterVATDto);
+        return Mono.when(shoppingLineFlux).then(Mono.empty()); //TODO se devuelve un mono con el DTO
     }
 }
