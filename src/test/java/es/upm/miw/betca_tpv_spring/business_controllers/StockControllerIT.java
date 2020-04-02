@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 
@@ -18,6 +20,15 @@ class StockControllerIT {
         StepVerifier
                 .create(this.stockController.readAll(null, null, null))
                 .expectNextCount(10)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testReadAllFilterDateAndStock() {
+        StepVerifier
+                .create(this.stockController.readAll(5, LocalDateTime.now().minusMonths(1), LocalDateTime.now()))
+                .expectNextCount(6)
                 .expectComplete()
                 .verify();
     }
@@ -68,8 +79,25 @@ class StockControllerIT {
     @Test
     void testGetShopping() {
         StepVerifier
-                .create(this.stockController.getShopping())
+                .create(this.stockController.getShopping(null, null))
                 .expectNextCount(11)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testGetShoppingInitDate() {
+        StepVerifier
+                .create(this.stockController.getShopping(LocalDateTime.now().with(LocalTime.of(0, 0)), null))
+                .expectNextCount(11)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testGetShoppingEndDate() {
+        StepVerifier
+                .create(this.stockController.getShopping(null, LocalDateTime.now().minusMonths(1)))
                 .expectComplete()
                 .verify();
     }

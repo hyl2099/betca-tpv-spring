@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.documents.Article;
+import es.upm.miw.betca_tpv_spring.documents.Ticket;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleStockDto;
 import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
@@ -36,7 +37,7 @@ public class StockController {
                         article.setSoldUnits(0);
                     }
                     return article;
-                });
+                }).filter(article -> article.getStock() != null);
     }
 
     public Flux<ArticleStockDto> getArticleInfo(Integer minimumStock) {
@@ -52,7 +53,7 @@ public class StockController {
     }
 
     public Flux<ArticleStockDto> getSoldUnits(LocalDateTime initDate, LocalDateTime endDate) {
-        return this.getShopping().groupBy(ShoppingDto::getCode)
+        return this.getShopping(initDate, endDate).groupBy(ShoppingDto::getCode)
                 .flatMap(idFlux -> idFlux.map(shopping -> {
                             ArticleStockDto article = new ArticleStockDto();
                             article.setCode(shopping.getCode());
@@ -65,9 +66,16 @@ public class StockController {
                 );
     }
 
-    public Flux<ShoppingDto> getShopping() {
-        return this.ticketReactRepository.findAll()
-                .filter(ticket -> ticket.getShoppingList() != null)
+    public Flux<ShoppingDto> getShopping(LocalDateTime initDate, LocalDateTime endDate) {
+        Flux<Ticket> shoppingDtoFlux;
+        if (initDate == null && endDate == null) {
+            shoppingDtoFlux = this.ticketReactRepository.findAll();
+        } else if (initDate == null) {
+            shoppingDtoFlux = this.ticketReactRepository.findByCreationDateLessThanEqual(endDate);
+        } else {
+            shoppingDtoFlux = this.ticketReactRepository.findByCreationDateBetween(initDate, endDate != null ? endDate : LocalDateTime.now());
+        }
+        return shoppingDtoFlux.filter(ticket -> ticket.getShoppingList() != null)
                 .flatMap(ticket -> Flux.just(ticket.getShoppingList()))
                 .map(ShoppingDto::new);
     }
