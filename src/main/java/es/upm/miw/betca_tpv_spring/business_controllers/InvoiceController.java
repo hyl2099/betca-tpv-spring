@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 import es.upm.miw.betca_tpv_spring.business_services.PdfService;
 import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.InvoiceNegativeCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.InvoiceOutputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
@@ -163,5 +164,10 @@ public class InvoiceController {
         return Mono.when(calculateBaseAndTaxPublisher, nextId, invoiceMono, shoppingFlux)
                 .then(invoiceReactRepository.save(invoice));
 
+    }
+
+    public Flux<InvoiceOutputDto> readAll() {
+        return invoiceReactRepository.findAll()
+                .map(InvoiceOutputDto::new);
     }
 }

@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.dtos.InvoiceNegativeCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.InvoiceOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ApiTestConfig
 public class InvoiceResourceIT {
@@ -89,6 +92,17 @@ public class InvoiceResourceIT {
                 .expectStatus().isBadRequest()
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void readAll() {
+        this.restService.loginAdmin(this.webTestClient)
+        .get().uri(contextPath + InvoiceResource.INVOICES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(InvoiceOutputDto.class)
+                .value(Assertions::assertNotNull)
+                .value(list -> assertTrue(list.size() > 1));
     }
 
 }
