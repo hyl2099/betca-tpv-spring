@@ -120,7 +120,7 @@ public class InvoiceController {
                 .flatMap(invoice -> invoiceReactRepository.save(invoice));
     }
 
-    private Mono<Invoice> calculateBaseAndTax(Invoice invoice){
+    private Mono<Invoice> calculateBaseAndTax(Invoice invoice) {
         Stream<Shopping> ticketShoppingList = Arrays.stream(invoice.getTicket().getShoppingList());
         List<Mono<Article>> articlePublishers = ticketShoppingList
                 .map(shopping -> this.articleReactRepository.findById(shopping.getArticleId())
@@ -136,32 +136,77 @@ public class InvoiceController {
         return Mono.when(articlePublishers).then(Mono.just(invoice));
     }
 
-    public Mono<QuarterVATDto> readQuarterlyVat(Quarter quarter){
+    private BigDecimal vatFromTax(Tax tax) {
+        if (tax.equals(Tax.SUPER_REDUCED)) {
+            return BigDecimal.valueOf(this.superReducedTax);
+        } else if (tax.equals(Tax.REDUCED)) {
+            return BigDecimal.valueOf(this.reducedTax);
+        } else if (tax.equals(Tax.GENERAL)) {
+            return BigDecimal.valueOf(this.generalTax);
+        } else return BigDecimal.ZERO;
+    }
+
+    private Flux<ShoppingLine> convertShoppingArrayToShoppingLineFlux(Shopping[] shoppings) {
+        Flux<ShoppingLine> shoppingLineFlux = Flux.empty();
+        for (Shopping shopping : shoppings) {
+            Mono<ShoppingLine> taxDtoMono = this.articleReactRepository.findById(shopping.getArticleId())
+                    .map(Article::getTax)
+                    .map(tax -> new ShoppingLine(tax, this.vatFromTax(tax), shopping.getShoppingTotal()));
+            shoppingLineFlux = shoppingLineFlux.mergeWith(taxDtoMono);
+        }
+        return shoppingLineFlux;
+    }
+
+    public Mono<QuarterVATDto> readQuarterlyVat(Quarter quarter) {
+
         QuarterVATDto quarterVATDto = new QuarterVATDto(quarter);
         quarterVATDto.getTaxes().add(new TaxDto(Tax.GENERAL, generalTax));
         quarterVATDto.getTaxes().add(new TaxDto(Tax.REDUCED, reducedTax));
         quarterVATDto.getTaxes().add(new TaxDto(Tax.SUPER_REDUCED, superReducedTax));
-        Flux<Invoice> invoices = this.invoiceReactRepository.findAll().filter(invoice ->quarter.getQuarterFromDate(invoice.getCreationDate()).equals(quarter)).doOnNext(invoice -> {
-            Arrays.stream(invoice.getTicket().getShoppingList()).forEach(item -> {
-                BigDecimal totalAmount = item.getShoppingTotal();
-                System.out.println("totalAmount: "+totalAmount);
-                System.out.println("articleId: "+item.getArticleId());
-                Mono<Tax> map = this.articleReactRepository.findById(item.getArticleId()).switchIfEmpty(Mono.error(new NotFoundException("Article "+item.getArticleId()+ " not found"))).map(Article::getTax).doOnNext(tax -> {
-                    System.out.println("Tax:"+ tax);
-                    if(tax.compareTo(Tax.GENERAL) == 0){
-                        quarterVATDto.getTaxes().get(0).setTaxableAmount(quarterVATDto.getTaxes().get(0).getTaxableAmount().add(totalAmount.divide(new BigDecimal(generalTax).add(new BigDecimal(1)))));
-                        quarterVATDto.getTaxes().get(0).setVat(quarterVATDto.getTaxes().get(0).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(generalTax).add(new BigDecimal(1))))));
-                        System.out.println("generalTax:"+quarterVATDto.getTaxes().get(0));
-                    } else if(tax.compareTo(Tax.REDUCED) == 0){
-                        quarterVATDto.getTaxes().get(1).setTaxableAmount(quarterVATDto.getTaxes().get(1).getTaxableAmount().add(totalAmount.divide(new BigDecimal(reducedTax).add(new BigDecimal(1)))));
-                        quarterVATDto.getTaxes().get(1).setVat(quarterVATDto.getTaxes().get(1).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(reducedTax).add(new BigDecimal(1))))));
-                    } else if(tax.compareTo(Tax.SUPER_REDUCED) == 0){
-                        quarterVATDto.getTaxes().get(2).setTaxableAmount(quarterVATDto.getTaxes().get(2).getTaxableAmount().add(totalAmount.divide(new BigDecimal(superReducedTax).add(new BigDecimal(1)))));
-                        quarterVATDto.getTaxes().get(2).setVat(quarterVATDto.getTaxes().get(2).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(superReducedTax).add(new BigDecimal(1))))));
-                    }
-                });
-            });
-        });
-        return Mono.when(invoices).then(Mono.just(quarterVATDto));
+
+        Flux<Shopping[]> shoppingFlux = this.invoiceReactRepository.findAll()
+                .filter(invoice -> quarter.getQuarterFromDate(invoice.getCreationDate()).equals(quarter))
+                .map(invoice -> invoice.getTicket().getShoppingList());
+
+        Flux<ShoppingLine> shoppingLineFlux = shoppingFlux
+                .flatMap(shoppings -> this.convertShoppingArrayToShoppingLineFlux(shoppings));
+
+        shoppingLineFlux.doOnNext(shoppingLine -> System.out.println("======----->>>>>"+shoppingLine));
+/*
+
+        Flux<Shopping[]> x = shoppingFlux.doOnEach(shoppings -> {
+            Arrays.stream(shoppings.get()).
+                    forEach(shopping -> {
+                        Mono<TaxDto> taxDto = this.articleReactRepository.findById(shopping.getArticleId())
+                                .map(Article::getTax)
+                                .map(tax -> new TaxDto(tax, shopping.getShoppingTotal().doubleValue()));
+                    })
+
+
+                    .forEach(item -> {
+                        BigDecimal totalAmount = item.getShoppingTotal();
+                        System.out.println("totalAmount: " + totalAmount);
+                        System.out.println("articleId: " + item.getArticleId());
+
+                        Mono<Tax> map = this.articleReactRepository.findById(item.getArticleId())
+                                .switchIfEmpty(Mono.error(new NotFoundException("Article " + item.getArticleId() + " not found")))
+                                .map(Article::getTax)
+                                .doOnNext(tax -> {
+                                    System.out.println("Tax:" + tax);
+                                    if (tax.compareTo(Tax.GENERAL) == 0) {
+                                        quarterVATDto.getTaxes().get(0).setTaxableAmount(quarterVATDto.getTaxes().get(0).getTaxableAmount().add(totalAmount.divide(new BigDecimal(generalTax).add(new BigDecimal(1)))));
+                                        quarterVATDto.getTaxes().get(0).setVat(quarterVATDto.getTaxes().get(0).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(generalTax).add(new BigDecimal(1))))));
+                                        System.out.println("generalTax:" + quarterVATDto.getTaxes().get(0));
+                                    } else if (tax.compareTo(Tax.REDUCED) == 0) {
+                                        quarterVATDto.getTaxes().get(1).setTaxableAmount(quarterVATDto.getTaxes().get(1).getTaxableAmount().add(totalAmount.divide(new BigDecimal(reducedTax).add(new BigDecimal(1)))));
+                                        quarterVATDto.getTaxes().get(1).setVat(quarterVATDto.getTaxes().get(1).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(reducedTax).add(new BigDecimal(1))))));
+                                    } else if (tax.compareTo(Tax.SUPER_REDUCED) == 0) {
+                                        quarterVATDto.getTaxes().get(2).setTaxableAmount(quarterVATDto.getTaxes().get(2).getTaxableAmount().add(totalAmount.divide(new BigDecimal(superReducedTax).add(new BigDecimal(1)))));
+                                        quarterVATDto.getTaxes().get(2).setVat(quarterVATDto.getTaxes().get(2).getVat().add(totalAmount.subtract(totalAmount.divide(new BigDecimal(superReducedTax).add(new BigDecimal(1))))));
+                                    }
+                                });
+                    });
+        });*/
+        return Mono.just(quarterVATDto);
     }
 }
