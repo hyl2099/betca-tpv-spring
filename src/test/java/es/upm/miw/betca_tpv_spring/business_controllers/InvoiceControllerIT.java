@@ -246,4 +246,19 @@ public class InvoiceControllerIT {
                 .verify();
     }
 
+    @Test
+    void testReadAll() {
+        StepVerifier
+                .create(this.invoiceController.readAll())
+                .expectNextMatches(invoice -> {
+                    assertEquals("20201", invoice.getInvoice());
+                    assertEquals("201901122", invoice.getTicket());
+                    assertEquals("666666004", invoice.getMobile());
+                    return true;
+                })
+                .expectNextCount(1)
+                .thenCancel()
+                .verify();
+    }
+
 }
