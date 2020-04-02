@@ -2,10 +2,12 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.InvoiceController;
 import es.upm.miw.betca_tpv_spring.dtos.InvoiceNegativeCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.InvoiceOutputDto;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -41,6 +43,12 @@ public class InvoiceResource {
     @PostMapping(value = NEGATIVE)
     public Mono<byte[]> generateNegative(@RequestBody @Valid InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto){
         return this.invoiceController.createNegativeAndPdf(invoiceNegativeCreationInputDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping()
+    public Flux<InvoiceOutputDto> cget() {
+        return this.invoiceController.readAll()
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
