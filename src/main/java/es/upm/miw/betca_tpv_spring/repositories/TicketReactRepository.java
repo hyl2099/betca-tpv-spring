@@ -7,6 +7,8 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 public interface TicketReactRepository extends ReactiveSortingRepository<Ticket, String> {
 
     Mono<Ticket> findFirstByOrderByCreationDateDescIdDesc();
@@ -15,4 +17,6 @@ public interface TicketReactRepository extends ReactiveSortingRepository<Ticket,
     Flux<TicketOutputDto> findAllTickets();
 
     Mono<Ticket> findByReference(String reference);
+
+    Flux<Ticket> findByCreationDateBetween(LocalDateTime init, LocalDateTime end);
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,6 +53,29 @@ class TicketReactRepositoryIT {
                     assertEquals("8400000000024", m.getShoppingList()[1].getArticleId());
                     return true;
                 })
+                .expectComplete().verify();
+    }
+
+    @Test
+    void testFindByCreationDateBetween() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime initDate = LocalDateTime.parse("1986-04-08 00:00", formatter);
+        LocalDateTime endDate = LocalDateTime.now();
+        StepVerifier
+                .create(this.ticketReactRepository.findByCreationDateBetween(initDate, endDate))
+                .expectNextMatches(ticket -> ticket.getCreationDate().isAfter(initDate) && ticket.getCreationDate().isBefore(endDate))
+                .expectNextCount(5)
+                .expectComplete().verify();
+    }
+
+    @Test
+    void testFindByCreationDateBetweenEmptyResult() {
+        String str = "1986-04-08 00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime initDate = LocalDateTime.parse(str, formatter);
+        LocalDateTime endDate =  LocalDateTime.parse("2020-04-01 00:00", formatter);
+        StepVerifier
+                .create(this.ticketReactRepository.findByCreationDateBetween(initDate, endDate))
                 .expectComplete().verify();
     }
 }
