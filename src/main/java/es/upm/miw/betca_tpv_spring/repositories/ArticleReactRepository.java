@@ -6,4 +6,6 @@ import reactor.core.publisher.Flux;
 
 public interface ArticleReactRepository extends ReactiveSortingRepository<Article, String> {
     Flux<Article> findByDescriptionLikeOrProvider(String description, String provider);
+
+    Flux<Article> findByStockLessThanEqual(Integer stock);
 }

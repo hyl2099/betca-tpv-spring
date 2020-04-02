@@ -48,4 +48,14 @@ class ArticleReactRepositoryIT {
                 .verify();
     }
 
+    @Test
+    void testFindByStockLessThanEquals() {
+        StepVerifier
+                .create(this.articleReactRepository.findByStockLessThanEqual(10))
+                .expectNextMatches(article -> article.getStock() <= 10)
+                .expectNextCount(8)
+                .thenCancel()
+                .verify();
+    }
+
 }

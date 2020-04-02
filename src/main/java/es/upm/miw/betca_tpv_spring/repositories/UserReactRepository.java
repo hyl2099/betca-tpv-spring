@@ -11,6 +11,6 @@ public interface UserReactRepository extends ReactiveSortingRepository<User, Str
 
     Mono<User> findByMobile(String mobile);
 
-    @Query(value = "{}", fields = "{ '_id' : 0, 'mobile' : 1, 'username' : 1}")
+    @Query(value = "{}", fields = "{ '_id' : 0, 'mobile' : 1, 'username' : 1, 'roles' : []}")
     Flux<UserMinimumDto> findAllUsers();
 }
