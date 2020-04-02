@@ -4,11 +4,15 @@ package es.upm.miw.betca_tpv_spring.dtos;
 public class FamilyCompleteDto {
     private String description;
     private String provider;
-    private String sizeType;
+    private boolean sizeType;
     private String fromSize;
     private String toSize;
     private String reference;
     private int increment;
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public FamilyCompleteDto(FamilyCompleteDto articlesFamilyComplete) {
         this.description = articlesFamilyComplete.getDescription();
@@ -41,11 +45,11 @@ public class FamilyCompleteDto {
         this.provider = provider;
     }
 
-    public String getSizeType() {
+    public boolean getSizeType() {
         return sizeType;
     }
 
-    public void setSizeType(String sizeType) {
+    public void setSizeType(boolean sizeType) {
         this.sizeType = sizeType;
     }
 
@@ -79,5 +83,61 @@ public class FamilyCompleteDto {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+
+    public static class Builder {
+        private FamilyCompleteDto familyCompleteDto;
+
+        private Builder() {
+            this.familyCompleteDto = new FamilyCompleteDto();
+            this.familyCompleteDto.reference = "";
+            this.familyCompleteDto.description = "";
+            this.familyCompleteDto.provider = "";
+            this.familyCompleteDto.fromSize = "";
+            this.familyCompleteDto.toSize = "";
+            this.familyCompleteDto.sizeType = false;
+            this.familyCompleteDto.increment = 0;
+        }
+
+        public Builder reference(String reference) {
+            this.familyCompleteDto.reference = reference;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.familyCompleteDto.description = description;
+            return this;
+        }
+
+        public Builder provider(String provider) {
+            this.familyCompleteDto.provider = provider;
+            return this;
+        }
+
+        public Builder fromSize(String fromSize) {
+            this.familyCompleteDto.fromSize = fromSize;
+            return this;
+        }
+
+
+        public Builder toSize(String toSize) {
+            this.familyCompleteDto.toSize = toSize;
+            return this;
+        }
+
+        public Builder sizeType(boolean sizeType) {
+            this.familyCompleteDto.sizeType = sizeType;
+            return this;
+        }
+
+        public Builder increment(int increment) {
+            this.familyCompleteDto.increment = increment;
+            return this;
+        }
+
+        public FamilyCompleteDto build() {
+            return this.familyCompleteDto;
+        }
     }
 }
