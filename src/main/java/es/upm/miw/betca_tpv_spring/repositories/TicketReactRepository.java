@@ -19,4 +19,6 @@ public interface TicketReactRepository extends ReactiveSortingRepository<Ticket,
     Mono<Ticket> findByReference(String reference);
 
     Flux<Ticket> findByCreationDateBetween(LocalDateTime init, LocalDateTime end);
+
+    Flux<Ticket> findByCreationDateLessThanEqual(LocalDateTime end);
 }

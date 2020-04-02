@@ -70,12 +70,29 @@ class TicketReactRepositoryIT {
 
     @Test
     void testFindByCreationDateBetweenEmptyResult() {
-        String str = "1986-04-08 00:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime initDate = LocalDateTime.parse(str, formatter);
-        LocalDateTime endDate =  LocalDateTime.parse("2020-04-01 00:00", formatter);
+        LocalDateTime initDate = LocalDateTime.parse("1986-04-08 00:00", formatter);
+        LocalDateTime endDate = LocalDateTime.parse("2020-04-01 00:00", formatter);
         StepVerifier
                 .create(this.ticketReactRepository.findByCreationDateBetween(initDate, endDate))
+                .expectComplete().verify();
+    }
+
+    @Test
+    void testFindByCreationDateLessThanEqualEmptyResult() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime endDate = LocalDateTime.parse("2020-04-01 00:00", formatter);
+        StepVerifier
+                .create(this.ticketReactRepository.findByCreationDateLessThanEqual(endDate))
+                .expectComplete().verify();
+    }
+
+    @Test
+    void testFindByCreationDateLessThanEqual() {
+        LocalDateTime endDate = LocalDateTime.now();
+        StepVerifier
+                .create(this.ticketReactRepository.findByCreationDateLessThanEqual(endDate))
+                .expectNextCount(6)
                 .expectComplete().verify();
     }
 }
