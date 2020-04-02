@@ -1,7 +1,10 @@
 package es.upm.miw.betca_tpv_spring.dtos;
 
+import es.upm.miw.betca_tpv_spring.documents.Role;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Arrays;
 
 public class UserMinimumDto {
 
@@ -12,13 +15,17 @@ public class UserMinimumDto {
     @NotNull
     private String username;
 
+    @NotNull
+    private Role[] roles;
+
     public UserMinimumDto() {
-        this("000000000", "");
+        this("000000000", "", new Role[]{});
     }
 
-    public UserMinimumDto(String mobile, String username) {
+    public UserMinimumDto(String mobile, String username, Role[] roles) {
         this.mobile = mobile;
         this.username = username;
+        this.roles = roles;
     }
 
     public String getMobile() {
@@ -37,8 +44,16 @@ public class UserMinimumDto {
         this.username = username;
     }
 
+    public Role[] getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Role[] roles) {
+        this.roles = roles;
+    }
+
     @Override
     public String toString() {
-        return "UserMinimumDto [mobile=" + mobile + ", username=" + username + "]";
+        return "UserMinimumDto [mobile=" + mobile + ", username=" + username + ", roles=" + Arrays.toString(roles) + "]";
     }
 }
