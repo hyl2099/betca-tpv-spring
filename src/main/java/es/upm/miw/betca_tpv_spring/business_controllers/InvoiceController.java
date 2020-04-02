@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_spring.business_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_services.PdfService;
 import es.upm.miw.betca_tpv_spring.documents.*;
+import es.upm.miw.betca_tpv_spring.dtos.InvoiceNegativeCreationInputDto;
 import es.upm.miw.betca_tpv_spring.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
@@ -10,6 +11,7 @@ import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -50,7 +52,7 @@ public class InvoiceController {
                 })
                 .handle((ticket, synchronousSink) -> {
                     User user = ticket.getUser();
-                    if (ticket.getUser() == null || !isUserCompletedForInvoice(user))
+                    if (ticket.getUser() == null || isNotUserCompletedForInvoice(user))
                         synchronousSink.error(new BadRequestException("User not completed"));
                     else if (ticket.isDebt())
                         synchronousSink.error(new BadRequestException("Ticket is debt"));
@@ -68,14 +70,14 @@ public class InvoiceController {
     }
 
 
-    private boolean isUserCompletedForInvoice(User user) {
-        return (user.getUsername() != null && !user.getUsername().trim().equals(""))
-                && (user.getAddress() != null && !user.getAddress().trim().equals(""))
-                && (user.getDni() != null && !user.getDni().trim().equals(""));
+    private boolean isNotUserCompletedForInvoice(User user) {
+        return (user.getUsername() == null || user.getUsername().trim().equals(""))
+                || (user.getAddress() == null || user.getAddress().trim().equals(""))
+                || (user.getDni() == null || user.getDni().trim().equals(""));
     }
 
     private Mono<Invoice> calculateBaseAndTax(Invoice invoice, Mono<Ticket> ticketPublisher) {
-        return ticketPublisher.flatMap(ticket -> calculateBaseAndTax(invoice));
+        return ticketPublisher.flatMap(ticket -> calculateBaseAndTax(invoice, ticket.getShoppingList()));
     }
 
 
@@ -104,12 +106,12 @@ public class InvoiceController {
     private Mono<Invoice> updateInvoice(String id) {
         return invoiceReactRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Invoice(" + id + ")")))
-                .flatMap(this::calculateBaseAndTax)
+                .flatMap(invoice -> this.calculateBaseAndTax(invoice, invoice.getTicket().getShoppingList()))
                 .flatMap(invoice -> invoiceReactRepository.save(invoice));
     }
 
-    private Mono<Invoice> calculateBaseAndTax(Invoice invoice){
-        Stream<Shopping> ticketShoppingList = Arrays.stream(invoice.getTicket().getShoppingList());
+    private Mono<Invoice> calculateBaseAndTax(Invoice invoice, Shopping[] shoppingList) {
+        Stream<Shopping> ticketShoppingList = Arrays.stream(shoppingList);
         List<Mono<Article>> articlePublishers = ticketShoppingList
                 .map(shopping -> this.articleReactRepository.findById(shopping.getArticleId())
                         .switchIfEmpty(Mono.error(new NotFoundException("Article(" + shopping.getArticleId() + ")")))
@@ -122,5 +124,44 @@ public class InvoiceController {
                             invoice.setBaseTax(invoice.getBaseTax().add(articleBaseTax));
                         })).collect(Collectors.toList());
         return Mono.when(articlePublishers).then(Mono.just(invoice));
+    }
+
+    @Transactional
+    public Mono<byte[]> createNegativeAndPdf(InvoiceNegativeCreationInputDto invoiceNegativeCreationInputDto) {
+        Shopping[] returnedShoppings = invoiceNegativeCreationInputDto.getReturnedShoppingList().stream().map(shoppingDto ->
+                new Shopping(shoppingDto.getAmount(), shoppingDto.getDiscount(), ShoppingState.RETURNED,
+                        shoppingDto.getCode(), shoppingDto.getDescription(), shoppingDto.getRetailPrice()))
+
+                .toArray(Shopping[]::new);
+        return pdfService.generateNegativeInvoice(
+                this.createNegativeInvoice(invoiceNegativeCreationInputDto.getReturnedTicketId(), returnedShoppings),
+                returnedShoppings);
+    }
+
+    private Mono<Invoice> createNegativeInvoice(String ticketId, Shopping[] returnedShoppings) {
+        Invoice invoice = new Invoice(0, null, null);
+        Mono<Ticket> oldTicketPublisher = ticketReactRepository.findById(ticketId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Ticket(" + ticketId + ")")))
+                .doOnNext(ticket -> {
+                    invoice.setUser(ticket.getUser());
+                    invoice.setTicket(ticket);
+                });
+        Mono<Invoice> invoiceMono = invoiceReactRepository.findFirstByTicketAndTaxGreaterThanEqual(oldTicketPublisher, BigDecimal.ZERO)
+                .switchIfEmpty(Mono.error(new NotFoundException("Positive Invoice not found")));
+
+        Mono<Integer> nextId = this.nextIdStartingYearly()
+                .map(id -> {
+                    invoice.setId(id);
+                    return id;
+                });
+        Flux<Shopping> shoppingFlux = Flux.fromArray(returnedShoppings)
+                .handle((shopping, shoppingSynchronousSink) -> {
+                    if (shopping.getAmount() >= 0)
+                        shoppingSynchronousSink.error(new BadRequestException("Shopping Amount not allowed (" + shopping.getAmount()  + ")"));
+                });
+        Mono<Invoice> calculateBaseAndTaxPublisher = this.calculateBaseAndTax(invoice, returnedShoppings);
+        return Mono.when(calculateBaseAndTaxPublisher, nextId, invoiceMono, shoppingFlux)
+                .then(invoiceReactRepository.save(invoice));
+
     }
 }

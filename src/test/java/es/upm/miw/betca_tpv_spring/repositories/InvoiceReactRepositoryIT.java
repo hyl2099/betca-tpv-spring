@@ -1,9 +1,13 @@
 package es.upm.miw.betca_tpv_spring.repositories;
 
 import es.upm.miw.betca_tpv_spring.TestConfig;
+import es.upm.miw.betca_tpv_spring.documents.Ticket;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,6 +16,9 @@ class InvoiceReactRepositoryIT {
 
     @Autowired
     private InvoiceReactRepository invoiceReactRepository;
+
+    @Autowired
+    private TicketReactRepository ticketReactRepository;
 
     @Test
     void testFindAllAndDatabaseSeeder() {
@@ -41,6 +48,25 @@ class InvoiceReactRepositoryIT {
                     assertNotNull(invoice.getCreationDate());
                     assertNotNull(invoice.getUser());
                     assertNotNull(invoice.getTicket());
+                    assertFalse(invoice.toString().matches("@"));
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindFirstByTicketAndTaxGreaterThanEqual() {
+        Mono<Ticket> ticketMono = ticketReactRepository.findById("201901125");
+        StepVerifier
+                .create(this.invoiceReactRepository.findFirstByTicketAndTaxGreaterThanEqual(ticketMono, BigDecimal.ZERO))
+                .expectNextMatches(invoice -> {
+                    assertEquals(2, invoice.simpleId());
+                    assertEquals("20202", invoice.getId());
+                    assertNotNull(invoice.getCreationDate());
+                    assertNotNull(invoice.getUser());
+                    assertNotNull(invoice.getTicket());
+                    assertTrue(invoice.getTax().compareTo(BigDecimal.ZERO) >= 0);
                     assertFalse(invoice.toString().matches("@"));
                     return true;
                 })

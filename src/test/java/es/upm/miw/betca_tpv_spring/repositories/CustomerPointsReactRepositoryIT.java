@@ -32,17 +32,12 @@ public class CustomerPointsReactRepositoryIT {
     }
 
     @Test
-    void findCustomerPointsByUserAndProjectPointsTest() {
+    void testFinByUserNotFound() {
         StepVerifier
-                .create(this.customerPointsReactRepository.findByUser(
-                        this.userReactRepository.findByMobile("666666001")))
-                .expectNextMatches(cp -> {
-                    assertNotNull(cp);
-                    assertEquals("cp2", cp.getId());
-                    assertEquals(20, cp.getPoints());
-                    return true;
-                })
+                .create(this.customerPointsReactRepository.findByUser(this.userReactRepository.findByMobile("686666011")))
+                .expectNextCount(0)
                 .expectComplete()
                 .verify();
     }
+
 }
