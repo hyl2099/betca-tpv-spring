@@ -1,12 +1,10 @@
 package es.upm.miw.betca_tpv_spring.business_services;
 
 import es.upm.miw.betca_tpv_spring.documents.*;
-import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import javax.swing.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
