@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_spring.business_services.PdfService;
 import es.upm.miw.betca_tpv_spring.documents.*;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
+import es.upm.miw.betca_tpv_spring.dtos.TicketSearchDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.exceptions.PdfException;
 import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
@@ -23,7 +24,9 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Controller
@@ -116,6 +119,28 @@ public class TicketController {
         } catch (IOException ioe) {
             throw new PdfException("Can’t read PDF");
         }
+    }
+
+    public Flux<TicketOutputDto> searchByMobileDateOrAmount(TicketSearchDto ticketSearchDto) {
+        Flux<Ticket> ticketFlux = ticketSearchDto.getDate() == null ?
+                ticketReactRepository.findAll() :
+                ticketReactRepository.findByCreationDateBetween(ticketSearchDto.getDate(), ticketSearchDto.getDate().plusDays(1));
+        if(ticketSearchDto.getMobile() != null) {
+            ticketFlux = ticketFlux.filter(ticket -> {
+                User user = ticket.getUser();
+                return user != null && user.getMobile().equals(ticketSearchDto.getMobile());
+            });
+        }
+        if(ticketSearchDto.getAmount() != null) {
+            ticketFlux = ticketFlux.filter(ticket -> {
+                AtomicReference<Integer> numberOfItems = new AtomicReference<>(0);
+                Arrays.stream(ticket.getShoppingList()).forEach(item -> {
+                    numberOfItems.updateAndGet(v -> v + item.getAmount());
+                });
+                return numberOfItems.get().equals(ticketSearchDto.getAmount());
+            });
+        }
+        return ticketFlux.map(ticket -> new TicketOutputDto(ticket.getId(), ticket.getReference()));
     }
 
 }
