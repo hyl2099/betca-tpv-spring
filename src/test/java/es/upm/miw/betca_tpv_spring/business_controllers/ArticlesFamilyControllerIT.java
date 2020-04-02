@@ -37,14 +37,9 @@ class ArticlesFamilyControllerIT {
     void TestCreateFamilyArticle() throws IOException {
         assertNotNull(articlesFamilyController.readSizes());
         Flux<ProviderDto> provider = providerController.readAll();
-        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
-        familyCompleteDto.setDescription("Jeans");
-        familyCompleteDto.setSizeType("2");
-        familyCompleteDto.setReference("Zaara");
-        familyCompleteDto.setFromSize("0");
-        familyCompleteDto.setToSize("40");
-        familyCompleteDto.setIncrement(2);
-        familyCompleteDto.setProvider(provider.collectList().block().get(0).getId());
+        FamilyCompleteDto familyCompleteDto = FamilyCompleteDto.builder()
+                                              .description("Jeans").sizeType(false).reference("Zaara")
+                                              .fromSize("0").toSize("40").increment(2).provider(provider.collectList().block().get(0).getId()).build();
         assertNotNull(articlesFamilyController.createArticleFamily(familyCompleteDto));
 
     }

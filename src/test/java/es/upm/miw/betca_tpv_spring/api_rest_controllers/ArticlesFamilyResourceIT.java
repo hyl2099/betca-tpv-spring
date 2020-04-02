@@ -73,14 +73,9 @@ public class ArticlesFamilyResourceIT {
                 .returnResult().getResponseBody();
         assertNotNull(provider);
         String id = provider.getId();
-        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
-        familyCompleteDto.setDescription("Camisetas");
-        familyCompleteDto.setSizeType("1");
-        familyCompleteDto.setReference("Springfield");
-        familyCompleteDto.setFromSize("0");
-        familyCompleteDto.setToSize("5");
-        familyCompleteDto.setProvider(id);
-
+        FamilyCompleteDto familyCompleteDto = FamilyCompleteDto.builder()
+                                              .description("Camisetas").sizeType(true).reference("Springfield")
+                                              .fromSize("0").toSize("5").provider(id).build();
         ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + ARTICLES_FAMILY)
                 .body(BodyInserters.fromObject(familyCompleteDto))
@@ -107,15 +102,9 @@ public class ArticlesFamilyResourceIT {
                 .returnResult().getResponseBody();
         assertNotNull(provider);
         String id = provider.getId();
-        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
-        familyCompleteDto.setDescription("Jeans");
-        familyCompleteDto.setSizeType("2");
-        familyCompleteDto.setReference("Zaara");
-        familyCompleteDto.setFromSize("0");
-        familyCompleteDto.setToSize("40");
-        familyCompleteDto.setIncrement(2);
-        familyCompleteDto.setProvider(id);
-
+        FamilyCompleteDto familyCompleteDto = FamilyCompleteDto.builder()
+                                              .description("Jeans").sizeType(false).reference("Zaara")
+                                              .fromSize("0").toSize("40").increment(2).provider(id).build();
         ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + ARTICLES_FAMILY)
                 .body(BodyInserters.fromObject(familyCompleteDto))
@@ -131,18 +120,26 @@ public class ArticlesFamilyResourceIT {
 
     @Test
     void testCreateArticleFamilyServerError() {
-        FamilyCompleteDto familyCompleteDto = new FamilyCompleteDto();
-        familyCompleteDto.setDescription("Jeans");
-        familyCompleteDto.setSizeType("2");
-        familyCompleteDto.setReference("Zaara");
-        familyCompleteDto.setFromSize("0");
-        familyCompleteDto.setToSize("40");
-        familyCompleteDto.setIncrement(2);
+        FamilyCompleteDto familyCompleteDto = FamilyCompleteDto.builder()
+                .description("Jeans").sizeType(false).reference("Zaara")
+                .fromSize("0").toSize("40").increment(2).build();
         ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
                 .post().uri(contextPath + ARTICLES_FAMILY)
                 .body(BodyInserters.fromObject(familyCompleteDto))
                 .exchange()
                 .expectStatus().is5xxServerError()
+                .expectBody(ArticlesFamilyDto.class)
+                .returnResult().getResponseBody();
+        assertNull(articleFamily.getReference());
+        assertNull(articleFamily.getFamilyType());
+    }
+
+    @Test
+    void testCreateArticleFamilyBadRequest() {
+        ArticlesFamilyDto articleFamily = this.restService.loginAdmin(this.webTestClient)
+                .post().uri(contextPath + ARTICLES_FAMILY)
+                .exchange()
+                .expectStatus().isBadRequest()
                 .expectBody(ArticlesFamilyDto.class)
                 .returnResult().getResponseBody();
         assertNull(articleFamily.getReference());

@@ -37,7 +37,10 @@ public class StockController {
                         article.setSoldUnits(0);
                     }
                     return article;
-                }).filter(article -> article.getStock() != null);
+                }).filter(article -> {
+                    boolean filterDate = initDate != null || endDate != null;
+                    return article.getStock() != null && (!filterDate || article.getSoldUnits() > 0);
+                });
     }
 
     public Flux<ArticleStockDto> getArticleInfo(Integer minimumStock) {
