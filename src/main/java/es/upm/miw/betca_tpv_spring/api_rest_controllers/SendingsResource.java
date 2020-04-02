@@ -50,4 +50,10 @@ public class SendingsResource {
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 
+    @DeleteMapping(value = TICKET_ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.sendingsController.deleteSendings(id)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
 }
