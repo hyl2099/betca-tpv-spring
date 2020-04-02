@@ -198,4 +198,22 @@ public class PdfService {
         table.tableColspanRight(total.setScale(2, RoundingMode.HALF_UP) + "€").build();
         return pdf.build();
     }
+
+    private void addOfferValue(PdfBuilder pdf, Offer offer) {
+        pdf.paragraphEmphasized(offer.getDiscount() + " %")
+                .paragraphEmphasized(" ").line();
+    }
+
+    public Mono<byte[]> generateOffer(Mono<Offer> offerReact) {
+        return offerReact.map(offer -> {
+            final String path = "/tpv-pdfs/offers/offer-" + offer.getId();
+            PdfBuilder pdf = new PdfBuilder(path);
+            this.addHead(pdf);
+            pdf.qrCode(offer.getId());
+            pdf.paragraphEmphasized(offer.getExpirationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            this.addOfferValue(pdf, offer);
+            return pdf.build();
+        });
+    }
 }
