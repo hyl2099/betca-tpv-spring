@@ -28,7 +28,7 @@ class StockControllerIT {
     void testReadAllFilterDateAndStock() {
         StepVerifier
                 .create(this.stockController.readAll(5, LocalDateTime.now().minusMonths(1), LocalDateTime.now()))
-                .expectNextCount(6)
+                .expectNextCount(2)
                 .expectComplete()
                 .verify();
     }
