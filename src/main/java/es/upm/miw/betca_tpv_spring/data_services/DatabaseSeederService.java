@@ -266,7 +266,7 @@ public class DatabaseSeederService {
                 new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
                 new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[5], "note"),
                 new Ticket(6, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
                         new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
         };
@@ -280,7 +280,8 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
                 new Invoice(1, users[4], tickets[1]),
-                new Invoice(2, users[4], tickets[4])
+                new Invoice(2, users[5], tickets[5]),
+                new Invoice(3, users[4], tickets[4])
         };
         invoices[1].setTax(new BigDecimal("0.0368"));
         invoices[1].setBaseTax(new BigDecimal("0.6624"));
