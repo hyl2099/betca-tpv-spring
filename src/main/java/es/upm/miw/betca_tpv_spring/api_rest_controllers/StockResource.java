@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
 @RestController
@@ -24,8 +28,11 @@ public class StockResource {
     }
 
     @GetMapping
-    public Flux<ArticleStockDto> readAll() {
-        return this.stockController.readAll()
+    public Flux<ArticleStockDto> readAll(@RequestParam(required = false) Integer minimumStock, @RequestParam(required = false) String initDate, @RequestParam(required = false) String endDate) {
+        LocalDateTime initDateTime = initDate.isEmpty() ? null : LocalDateTime.parse(initDate, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime endDateTime = endDate.isEmpty() ? null : LocalDateTime.parse(endDate, DateTimeFormatter.ISO_DATE_TIME);
+
+        return this.stockController.readAll(minimumStock, initDateTime, endDateTime)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }
