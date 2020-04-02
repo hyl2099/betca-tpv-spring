@@ -89,6 +89,9 @@ public class PdfService {
             final String path = "/tpv-pdfs/tickets/ticket-" + ticket.getId();
             PdfBuilder pdf = new PdfBuilder(path);
             this.addHead(pdf);
+            if (ticket.getCustomerPoints() != null)
+                pdf.paragraphEmphasized("Acummulated points: " + ticket.getCustomerPoints().getPoints());
+
             if (ticket.isDebt()) {
                 pdf.paragraphEmphasized("BOOKING");
                 pdf.paragraphEmphasized("Paid: " + ticket.pay().setScale(2, RoundingMode.HALF_UP) + "€");
@@ -166,11 +169,11 @@ public class PdfService {
         return invoiceReact.map(invoice -> buildInvoicePdf(invoice, invoice.getTicket().getShoppingList()));
     }
 
-    public Mono<byte[]> generateNegativeInvoice(Mono<Invoice> invoiceReact, Shopping[] returnedShoppings){
+    public Mono<byte[]> generateNegativeInvoice(Mono<Invoice> invoiceReact, Shopping[] returnedShoppings) {
         return invoiceReact.map(invoice -> buildInvoicePdf(invoice, returnedShoppings));
     }
 
-    public byte[] buildInvoicePdf(Invoice invoice, Shopping[] shoppings){
+    public byte[] buildInvoicePdf(Invoice invoice, Shopping[] shoppings) {
         final String path = "/tpv-pdfs/invoices/invoice-" + invoice.getId();
         PdfBuilder pdf = new PdfBuilder(path);
         this.addHead(pdf);
