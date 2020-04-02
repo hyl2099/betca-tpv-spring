@@ -121,6 +121,10 @@ public class TicketController {
         }
     }
 
+    public Mono<Ticket> getTicket(String id) {
+        return this.ticketReactRepository.findById(id);
+    }
+
     public Flux<TicketOutputDto> searchByMobileDateOrAmount(TicketSearchDto ticketSearchDto) {
         Flux<Ticket> ticketFlux = ticketSearchDto.getDate() == null ?
                 ticketReactRepository.findAll() :
