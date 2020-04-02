@@ -81,20 +81,24 @@ public class ArticlesFamilyController {
         List<ArticlesFamily> familyArticleList = new ArrayList<>();
         Optional<Provider> provider = this.providerRepository.findById(articlesFamilyDto.getProvider());
 
+        int increment = 1;
+        if(articlesFamilyDto.getIncrement()>0 && !articlesFamilyDto.getSizeType())
+            increment = articlesFamilyDto.getIncrement();
 
-        for (int index = lowerLimit; index <= upperLimit; index = index+1 + articlesFamilyDto.getIncrement()) {
+
+        for (int index = lowerLimit; index <= upperLimit;index += increment) {
             String code = new Barcode().generateEan13code(Long.parseLong(this.articleRepository.findFirstByOrderByCodeDesc().getCode().substring(0, 12)) + 1);
             if (code.length() == 13 && Long.parseLong(code.substring(7, 12)) > 99999L) {
                 return Mono.error(new BadRequestException("Index out of range"));
             }
 
             String description;
-            if(articlesFamilyDto.getSizeType().equals("1"))
+            if(articlesFamilyDto.getSizeType())
                 description = sizes.get(index);
             else
                 description = String.valueOf(index);
 
-            Article article = Article.builder(code).description(articlesFamilyDto.getReference()+ "-" + articlesFamilyDto.getDescription() + " T" + description)
+            Article article = Article.builder(code).description(articlesFamilyDto.getReference()+ " - " + articlesFamilyDto.getDescription() + " T" + description)
             .reference(articlesFamilyDto.getReference()+ " T" + description).provider(provider.get()).build();
             this.articleRepository.save(article);
             familyArticleList.add(new FamilyArticle(article));
