@@ -98,7 +98,7 @@ class TicketResourceIT {
                 .expectBodyList(TicketOutputDto.class)
                 .returnResult().getResponseBody();
         assertNotNull(tickets);
-        assertEquals(2, tickets.size());
+        assertEquals(1, tickets.size());
     }
 
     @Test

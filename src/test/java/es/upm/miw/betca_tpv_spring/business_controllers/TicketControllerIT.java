@@ -65,7 +65,7 @@ public class TicketControllerIT {
         TicketSearchDto ticketSearchDto = new TicketSearchDto(mobile, null, null);
         StepVerifier
                 .create(this.ticketController.searchByMobileDateOrAmount(ticketSearchDto))
-                .expectNextCount(4)
+                .expectNextCount(3)
                 .expectComplete()
                 .verify();
     }
@@ -103,7 +103,7 @@ public class TicketControllerIT {
         TicketSearchDto ticketSearchDto = new TicketSearchDto(mobile, date, amount);
         StepVerifier
                 .create(this.ticketController.searchByMobileDateOrAmount(ticketSearchDto))
-                .expectNextCount(2)
+                .expectNextCount(1)
                 .expectComplete()
                 .verify();
     }
