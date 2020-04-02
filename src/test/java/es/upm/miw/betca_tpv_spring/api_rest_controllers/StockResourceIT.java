@@ -27,9 +27,6 @@ class StockResourceIT {
         this.restService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + STOCK)
-                .queryParam("minimumStock", null)
-                .queryParam("initDate", null)
-                .queryParam("endDate", null)
                 .build())
                 .exchange().expectStatus().isOk();
     }
@@ -40,8 +37,6 @@ class StockResourceIT {
                 .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + STOCK)
                 .queryParam("minimumStock", 0)
-                .queryParam("initDate", null)
-                .queryParam("endDate", null)
                 .build())
                 .exchange().expectBody(ArticleStockDto[].class)
                 .value(articleStockDto -> assertTrue(articleStockDto.length <= 0 || articleStockDto[0].getStock() <= 0));
@@ -53,7 +48,6 @@ class StockResourceIT {
                 .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + STOCK)
                 .queryParam("minimumStock", 1)
-                .queryParam("initDate", null)
                 .queryParam("endDate", LocalDateTime.now().minusMonths(1).toString())
                 .build())
                 .exchange().expectBody(ArticleStockDto[].class)
