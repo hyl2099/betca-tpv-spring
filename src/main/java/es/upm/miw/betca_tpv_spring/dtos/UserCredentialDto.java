@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 public class UserCredentialDto {
 
     @NotNull
-    private String password;
+    private String mobile;
 
     @NotNull
     private String newPassword;
@@ -14,17 +14,17 @@ public class UserCredentialDto {
         this("", "");
     }
 
-    public UserCredentialDto(String password, String newPassword) {
-        this.password = password;
+    public UserCredentialDto(String mobile, String newPassword) {
+        this.mobile = mobile;
         this.newPassword = newPassword;
     }
 
-    public String getPassword() {
-        return password;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getNewPassword() {
