@@ -48,7 +48,7 @@ class StockResourceIT {
                 .get().uri(uriBuilder -> uriBuilder
                 .path(contextPath + STOCK)
                 .queryParam("minimumStock", 1)
-                .queryParam("endDate", LocalDateTime.now().minusMonths(1).toString())
+                .queryParam("endDate", LocalDateTime.now().minusMonths(2).toString())
                 .build())
                 .exchange().expectBody(ArticleStockDto[].class)
                 .value(articleStockDto -> assertTrue(articleStockDto.length <= 0 || articleStockDto[0].getStock() <= 1));
