@@ -1,30 +1,32 @@
-package es.upm.miw.betca_tpv_spring.documents;
+package es.upm.miw.betca_tpv_spring.dtos;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
+import es.upm.miw.betca_tpv_spring.documents.Messages;
 
 import java.time.LocalDateTime;
 
-public class Messages {
-
-    @Id
-    private ObjectId id;
+public class MessagesDto {
 
     private String fromUserName;
     private String messageContent;
     private LocalDateTime sentDate;
     private LocalDateTime readDate;
 
-    public Messages(String fromUserName, String messageContent, LocalDateTime sentDate, LocalDateTime readDate){
-        this.id = ObjectId.get();
+    public MessagesDto() {
+        // Empty for framework
+    }
+
+    public MessagesDto(String fromUserName, String messageContent, LocalDateTime sentDate, LocalDateTime readDate) {
         this.fromUserName = fromUserName;
         this.messageContent = messageContent;
         this.sentDate = sentDate;
         this.readDate = readDate;
     }
 
-    public ObjectId getId() {
-        return id;
+    public MessagesDto(Messages messages) {
+        this.fromUserName = messages.getFromUserName();
+        this.messageContent = messages.getMessageContent();
+        this.sentDate = messages.getSentDate();
+        this.readDate = messages.getReadDate();
     }
 
     public String getFromUserName() {
@@ -60,13 +62,12 @@ public class Messages {
     }
 
     @Override
-    public String toString(){
-        return "Messages{" +
-                "id='" + id + '\'' +
-                ", fromUserName='" + fromUserName + "\'" +
-                ", messageContent='" + messageContent + "\'" +
-                ", sentDate='" + sentDate + "\'" +
-                ", readDate='" + readDate + "\'" +
-                "}";
+    public String toString() {
+        return "MessagesDto [" +
+                "fromUserName=" + fromUserName  +
+                ", messageContent=" + messageContent +
+                ", sentDate=" + sentDate +
+                ", readDate=" + readDate +
+                ']';
     }
 }

@@ -63,7 +63,14 @@ class UserReactRepositoryIT {
                     assertTrue(user.isActive());
                     assertNotNull(user.getRoles());
                     assertFalse(user.toString().matches("@"));
-                    assertEquals(messagesList.toString(), user.getMessagesList().toString());
+                    assertEquals(messagesList.get(0).getFromUserName(), user.getMessagesList().get(0).getFromUserName());
+                    assertEquals(messagesList.get(0).getMessageContent(), user.getMessagesList().get(0).getMessageContent());
+                    assertEquals(messagesList.get(0).getSentDate(), user.getMessagesList().get(0).getSentDate());
+                    assertEquals(messagesList.get(0).getReadDate(), user.getMessagesList().get(0).getReadDate());
+                    assertEquals(messagesList.get(1).getFromUserName(), user.getMessagesList().get(1).getFromUserName());
+                    assertEquals(messagesList.get(1).getMessageContent(), user.getMessagesList().get(1).getMessageContent());
+                    assertEquals(messagesList.get(1).getSentDate(), user.getMessagesList().get(1).getSentDate());
+                    assertEquals(messagesList.get(1).getReadDate(), user.getMessagesList().get(1).getReadDate());
                     return true;
                 })
                 .thenCancel()
