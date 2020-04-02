@@ -19,8 +19,6 @@ public class UserDto extends UserMinimumDto {
 
     private Boolean active;
 
-    private Role[] roles;
-
     private LocalDateTime registrationDate;
 
     public UserDto() {
@@ -28,12 +26,11 @@ public class UserDto extends UserMinimumDto {
     }
 
     public UserDto(User user) {
-        super(user.getMobile(), user.getUsername());
+        super(user.getMobile(), user.getUsername(), user.getRoles());
         this.email = user.getEmail();
         this.dni = user.getDni();
         this.address = user.getAddress();
         this.active = user.isActive();
-        this.roles = user.getRoles();
         this.registrationDate = user.getRegistrationDate();
     }
 
@@ -57,10 +54,6 @@ public class UserDto extends UserMinimumDto {
         return this.registrationDate;
     }
 
-    public Role[] getRoles() {
-        return this.roles;
-    }
-
     @Override
     public String toString() {
         return "UserDto{" +
@@ -70,7 +63,6 @@ public class UserDto extends UserMinimumDto {
                 ", dni='" + dni + '\'' +
                 ", address='" + address + '\'' +
                 ", active=" + active +
-                ", roles=" + Arrays.toString(roles) +
                 ", registrationDate=" + registrationDate +
                 '}';
     }
