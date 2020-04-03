@@ -35,7 +35,8 @@ public class OfferController {
     }
 
     public Mono<Offer> createOffer(OfferCreationDto offerCreationDto) {
-        Article[] articles = offerCreationDto.getArticleList().stream().map(articleDto -> new Article().builder(articleDto.getCode())
+        Article[] articles;
+        articles = offerCreationDto.getArticleList().stream().map(articleDto -> Article.builder(articleDto.getCode())
                 .description(articleDto.getDescription())
                 .retailPrice(articleDto.getRetailPrice())
                 .build()).toArray(Article[]::new);
