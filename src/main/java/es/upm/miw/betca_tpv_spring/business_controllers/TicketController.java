@@ -154,4 +154,8 @@ public class TicketController {
         return ticketFlux.map(ticket -> new TicketOutputDto(ticket.getId(), ticket.getReference()));
     }
 
+    public Flux<TicketOutputDto> searchNotCommittedByArticle(String articleId) {
+        return this.ticketReactRepository.findNotCommittedByArticleId(articleId)
+                .map(ticket -> new TicketOutputDto(ticket.getId(), ticket.getReference()));
+    }
 }
