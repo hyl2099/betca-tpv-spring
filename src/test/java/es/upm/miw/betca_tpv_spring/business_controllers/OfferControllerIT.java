@@ -82,7 +82,7 @@ public class OfferControllerIT {
         assertEquals(1, this.offerRepository.count());
         String id = this.offerRepository.findAll().get(0).getId();
         StepVerifier
-                .create(this.offerController.deleteOrder(id))
+                .create(this.offerController.deleteOffer(id))
                 .expectComplete()
                 .verify();
         assertEquals(0, this.offerRepository.count());

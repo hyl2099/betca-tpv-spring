@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_spring.documents.Offer;
 import es.upm.miw.betca_tpv_spring.dtos.ArticleDto;
 import es.upm.miw.betca_tpv_spring.dtos.OfferCreationDto;
 import es.upm.miw.betca_tpv_spring.dtos.OfferDto;
+import es.upm.miw.betca_tpv_spring.dtos.OrderDto;
 import es.upm.miw.betca_tpv_spring.repositories.OfferRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OfferResource.OFFER_ID;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDERS;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.OrderResource.ORDER_ID;
 import static org.junit.Assert.assertEquals;
 
 @ApiTestConfig
@@ -87,6 +91,38 @@ public class OfferResourceIT {
         assert offerDto != null;
         this.offerRepository.deleteById(offerDto.getId());
         assertEquals(this.offerRepository.findById(offerDto.getId()), Optional.empty());
+    }
+
+    @Test
+    void testSearchOfferByDates() {
+        this.restService.loginAdmin(webTestClient)
+                .get().uri(uriBuilder -> uriBuilder
+                .path(contextPath + OFFERS)
+                .queryParam("registrationDate", "2020-03-31T22:00:00.000Z")
+                .queryParam("expirationDate", "2020-04-29T22:00:00.000Z")
+                .build())
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void testGetOffer() {
+        OrderDto order = this.restService.loginAdmin(webTestClient)
+                .get().uri(contextPath + OFFERS + OFFER_ID, this.offers.get(0).getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderDto.class)
+                .returnResult().getResponseBody();
+        assertEquals(this.offerRepository.findById(this.offers.get(0).getId()).get().getId(), order.getId());
+    }
+
+    @Test
+    void testDeleteOfferById() {
+        this.restService.loginAdmin(webTestClient)
+                .delete().uri(contextPath + OFFERS + OFFER_ID, this.offers.get(0).getId())
+                .exchange()
+                .expectStatus().isOk();
+        assertEquals(Optional.empty(), this.offerRepository.findById(this.offers.get(0).getId()));
     }
 
     private OfferDto createOfferDto() {
