@@ -23,8 +23,7 @@ public class BudgetDto {
     }
 
     public BudgetDto(Budget budget) {
-        this.shoppingCart = Arrays.asList(budget.getShoppingList()).stream().map(p-> {
-            ShoppingDto spd= new ShoppingDto(p);return spd;}).collect(Collectors.toList());
+        this.shoppingCart = Arrays.asList(budget.getShoppingList()).stream().map(p-> new ShoppingDto(p)).collect(Collectors.toList());
         this.creationDate = budget.getCreationDate();
     }
 
