@@ -35,7 +35,7 @@ public class TicketController {
     private CashierClosureReactRepository cashierClosureReactRepository;
     private PdfService pdfService;
     private CustomerPointsReactRepository customerPointsReactRepository;
-    private static Integer POINT_EQUIVALENCE = 100;
+    private static Integer EACH_TWO_UNIT_ONE_POINT = 2;
 
     @Autowired
     public TicketController(TicketReactRepository ticketReactRepository, UserReactRepository userReactRepository,
@@ -97,9 +97,11 @@ public class TicketController {
         Mono<Void> cashierClosureUpdate = this.cashierClosureReactRepository.saveAll(cashierClosureReact).then();
 
         Mono<CustomerPoints> customerPoints = this.customerPointsReactRepository.findByUser(user).map(customerPoints1 -> {
-            customerPoints1.setPoints((ticket.getTotal().intValue() * 75) / POINT_EQUIVALENCE);
+            customerPoints1.setPoints((customerPoints1.getPoints() + (ticket.getTotal().intValue() / EACH_TWO_UNIT_ONE_POINT)));
             return customerPoints1;
-        }).doOnNext(cp -> ticket.setCustomerPoints(cp));
+        }).doOnNext(cp -> {
+            ticket.setCustomerPoints(cp);
+        });
 
         Mono<Void> customerPointsUpdate = this.customerPointsReactRepository.saveAll(customerPoints).then();
 
