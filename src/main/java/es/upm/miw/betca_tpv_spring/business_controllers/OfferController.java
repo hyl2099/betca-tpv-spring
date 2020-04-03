@@ -50,9 +50,9 @@ public class OfferController {
         return offerReactRepository.save(offer);
     }
 
-    public Mono<Void> deleteOrder(String orderId) {
-        Mono<Offer> offer = this.offerReactRepository.findById(orderId);
-        return Mono.when(offer).then(this.offerReactRepository.deleteById(orderId));
+    public Mono<Void> deleteOffer(String offerId) {
+        Mono<Offer> offer = this.offerReactRepository.findById(offerId);
+        return Mono.when(offer).then(this.offerReactRepository.deleteById(offerId));
     }
 
     @Transactional
