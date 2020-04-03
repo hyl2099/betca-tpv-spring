@@ -7,6 +7,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 
@@ -98,6 +99,40 @@ class StockControllerIT {
     void testGetShoppingEndDate() {
         StepVerifier
                 .create(this.stockController.getShopping(null, LocalDateTime.now().minusMonths(1)))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testGetShoppingArticlePerYearEmpty() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime endDate = LocalDateTime.parse("2010-12-31 00:00", formatter);
+        LocalDateTime initDate = LocalDateTime.parse("2010-01-01 00:00", formatter);
+
+        StepVerifier
+                .create(this.stockController.getShoppingArticlePerYear(initDate, endDate, "8400000000017"))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testGetShoppingArticlePerYear() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime initDate = LocalDateTime.parse("2020-01-01 00:00", formatter);
+        LocalDateTime endDate = LocalDateTime.parse("2020-12-31 00:00", formatter);
+
+        StepVerifier
+                .create(this.stockController.getShoppingArticlePerYear(initDate, endDate, "8400000000017"))
+                .expectNextMatches(articleStockDto -> articleStockDto.getYear().equals(initDate.getYear()))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void readArticleSalesInfo() {
+        StepVerifier
+                .create(this.stockController.readArticleSalesInfo("8400000000017"))
+                .expectNextMatches(articleStockDto -> articleStockDto.getYear().equals(LocalDateTime.now().getYear()))
                 .expectComplete()
                 .verify();
     }

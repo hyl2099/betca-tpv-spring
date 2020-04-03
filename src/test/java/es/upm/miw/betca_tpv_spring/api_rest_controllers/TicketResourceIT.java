@@ -116,4 +116,17 @@ class TicketResourceIT {
         assertNotNull(tickets);
         assertEquals(4, tickets.size());
     }
+
+    @Test
+    void testSearchNotCommittedByArticle() {
+        String articleId = "8400000000024";
+        List<TicketOutputDto> tickets = this.restService.loginAdmin(webTestClient)
+                .get().uri(contextPath + TICKETS + SEARCH_BY_ARTICLE, articleId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(TicketOutputDto.class)
+                .returnResult().getResponseBody();
+        assertNotNull(tickets);
+        assertEquals(1, tickets.size());
+    }
 }
