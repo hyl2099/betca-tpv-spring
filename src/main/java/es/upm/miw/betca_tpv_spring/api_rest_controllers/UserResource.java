@@ -1,10 +1,7 @@
 package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 
 import es.upm.miw.betca_tpv_spring.business_controllers.UserController;
-import es.upm.miw.betca_tpv_spring.dtos.TokenOutputDto;
-import es.upm.miw.betca_tpv_spring.dtos.UserDto;
-import es.upm.miw.betca_tpv_spring.dtos.UserMinimumDto;
-import es.upm.miw.betca_tpv_spring.dtos.UserCredentialDto;
+import es.upm.miw.betca_tpv_spring.dtos.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +24,7 @@ public class UserResource {
     public static final String USERS = "/users";
     public static final String TOKEN = "/token";
     public static final String MOBILE_ID = "/{mobile}";
-
+    public static final String MESSAGES = "/messages";
 
     private UserController userController;
 
@@ -66,6 +63,12 @@ public class UserResource {
     @PutMapping(value = MOBILE_ID)
     public Mono<UserDto> updateUser(@PathVariable String mobile, @Valid @RequestBody UserDto userDto) {
         return this.userController.updateUser(mobile, userDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @PutMapping(value = MESSAGES)
+    public Mono<MessagesDto> sendMessageToUser(@Valid @RequestBody MessagesDto messagesDto) {
+        return this.userController.sendMessageToUser(messagesDto)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 

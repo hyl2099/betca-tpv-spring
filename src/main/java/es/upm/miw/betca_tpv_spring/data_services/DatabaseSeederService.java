@@ -169,8 +169,8 @@ public class DatabaseSeederService {
         List<Messages> messagesList = new ManagedList<>();
         LocalDateTime sentTime = LocalDateTime.of(2020, 3, 13, 9, 0, 0);
         LocalDateTime readTime = LocalDateTime.of(2020, 3, 14, 9, 0, 0);
-        messagesList.add(new Messages("u002", "Message fromm u002 to u007", sentTime, readTime));
-        messagesList.add(new Messages("u003", "Message fromm u003 to u007", sentTime.plusDays(1), readTime.plusDays(1)));
+        messagesList.add(new Messages("666666002", "666666007","Message fromm 2 to 7", sentTime, readTime));
+        messagesList.add(new Messages("666666003", "666666007","Message fromm 3 to 7", sentTime.plusDays(1), readTime.plusDays(1)));
         User[] users = {
                 User.builder().mobile("666666000").username("all-roles").password("p000").dni(null).address("C/TPV, 0, MIW").email("u000@gmail.com").roles(allRoles).build(),
                 User.builder().mobile("666666001").username("manager").password("p001").dni("66666601C").address("C/TPV, 1").email("u001@gmail.com").roles(Role.MANAGER).build(),
