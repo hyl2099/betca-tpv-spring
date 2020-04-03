@@ -96,7 +96,8 @@ public class TicketController {
         Mono<Void> cashierClosureUpdate = this.cashierClosureReactRepository.saveAll(cashierClosureReact).then();
 
         Mono<CustomerPoints> customerPoints = this.customerPointsReactRepository.findByUser(user).map(customerPoints1 -> {
-            customerPoints1.setPoints((customerPoints1.getPoints() + (ticket.getTotal().intValue() / EACH_TWO_UNIT_ONE_POINT)));
+            int points = (customerPoints1.getPoints() + (ticket.getTotal().intValue() / EACH_TWO_UNIT_ONE_POINT));
+            customerPoints1.setPoints(points < 0 ? 0 : points);
             return customerPoints1;
         }).doOnNext(cp -> ticket.setCustomerPoints(cp));
 
