@@ -99,9 +99,7 @@ public class TicketController {
         Mono<CustomerPoints> customerPoints = this.customerPointsReactRepository.findByUser(user).map(customerPoints1 -> {
             customerPoints1.setPoints((customerPoints1.getPoints() + (ticket.getTotal().intValue() / EACH_TWO_UNIT_ONE_POINT)));
             return customerPoints1;
-        }).doOnNext(cp -> {
-            ticket.setCustomerPoints(cp);
-        });
+        }).doOnNext(cp -> ticket.setCustomerPoints(cp));
 
         Mono<Void> customerPointsUpdate = this.customerPointsReactRepository.saveAll(customerPoints).then();
 
