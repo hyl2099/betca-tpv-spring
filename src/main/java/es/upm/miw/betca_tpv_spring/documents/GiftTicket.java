@@ -22,9 +22,8 @@ public class GiftTicket {
         this.personalizedMessage = "";
     }
 
-    public GiftTicket(String id, LocalDateTime expirationDate, String personalizedMessage, Ticket ticket) {
-        this.id = id;
-        this.expirationDate = expirationDate;
+    public GiftTicket(String personalizedMessage, Ticket ticket) {
+        this();
         this.personalizedMessage = personalizedMessage;
         this.ticket = ticket;
     }
