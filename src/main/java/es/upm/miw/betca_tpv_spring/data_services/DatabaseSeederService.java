@@ -169,8 +169,8 @@ public class DatabaseSeederService {
         List<Messages> messagesList = new ManagedList<>();
         LocalDateTime sentTime = LocalDateTime.of(2020, 3, 13, 9, 0, 0);
         LocalDateTime readTime = LocalDateTime.of(2020, 3, 14, 9, 0, 0);
-        messagesList.add(new Messages("u002", "Message fromm u002 to u007", sentTime, readTime));
-        messagesList.add(new Messages("u003", "Message fromm u003 to u007", sentTime.plusDays(1), readTime.plusDays(1)));
+        messagesList.add(new Messages("666666002", "666666007","Message fromm 2 to 7", sentTime, readTime));
+        messagesList.add(new Messages("666666003", "666666007","Message fromm 3 to 7", sentTime.plusDays(1), readTime.plusDays(1)));
         User[] users = {
                 User.builder().mobile("666666000").username("all-roles").password("p000").dni(null).address("C/TPV, 0, MIW").email("u000@gmail.com").roles(allRoles).build(),
                 User.builder().mobile("666666001").username("manager").password("p001").dni("66666601C").address("C/TPV, 1").email("u001@gmail.com").roles(Role.MANAGER).build(),
@@ -258,17 +258,17 @@ public class DatabaseSeederService {
         };
         Ticket[] tickets = {
                 new Ticket(1, BigDecimal.TEN, new BigDecimal("25.0"), BigDecimal.ZERO,
-                        new Shopping[]{shoppingList[0], shoppingList[1]}, users[4], "note"),
+                        new Shopping[]{shoppingList[0], shoppingList[1]}, users[4], "note",null),
                 new Ticket(2, new BigDecimal("18.0"), BigDecimal.ZERO, BigDecimal.ZERO,
-                        new Shopping[]{shoppingList[2]}, users[4], "note"),
+                        new Shopping[]{shoppingList[2]}, users[4], "note",null),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note",null),
                 new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note",null),
                 new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[5], "note",null),
                 new Ticket(6, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note"),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note",null),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
@@ -280,7 +280,8 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
                 new Invoice(1, users[4], tickets[1]),
-                new Invoice(2, users[4], tickets[4])
+                new Invoice(2, users[5], tickets[5]),
+                new Invoice(3, users[4], tickets[4])
         };
         invoices[1].setTax(new BigDecimal("0.0368"));
         invoices[1].setBaseTax(new BigDecimal("0.6624"));
