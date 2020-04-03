@@ -139,8 +139,8 @@ public class PdfService {
                 Shopping shopping = giftTicket.getTicket().getShoppingList()[i];
                 table.tableCell(String.valueOf(i + 1), shopping.getDescription(), "" + shopping.getAmount(), " - ", " - ", " - ");
             }
-            pdf.paragraph("Expiration date: " + giftTicket.getExpirationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).line();
-            pdf.paragraphEmphasized("Message: " + giftTicket.getPersonalizedMessage())
+            pdf.paragraph("Expiration date: " + giftTicket.getExpirationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            pdf.line().paragraphEmphasized("Message: " + giftTicket.getPersonalizedMessage())
                     .paragraphEmphasized(" ").line();
             return pdf.build();
         });
