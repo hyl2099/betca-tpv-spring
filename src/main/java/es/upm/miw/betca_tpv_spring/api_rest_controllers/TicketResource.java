@@ -24,6 +24,7 @@ public class TicketResource {
     public static final String TICKETS = "/tickets";
     public static final String TICKET_ID = "/{id}";
     public static final String SEARCH = "/search";
+    public static final String SEARCH_BY_ARTICLE = "/search/article/{articleId}";
 
     private TicketController ticketController;
 
@@ -61,6 +62,12 @@ public class TicketResource {
         LocalDateTime day = date == null ? null : LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
         TicketSearchDto ticketSearchDto = new TicketSearchDto(mobile, day, amount);
         return this.ticketController.searchByMobileDateOrAmount(ticketSearchDto)
+                .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
+    }
+
+    @GetMapping(value = SEARCH_BY_ARTICLE)
+    public Flux<TicketOutputDto> searchNotCommittedByArticle(@PathVariable String articleId) {
+        return this.ticketController.searchNotCommittedByArticle(articleId)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));
     }
 }

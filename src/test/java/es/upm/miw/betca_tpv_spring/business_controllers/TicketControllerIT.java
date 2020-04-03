@@ -107,4 +107,14 @@ public class TicketControllerIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testGetNotCommittedByArticle() {
+        String articleId = "8400000000024";
+        StepVerifier
+                .create(this.ticketController.searchNotCommittedByArticle(articleId))
+                .expectNextCount(1)
+                .expectComplete()
+                .verify();
+    }
 }
