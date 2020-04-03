@@ -7,10 +7,7 @@ import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketSearchDto;
 import es.upm.miw.betca_tpv_spring.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_spring.exceptions.PdfException;
-import es.upm.miw.betca_tpv_spring.repositories.ArticleReactRepository;
-import es.upm.miw.betca_tpv_spring.repositories.CashierClosureReactRepository;
-import es.upm.miw.betca_tpv_spring.repositories.TicketReactRepository;
-import es.upm.miw.betca_tpv_spring.repositories.UserReactRepository;
+import es.upm.miw.betca_tpv_spring.repositories.*;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,16 +34,19 @@ public class TicketController {
     private UserReactRepository userReactRepository;
     private CashierClosureReactRepository cashierClosureReactRepository;
     private PdfService pdfService;
+    private CustomerPointsReactRepository customerPointsReactRepository;
+    private static Integer POINT_EQUIVALENCE = 100;
 
     @Autowired
     public TicketController(TicketReactRepository ticketReactRepository, UserReactRepository userReactRepository,
                             ArticleReactRepository articleReactRepository, CashierClosureReactRepository cashierClosureReactRepository,
-                            PdfService pdfService) {
+                            PdfService pdfService, CustomerPointsReactRepository customerPointsReactRepository) {
         this.ticketReactRepository = ticketReactRepository;
         this.userReactRepository = userReactRepository;
         this.articleReactRepository = articleReactRepository;
         this.cashierClosureReactRepository = cashierClosureReactRepository;
         this.pdfService = pdfService;
+        this.customerPointsReactRepository = customerPointsReactRepository;
     }
 
     private Mono<Integer> nextIdStartingDaily() {
@@ -82,7 +82,7 @@ public class TicketController {
                 .toArray(Shopping[]::new);
         Ticket ticket = new Ticket(0, ticketCreationDto.getCard(), ticketCreationDto.getCash(),
                 ticketCreationDto.getVoucher(), shoppingArray, null,
-                ticketCreationDto.getNote());
+                ticketCreationDto.getNote(), null);
         Mono<User> user = this.userReactRepository.findByMobile(ticketCreationDto.getUserMobile())
                 .doOnNext(ticket::setUser);
         Mono<Integer> nextId = this.nextIdStartingDaily()
@@ -96,7 +96,14 @@ public class TicketController {
                 });
         Mono<Void> cashierClosureUpdate = this.cashierClosureReactRepository.saveAll(cashierClosureReact).then();
 
-        return Mono.when(user, nextId, updateArticlesStockAssured(ticketCreationDto), cashierClosureUpdate)
+        Mono<CustomerPoints> customerPoints = this.customerPointsReactRepository.findByUser(user).map(customerPoints1 -> {
+            customerPoints1.setPoints((ticket.getTotal().intValue() * 75) / POINT_EQUIVALENCE);
+            return customerPoints1;
+        }).doOnNext(cp -> ticket.setCustomerPoints(cp));
+
+        Mono<Void> customerPointsUpdate = this.customerPointsReactRepository.saveAll(customerPoints).then();
+
+        return Mono.when(user, nextId, updateArticlesStockAssured(ticketCreationDto), customerPointsUpdate, cashierClosureUpdate)
                 .then(this.ticketReactRepository.save(ticket));
     }
 
@@ -129,13 +136,13 @@ public class TicketController {
         Flux<Ticket> ticketFlux = ticketSearchDto.getDate() == null ?
                 ticketReactRepository.findAll() :
                 ticketReactRepository.findByCreationDateBetween(ticketSearchDto.getDate(), ticketSearchDto.getDate().plusDays(1));
-        if(ticketSearchDto.getMobile() != null) {
+        if (ticketSearchDto.getMobile() != null) {
             ticketFlux = ticketFlux.filter(ticket -> {
                 User user = ticket.getUser();
                 return user != null && user.getMobile().equals(ticketSearchDto.getMobile());
             });
         }
-        if(ticketSearchDto.getAmount() != null) {
+        if (ticketSearchDto.getAmount() != null) {
             ticketFlux = ticketFlux.filter(ticket -> {
                 AtomicReference<Integer> numberOfItems = new AtomicReference<>(0);
                 Arrays.stream(ticket.getShoppingList()).forEach(item -> {
