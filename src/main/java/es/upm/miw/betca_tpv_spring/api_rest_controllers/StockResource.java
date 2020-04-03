@@ -30,7 +30,7 @@ public class StockResource {
     @GetMapping
     public Flux<ArticleStockDto> readAll(@RequestParam(required = false) Integer minimumStock, @RequestParam(required = false) String initDate, @RequestParam(required = false) String endDate) {
         LocalDateTime initDateTime = initDate == null || initDate.isEmpty() ? null : LocalDateTime.parse(initDate, DateTimeFormatter.ISO_DATE_TIME);
-        LocalDateTime endDateTime = endDate == null || endDate.isEmpty() ? null : LocalDateTime.parse(endDate, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime endDateTime = endDate == null || endDate.isEmpty() ? null : LocalDateTime.parse(endDate, DateTimeFormatter.ISO_DATE_TIME).plusDays(1);
 
         return this.stockController.readAll(minimumStock, initDateTime, endDateTime)
                 .doOnNext(log -> LogManager.getLogger(this.getClass()).debug(log));

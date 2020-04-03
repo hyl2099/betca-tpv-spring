@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_spring.api_rest_controllers;
 import es.upm.miw.betca_tpv_spring.dtos.CashierClosureInputDto;
 import es.upm.miw.betca_tpv_spring.dtos.ShoppingDto;
 import es.upm.miw.betca_tpv_spring.dtos.TicketCreationInputDto;
+import es.upm.miw.betca_tpv_spring.dtos.TicketOutputDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 
 import static es.upm.miw.betca_tpv_spring.api_rest_controllers.CashierClosureResource.CASHIER_CLOSURES;
+import static es.upm.miw.betca_tpv_spring.api_rest_controllers.TicketResource.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @ApiTestConfig
 class TicketResourceIT {
@@ -78,4 +84,36 @@ class TicketResourceIT {
                 .expectStatus().isOk();
     }
 
+    @Test
+    void testSearchByMobileDateOrAmount() {
+        List<TicketOutputDto> tickets = this.restService.loginAdmin(webTestClient)
+                .get().uri(uriBuilder -> uriBuilder
+                .path(contextPath + TICKETS + SEARCH)
+                .queryParam("mobile", "666666004")
+                .queryParam("date", LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).toString())
+                .queryParam("amount", 6)
+                .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(TicketOutputDto.class)
+                .returnResult().getResponseBody();
+        assertNotNull(tickets);
+        assertEquals(1, tickets.size());
+    }
+
+    @Test
+    void testSearchMissParam() {
+        List<TicketOutputDto> tickets = this.restService.loginAdmin(webTestClient)
+                .get().uri(uriBuilder -> uriBuilder
+                        .path(contextPath + TICKETS + SEARCH)
+                        .queryParam("date", LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).toString())
+                        .queryParam("amount", 6)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(TicketOutputDto.class)
+                .returnResult().getResponseBody();
+        assertNotNull(tickets);
+        assertEquals(4, tickets.size());
+    }
 }

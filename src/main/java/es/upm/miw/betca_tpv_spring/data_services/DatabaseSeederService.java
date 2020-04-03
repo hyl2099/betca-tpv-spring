@@ -258,17 +258,17 @@ public class DatabaseSeederService {
         };
         Ticket[] tickets = {
                 new Ticket(1, BigDecimal.TEN, new BigDecimal("25.0"), BigDecimal.ZERO,
-                        new Shopping[]{shoppingList[0], shoppingList[1]}, users[4], "note", null),
+                        new Shopping[]{shoppingList[0], shoppingList[1]}, users[4], "note",null),
                 new Ticket(2, new BigDecimal("18.0"), BigDecimal.ZERO, BigDecimal.ZERO,
-                        new Shopping[]{shoppingList[2]}, users[4], "note", null),
+                        new Shopping[]{shoppingList[2]}, users[4], "note",null),
                 new Ticket(3, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note", null),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note",null),
                 new Ticket(4, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note", null),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, null, "note",null),
                 new Ticket(5, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note", null),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[5], "note",null),
                 new Ticket(6, BigDecimal.ZERO, new BigDecimal("16.18"), new BigDecimal("5"),
-                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note", null),
+                        new Shopping[]{shoppingList[3], shoppingList[4]}, users[4], "note",null),
         };
         tickets[0].setId("201901121");
         tickets[1].setId("201901122");
@@ -280,7 +280,8 @@ public class DatabaseSeederService {
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
         Invoice[] invoices = {
                 new Invoice(1, users[4], tickets[1]),
-                new Invoice(2, users[4], tickets[4])
+                new Invoice(2, users[5], tickets[5]),
+                new Invoice(3, users[4], tickets[4])
         };
         invoices[1].setTax(new BigDecimal("0.0368"));
         invoices[1].setBaseTax(new BigDecimal("0.6624"));
